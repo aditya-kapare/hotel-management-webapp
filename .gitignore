@@ -1,0 +1,32 @@
+##################################################
+# .NET / Visual Studio
+##################################################
+
+# Visual Studio cache
+.vs/
+
+# Build results
+bin/
+obj/
+
+# Rider / VS Code / others
+.idea/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+HotelManagement/HotelManagement.WebApp/appsettings.json
+HotelManagement/HotelManagement.WebApp/appsettings.Development.json
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Publish output
+publish/
