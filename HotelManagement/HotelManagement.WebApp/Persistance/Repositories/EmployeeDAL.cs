@@ -1,5 +1,5 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
-using HotelManagement.WebApp.Persistance.Repositories;
+using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 
 namespace HotelManagementSystem.DAL
