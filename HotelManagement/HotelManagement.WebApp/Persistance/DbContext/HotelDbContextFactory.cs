@@ -1,0 +1,23 @@
+﻿using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+
+namespace HotelManagement.WebApp.Persistance.DbContext
+{
+
+
+    public class HotelDbContextFactory : IDesignTimeDbContextFactory<HotelDbContext>
+    {
+        public HotelDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<HotelDbContext>();
+
+            optionsBuilder.UseSqlServer(
+                "");
+
+            return new HotelDbContext(optionsBuilder.Options);
+        }
+    }
+} 
+
+
