@@ -1,0 +1,54 @@
+@startuml
+title Hotel Management System - High Level Architecture (MVC + Layered)
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Presentation Layer (ASP.NET MVC)" {
+  [Web UI\nViews/Razor] as UI
+  [Controllers] as Controllers
+  [AuthZ/Filters\n(Role-based)] as Filters
+  [ViewModels/DTOs] as DTOs
+}
+
+package "Application Layer (Use-cases)" {
+  [Services] as Services
+  [Validators] as Validators
+}
+
+package "Domain Layer (Business Core)" {
+  [Entities] as Entities
+  [Domain Rules] as Rules
+  [Enums] as Enums
+}
+
+package "Infrastructure Layer" {
+  [Repositories (EF Core)] as Repos
+  [DbContext] as Db
+  [Identity/Auth Provider] as Auth
+  [Logging] as Logging
+}
+
+database "Hotel DB" as DB
+
+UI --> Controllers : HTTP Requests
+Controllers --> Filters : authorize/role check
+Controllers --> DTOs : bind/return
+Controllers --> Services : call use-cases
+Services --> Validators : validate inputs
+Services --> Entities : create/update\nbusiness objects
+Services --> Repos : persistence operations
+Repos --> Db : EF Core operations
+Db --> DB : SQL
+Controllers --> Logging : log actions/errors
+Services --> Logging
+Controllers --> Auth : login/logout
+Filters --> Auth : verify roles
+
+note right of Filters
+Roles from SRS:
+- Admin
+- Receptionist
+end note
+
+@enduml
