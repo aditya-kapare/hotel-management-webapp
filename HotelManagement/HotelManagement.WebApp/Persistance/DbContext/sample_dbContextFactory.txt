@@ -1,4 +1,4 @@
-﻿using HotelManagementSystem.Data;
+using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 

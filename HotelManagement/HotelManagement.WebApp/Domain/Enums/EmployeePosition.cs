@@ -1,6 +1,5 @@
 ﻿namespace HotelManagement.WebApp.Domain.Enums
 {
-
     public enum EmployeePosition
     {
         FrontDeskClerk,
@@ -11,5 +10,4 @@
         Manager,
         Accountant
     }
-
 }
