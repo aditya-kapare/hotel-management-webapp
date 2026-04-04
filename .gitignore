@@ -8,6 +8,7 @@
 # Build results
 bin/
 obj/
+wwwroot/
 
 # Rider / VS Code / others
 .idea/
@@ -18,8 +19,8 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
-HotelManagement/HotelManagement.WebApp/appsettings.json
-HotelManagement/HotelManagement.WebApp/appsettings.Development.json
+# HotelManagement/HotelManagement.WebApp/appsettings.json
+# HotelManagement/HotelManagement.WebApp/appsettings.Development.json
 
 # Logs
 *.log
