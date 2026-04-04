@@ -1,10 +1,6 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Repositories;
-using HotelManagementSystem.DAL.Interfaces;
 using HotelManagementSystem.Data;
-using HotelManagementSystem.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -22,11 +18,8 @@ namespace HotelManagementSystem.DAL
             return _context.Employees.ToList();
         }
 
-        public Employee GetEmployeeByAadhar(string aadharNo)
-        {
-            return _context.Employees
-                           .FirstOrDefault(e => e.AadharNo == aadharNo);
-        }
+        public Employee GetEmployeeByAadhar(string aadharNo) 
+            => _context.Employees.FirstOrDefault(e => e.AadharNo == aadharNo);
 
         public void AddEmployee(Employee employee)
         {

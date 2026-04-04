@@ -8,7 +8,6 @@
 # Build results
 bin/
 obj/
-wwwroot/
 
 # Rider / VS Code / others
 .idea/
@@ -19,8 +18,6 @@ wwwroot/
 *.suo
 *.userosscache
 *.sln.docstates
-# HotelManagement/HotelManagement.WebApp/appsettings.json
-# HotelManagement/HotelManagement.WebApp/appsettings.Development.json
 
 # Logs
 *.log
@@ -31,3 +28,15 @@ Thumbs.db
 
 # Publish output
 publish/
+
+
+# Databases
+*.mdf
+*.ldf
+*.db
+
+# Secrets
+appsettings.Production.json
+
+# LibMan / client-side vendor libraries
+wwwroot/lib/
