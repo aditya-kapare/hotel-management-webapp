@@ -1,6 +1,30 @@
-﻿namespace HotelManagement.WebApp.Domain.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HotelManagement.WebApp.Domain.Models
 {
     public class Employee
     {
+
+        [Key]
+        [Required]
+        public string AadharNo { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+        public string Gender { get; set; }
+
+        public string EmployeePosition { get; set; } 
+
+        public decimal Salary { get; set; }
+
+        [Required]
+        public string MobileNo { get; set; }
+
+        public string EmailId { get; set; }
     }
 }
+
+
