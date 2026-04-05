@@ -1,10 +1,9 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace HotelManagementSystem.DAL
+
 {
     public class DropPickRequestDAL : IDropPickRequestDAL
     {
@@ -48,4 +47,12 @@ namespace HotelManagementSystem.DAL
         public void DeleteRequest(int requestId)
         {
             var request = _context.DropPickRequests.FirstOrDefault(r => r.RequestId == requestId);
+
             if (request != null)
+            {
+                _context.DropPickRequests.Remove(request);
+                _context.SaveChanges();
+            }
+        }
+    }
+}
