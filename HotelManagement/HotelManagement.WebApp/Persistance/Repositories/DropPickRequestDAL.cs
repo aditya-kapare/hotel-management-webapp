@@ -1,9 +1,12 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelManagementSystem.DAL
-
 {
     public class DropPickRequestDAL : IDropPickRequestDAL
     {
@@ -14,44 +17,52 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<DropPickRequest> GetAllRequests()
+        public async Task<IEnumerable<DropPickRequest>> GetAllRequestsAsync()
         {
-            return _context.DropPickRequests.ToList();
+            return await _context.DropPickRequests.ToListAsync();
         }
 
-        public DropPickRequest GetRequestById(int requestId)
-            => _context.DropPickRequests.FirstOrDefault(r => r.RequestId == requestId);
-
-        public IEnumerable<DropPickRequest> GetRequestsByStayId(int stayId)
+        public async Task<DropPickRequest?> GetRequestByIdAsync(int requestId)
         {
-            return _context.DropPickRequests.Where(r => r.StayId == stayId).ToList();
+            return await _context.DropPickRequests
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
         }
 
-        public IEnumerable<DropPickRequest> GetRequestsByDriverId(int driverId)
+        public async Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId)
         {
-            return _context.DropPickRequests.Where(r => r.DriverId == driverId).ToList();
+            return await _context.DropPickRequests
+                .Where(r => r.StayId == stayId)
+                .ToListAsync();
         }
 
-        public void AddRequest(DropPickRequest request)
+        public async Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId)
         {
-            _context.DropPickRequests.Add(request);
-            _context.SaveChanges();
+            return await _context.DropPickRequests
+                .Where(r => r.DriverId == driverId)
+                .ToListAsync();
         }
 
-        public void UpdateRequest(DropPickRequest request)
+        public async Task AddRequestAsync(DropPickRequest request)
+        {
+            await _context.DropPickRequests.AddAsync(request);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRequestAsync(DropPickRequest request)
         {
             _context.DropPickRequests.Update(request);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteRequest(int requestId)
+        public async Task DeleteRequestAsync(int requestId)
         {
-            var request = _context.DropPickRequests.FirstOrDefault(r => r.RequestId == requestId);
+            var request = await _context.DropPickRequests
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request != null)
             {
                 _context.DropPickRequests.Remove(request);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

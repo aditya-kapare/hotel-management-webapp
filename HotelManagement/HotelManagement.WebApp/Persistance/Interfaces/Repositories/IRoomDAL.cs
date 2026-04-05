@@ -4,12 +4,11 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
 {
     public interface IRoomDAL
     {
-        IEnumerable<Room> GetAllRooms();
-        IEnumerable<Room> GetRoomsByType(int roomType);
-        Room GetRoomByRoomNo(int roomNo);
-        void AddRoom(Room room);
-        void UpdateRoom(Room room);
-        void DeleteRoom(int roomNo);
+        Task<IEnumerable<Room>> GetAllRoomsAsync();
+        Task<IEnumerable<Room>> GetRoomsByTypeAsync(int roomType);
+        Task<Room?> GetRoomByRoomNoAsync(int roomNo);
+        Task AddRoomAsync(Room room);
+        Task UpdateRoomAsync(Room room);
+        Task DeleteRoomAsync(int roomNo);
     }
 }
-

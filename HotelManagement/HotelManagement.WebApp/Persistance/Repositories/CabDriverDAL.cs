@@ -1,7 +1,9 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
 
 namespace HotelManagementSystem.DAL
@@ -15,33 +17,38 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<CabDriver> GetAllDrivers()
+        public async Task<IEnumerable<CabDriver>> GetAllDriversAsync()
         {
-            return _context.CabDrivers.ToList();
+            return await _context.CabDrivers.ToListAsync();
         }
 
-        public CabDriver GetDriverById(int driverId)
-            => _context.CabDrivers.FirstOrDefault(d => d.DriverId == driverId);
-
-        public void AddDriver(CabDriver driver)
+        public async Task<CabDriver?> GetDriverByIdAsync(int driverId)
         {
-            _context.CabDrivers.Add(driver);
-            _context.SaveChanges();
+            return await _context.CabDrivers
+                .FirstOrDefaultAsync(d => d.DriverId == driverId);
         }
 
-        public void UpdateDriver(CabDriver driver)
+        public async Task AddDriverAsync(CabDriver driver)
+        {
+            await _context.CabDrivers.AddAsync(driver);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDriverAsync(CabDriver driver)
         {
             _context.CabDrivers.Update(driver);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteDriver(int driverId)
+        public async Task DeleteDriverAsync(int driverId)
         {
-            var driver = _context.CabDrivers.FirstOrDefault(d => d.DriverId == driverId);
+            var driver = await _context.CabDrivers
+                .FirstOrDefaultAsync(d => d.DriverId == driverId);
+
             if (driver != null)
             {
                 _context.CabDrivers.Remove(driver);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

@@ -1,6 +1,10 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -13,38 +17,45 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<Customer> GetAllCustomers()
+        public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
         {
-            return _context.Customers.ToList();
+            return await _context.Customers.ToListAsync();
         }
 
-        public Customer GetCustomerByIdentityId(string identityId)
-            => _context.Customers.FirstOrDefault(c => c.IdentityId == identityId);
-
-        public IEnumerable<Customer> GetCustomersByIdentityIdType(int identityIdType)
+        public async Task<Customer?> GetCustomerByIdentityIdAsync(string identityId)
         {
-            return _context.Customers.Where(c => (int)c.IdentityIdType == identityIdType).ToList();
+            return await _context.Customers
+                .FirstOrDefaultAsync(c => c.IdentityId == identityId);
         }
 
-        public void AddCustomer(Customer customer)
+        public async Task<IEnumerable<Customer>> GetCustomersByIdentityIdTypeAsync(int identityIdType)
         {
-            _context.Customers.Add(customer);
-            _context.SaveChanges();
+            return await _context.Customers
+                .Where(c => (int)c.IdentityIdType == identityIdType)
+                .ToListAsync();
         }
 
-        public void UpdateCustomer(Customer customer)
+        public async Task AddCustomerAsync(Customer customer)
+        {
+            await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateCustomerAsync(Customer customer)
         {
             _context.Customers.Update(customer);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteCustomer(string identityId)
+        public async Task DeleteCustomerAsync(string identityId)
         {
-            var customer = _context.Customers.FirstOrDefault(c => c.IdentityId == identityId);
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.IdentityId == identityId);
+
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

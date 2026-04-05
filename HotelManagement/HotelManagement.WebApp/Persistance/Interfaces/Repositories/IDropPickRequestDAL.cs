@@ -1,15 +1,17 @@
-﻿using HotelManagement.WebApp.Domain.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using HotelManagement.WebApp.Domain.Models;
 
 namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
 {
     public interface IDropPickRequestDAL
     {
-        IEnumerable<DropPickRequest> GetAllRequests();
-        DropPickRequest GetRequestById(int requestId);
-        IEnumerable<DropPickRequest> GetRequestsByStayId(int stayId);
-        IEnumerable<DropPickRequest> GetRequestsByDriverId(int driverId);
-        void AddRequest(DropPickRequest request);
-        void UpdateRequest(DropPickRequest request);
-        void DeleteRequest(int requestId);
+        Task<IEnumerable<DropPickRequest>> GetAllRequestsAsync();
+        Task<DropPickRequest?> GetRequestByIdAsync(int requestId);
+        Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId);
+        Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId);
+        Task AddRequestAsync(DropPickRequest request);
+        Task UpdateRequestAsync(DropPickRequest request);
+        Task DeleteRequestAsync(int requestId);
     }
 }
