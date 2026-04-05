@@ -1,14 +1,13 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
-using System.Collections.Generic;
 
 namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
 {
     public interface IEmployeeDAL
     {
-        IEnumerable<Employee> GetAllEmployees();
-        Employee GetEmployeeByAadhar(string aadharNo);
-        void AddEmployee(Employee employee);
-        void UpdateEmployee(Employee employee);
-        void DeleteEmployee(string aadharNo);
+        Task<IEnumerable<Employee>> GetAllEmployeesAsync();
+        Task<Employee?> GetEmployeeByAadharAsync(string aadharNo);
+        Task AddEmployeeAsync(Employee employee);
+        Task UpdateEmployeeAsync(Employee employee);
+        Task DeleteEmployeeAsync(string aadharNo);
     }
 }

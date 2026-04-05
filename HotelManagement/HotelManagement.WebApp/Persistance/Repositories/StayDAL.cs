@@ -1,9 +1,11 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelManagementSystem.DAL
 {
@@ -16,49 +18,60 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<Stay> GetAllStays()
+        public async Task<IEnumerable<Stay>> GetAllStaysAsync()
         {
-            return _context.Stays.ToList();
+            return await _context.Stays.ToListAsync();
         }
 
-        public Stay GetStayById(int stayId)
-            => _context.Stays.FirstOrDefault(s => s.StayId == stayId);
-
-        public IEnumerable<Stay> GetStaysByRoomNo(int roomNo)
+        public async Task<Stay?> GetStayByIdAsync(int stayId)
         {
-            return _context.Stays.Where(s => s.RoomNo == roomNo).ToList();
+            return await _context.Stays
+                .FirstOrDefaultAsync(s => s.StayId == stayId);
         }
 
-        public IEnumerable<Stay> GetStaysByCustomerIdentityId(string customerIdentityId)
+        public async Task<IEnumerable<Stay>> GetStaysByRoomNoAsync(int roomNo)
         {
-            return _context.Stays.Where(s => s.CustomerIdentityId == customerIdentityId).ToList();
+            return await _context.Stays
+                .Where(s => s.RoomNo == roomNo)
+                .ToListAsync();
         }
 
-        public IEnumerable<Stay> GetStaysByCheckInDate(DateTime date)
+        public async Task<IEnumerable<Stay>> GetStaysByCustomerIdentityIdAsync(string customerIdentityId)
+        {
+            return await _context.Stays
+                .Where(s => s.CustomerIdentityId == customerIdentityId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Stay>> GetStaysByCheckInDateAsync(DateTime date)
         {
             var target = date.Date;
-            return _context.Stays.Where(s => s.CheckInAt.Date == target).ToList();
+            return await _context.Stays
+                .Where(s => s.CheckInAt.Date == target)
+                .ToListAsync();
         }
 
-        public void AddStay(Stay stay)
+        public async Task AddStayAsync(Stay stay)
         {
-            _context.Stays.Add(stay);
-            _context.SaveChanges();
+            await _context.Stays.AddAsync(stay);
+            await _context.SaveChangesAsync();
         }
 
-        public void UpdateStay(Stay stay)
+        public async Task UpdateStayAsync(Stay stay)
         {
             _context.Stays.Update(stay);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteStay(int stayId)
+        public async Task DeleteStayAsync(int stayId)
         {
-            var stay = _context.Stays.FirstOrDefault(s => s.StayId == stayId);
+            var stay = await _context.Stays
+                .FirstOrDefaultAsync(s => s.StayId == stayId);
+
             if (stay != null)
             {
                 _context.Stays.Remove(stay);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

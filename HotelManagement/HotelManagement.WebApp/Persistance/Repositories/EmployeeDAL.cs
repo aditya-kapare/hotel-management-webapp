@@ -1,6 +1,10 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -13,37 +17,39 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<Employee> GetAllEmployees()
+        public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
         {
-            return _context.Employees.ToList();
+            return await _context.Employees.ToListAsync();
         }
 
-        public Employee GetEmployeeByAadhar(string aadharNo) 
-            => _context.Employees.FirstOrDefault(e => e.AadharNo == aadharNo);
-
-        public void AddEmployee(Employee employee)
+        public async Task<Employee?> GetEmployeeByAadharAsync(string aadharNo)
         {
-            _context.Employees.Add(employee);
-            _context.SaveChanges();
+            return await _context.Employees
+                .FirstOrDefaultAsync(e => e.AadharNo == aadharNo);
         }
 
-        public void UpdateEmployee(Employee employee)
+        public async Task AddEmployeeAsync(Employee employee)
+        {
+            await _context.Employees.AddAsync(employee);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateEmployeeAsync(Employee employee)
         {
             _context.Employees.Update(employee);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteEmployee(string aadharNo)
+        public async Task DeleteEmployeeAsync(string aadharNo)
         {
-            var employee = _context.Employees
-                                   .FirstOrDefault(e => e.AadharNo == aadharNo);
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.AadharNo == aadharNo);
 
             if (employee != null)
             {
                 _context.Employees.Remove(employee);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }
 }
-

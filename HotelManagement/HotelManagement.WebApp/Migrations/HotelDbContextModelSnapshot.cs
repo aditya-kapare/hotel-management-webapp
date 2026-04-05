@@ -132,8 +132,8 @@ namespace HotelManagement.WebApp.Migrations
                     b.Property<string>("EmployeePosition")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<string>("MobileNo")
                         .IsRequired()

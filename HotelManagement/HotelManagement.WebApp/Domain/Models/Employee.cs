@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HotelManagement.WebApp.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagement.WebApp.Domain.Models
 {
@@ -13,7 +14,7 @@ namespace HotelManagement.WebApp.Domain.Models
 
         public int Age { get; set; }
 
-        public string? Gender { get; set; }
+        public Gender Gender { get; set; }
 
         public string? EmployeePosition { get; set; }
 

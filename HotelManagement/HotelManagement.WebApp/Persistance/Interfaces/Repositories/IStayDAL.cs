@@ -1,18 +1,19 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
 {
     public interface IStayDAL
     {
-        IEnumerable<Stay> GetAllStays();
-        Stay GetStayById(int stayId);
-        IEnumerable<Stay> GetStaysByRoomNo(int roomNo);
-        IEnumerable<Stay> GetStaysByCustomerIdentityId(string customerIdentityId);
-        IEnumerable<Stay> GetStaysByCheckInDate(DateTime date);
-        void AddStay(Stay stay);
-        void UpdateStay(Stay stay);
-        void DeleteStay(int stayId);
+        Task<IEnumerable<Stay>> GetAllStaysAsync();
+        Task<Stay?> GetStayByIdAsync(int stayId);
+        Task<IEnumerable<Stay>> GetStaysByRoomNoAsync(int roomNo);
+        Task<IEnumerable<Stay>> GetStaysByCustomerIdentityIdAsync(string customerIdentityId);
+        Task<IEnumerable<Stay>> GetStaysByCheckInDateAsync(DateTime date);
+        Task AddStayAsync(Stay stay);
+        Task UpdateStayAsync(Stay stay);
+        Task DeleteStayAsync(int stayId);
     }
 }

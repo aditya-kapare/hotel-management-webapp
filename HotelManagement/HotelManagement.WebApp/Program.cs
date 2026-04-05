@@ -1,4 +1,4 @@
-
+using HotelManagement.WebApp.Persistance.DataSeeder;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +16,14 @@ builder.Services.AddDbContext<HotelDbContext>(options =>
 
 //************************Middleware********************
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
+    await SeedRunner.RunAsync(db);
+}
+
 
 app.UseStaticFiles();
 app.UseRouting();

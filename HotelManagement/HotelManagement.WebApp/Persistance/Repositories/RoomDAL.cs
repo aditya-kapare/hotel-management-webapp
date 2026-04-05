@@ -1,8 +1,7 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagementSystem.DAL
 {
@@ -15,38 +14,45 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-        public IEnumerable<Room> GetAllRooms()
+        public async Task<IEnumerable<Room>> GetAllRoomsAsync()
         {
-            return _context.Rooms.ToList();
+            return await _context.Rooms.ToListAsync();
         }
 
-        public IEnumerable<Room> GetRoomsByType(int roomType)
+        public async Task<IEnumerable<Room>> GetRoomsByTypeAsync(int roomType)
         {
-            return _context.Rooms.Where(r => (int)r.RoomType == roomType).ToList();
+            return await _context.Rooms
+                .Where(r => (int)r.RoomType == roomType)
+                .ToListAsync();
         }
 
-        public Room GetRoomByRoomNo(int roomNo)
-            => _context.Rooms.FirstOrDefault(r => r.RoomNo == roomNo);
-
-        public void AddRoom(Room room)
+        public async Task<Room?> GetRoomByRoomNoAsync(int roomNo)
         {
-            _context.Rooms.Add(room);
-            _context.SaveChanges();
+            return await _context.Rooms
+                .FirstOrDefaultAsync(r => r.RoomNo == roomNo);
         }
 
-        public void UpdateRoom(Room room)
+        public async Task AddRoomAsync(Room room)
+        {
+            await _context.Rooms.AddAsync(room);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRoomAsync(Room room)
         {
             _context.Rooms.Update(room);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteRoom(int roomNo)
+        public async Task DeleteRoomAsync(int roomNo)
         {
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomNo == roomNo);
+            var room = await _context.Rooms
+                .FirstOrDefaultAsync(r => r.RoomNo == roomNo);
+
             if (room != null)
             {
                 _context.Rooms.Remove(room);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

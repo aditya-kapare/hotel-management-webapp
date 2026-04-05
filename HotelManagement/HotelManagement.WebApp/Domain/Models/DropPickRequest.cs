@@ -8,23 +8,16 @@ namespace HotelManagement.WebApp.Domain.Models
         [Key]
         [Required]
         public int RequestId { get; set; }
-
         [Required]
         public DateTime RequestedAt { get; set; }
-
         public string Notes { get; set; } = string.Empty;
-
         [Required]
         public RequestType RequestType { get; set; }
-
         [Required]
         public int StayId { get; set; }
-
-        public Stay Stay { get; set; } = new Stay();
-
+        public Stay Stay { get; set; } = null!;
         [Required]
         public int DriverId { get; set; }
-
-        public CabDriver CabDriver { get; set; } = new(); 
+        public CabDriver CabDriver { get; set; } = null!; 
     }
 }
