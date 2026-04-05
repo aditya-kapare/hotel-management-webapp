@@ -38,5 +38,3 @@ publish/
 # Secrets
 appsettings.Production.json
 
-# LibMan / client-side vendor libraries
-wwwroot/lib/
