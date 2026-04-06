@@ -51,6 +51,11 @@ app.UseRouting();
 
 //This is for test purpose only. It will be removed in production.**************8
 //*****************************Configurations area **********************************
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
