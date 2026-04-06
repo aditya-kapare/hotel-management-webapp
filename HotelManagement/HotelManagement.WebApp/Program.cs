@@ -1,3 +1,5 @@
+using HotelManagement.WebApp.Application.Facades;
+using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services;
 using HotelManagement.WebApp.Persistance.DataSeeder;
@@ -27,6 +29,9 @@ builder.Services.AddScoped<ICabDriverService, CabDriverService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
+builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
+builder.Services.AddScoped<IReceptionistServiceFacade, ReceptionistServiceFacade>();
+
 
 //************************Middleware********************
 var app = builder.Build();
