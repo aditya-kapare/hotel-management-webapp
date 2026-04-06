@@ -1,7 +1,4 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
 {
