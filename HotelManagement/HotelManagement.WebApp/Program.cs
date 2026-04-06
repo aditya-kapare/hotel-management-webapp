@@ -1,4 +1,8 @@
+using HotelManagement.WebApp.Application.Interfaces.Services;
+using HotelManagement.WebApp.Application.Services;
 using HotelManagement.WebApp.Persistance.DataSeeder;
+using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using HotelManagementSystem.DAL;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,8 +15,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<HotelDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:HotelManagementSystemDb"])
 );
-
-
+builder.Services.AddScoped<IEmployeeDAL, EmployeeDAL>();
+builder.Services.AddScoped<IRoomDAL, RoomDAL>();
+builder.Services.AddScoped<ICabDriverDAL, CabDriverDAL>();
+builder.Services.AddScoped<ICustomerDAL, CustomerDAL>();
+builder.Services.AddScoped<IStayDAL, StayDAL>();
+builder.Services.AddScoped<IDropPickRequestDAL, DropPickRequestDAL>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<ICabDriverService, CabDriverService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IStayService, StayService>();
+builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 
 //************************Middleware********************
 var app = builder.Build();
