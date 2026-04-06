@@ -8,15 +8,21 @@ namespace HotelManagement.WebApp.Application.Services
 {
     public sealed class StayService : IStayService
     {
+        private readonly IStayChargeCalculator _chargeCalculator;
         private readonly IStayDAL _stayDal;
         private readonly IRoomDAL _roomDal;
         private readonly ICustomerDAL _customerDal;
 
-        public StayService(IStayDAL stayDal, IRoomDAL roomDal, ICustomerDAL customerDal)
+        public StayService(
+            IStayDAL stayDal, 
+            IRoomDAL roomDal, 
+            ICustomerDAL customerDal, 
+            IStayChargeCalculator chargeCalculator)
         {
             _stayDal = stayDal;
             _roomDal = roomDal;
             _customerDal = customerDal;
+            _chargeCalculator = chargeCalculator;
         }
 
         public async Task<IReadOnlyList<StayDto>> GetAllAsync()
@@ -151,17 +157,34 @@ namespace HotelManagement.WebApp.Application.Services
 
             var checkOutAt = normalized.CheckOutAt ?? DateTime.Now;
 
-            StayMapping.ApplyCheckOut(normalized, stay, checkOutAt);
+            var room = await _roomDal.GetRoomByRoomNoAsync(stay.RoomNo);
+            if (room is null)
+                throw new KeyNotFoundException($"Room '{stay.RoomNo}' was not found.");
+
+            var bill = _chargeCalculator.CalculateBill(
+                roomPricePerNight: room.Price,
+                checkInAt: stay.CheckInAt,
+                checkOutAt: checkOutAt,
+                depositPaid: stay.DepositPaid,
+                additionalAmountPaid: normalized.AmountPaid
+            );
+
+
+            f(bill.TotalPaid > bill.TotalCharge)
+    throw new InvalidOperationException(
+        $"Amount paid ({bill.TotalPaid}) exceeds total charge ({bill.TotalCharge})."
+    );
+
+
+            stay.CheckOutAt = checkOutAt;
+            stay.AmountPaid = normalized.AmountPaid;
+            stay.PendingAmount = bill.Pending;
 
             await _stayDal.UpdateStayAsync(stay);
 
-            var room = await _roomDal.GetRoomByRoomNoAsync(stay.RoomNo);
-            if (room is not null)
-            {
-                room.AvailabilityStatus = AvailabilityStatus.Available;
-                room.CleanStatus = CleanStatus.Dirty;
-                await _roomDal.UpdateRoomAsync(room);
-            }
+            room.AvailabilityStatus = AvailabilityStatus.Available;
+            room.CleanStatus = CleanStatus.Dirty;
+            await _roomDal.UpdateRoomAsync(room);
 
             return StayMapping.ToDto(stay);
         }
