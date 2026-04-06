@@ -1,8 +1,10 @@
-﻿using HotelManagement.WebApp.Application.Dtos.Stays;
+﻿using HotelManagement.WebApp.Application.Dtos.Billing;
+using HotelManagement.WebApp.Application.Dtos.Stays;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Stays;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using HotelManagementSystem.DAL;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -251,5 +253,47 @@ namespace HotelManagement.WebApp.Application.Services
 
             if (r.PendingAmount < 0) throw new ArgumentException("PendingAmount cannot be negative.", nameof(r.PendingAmount));
         }
-    }
+
+        
+        public async Task<BillingSummaryDto> GetBillingSummaryAsync(int stayId)
+        {
+            if (stayId <= 0)
+                throw new ArgumentException("StayId must be positive.", nameof(stayId));
+
+            var stay = await _stayDal.GetStayByIdAsync(stayId)
+                ?? throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
+
+            var room = await _roomDal.GetRoomByRoomNoAsync(stay.RoomNo)
+                ?? throw new KeyNotFoundException($"Room '{stay.RoomNo}' was not found.");
+
+            var effectiveCheckOut = stay.CheckOutAt ?? DateTime.Now;
+
+            var bill = _chargeCalculator.CalculateBill(
+                roomPricePerNight: room.Price,
+                checkInAt: stay.CheckInAt,
+                checkOutAt: effectiveCheckOut,
+                depositPaid: stay.DepositPaid,
+                additionalAmountPaid: stay.AmountPaid
+            );
+
+            var nights = _chargeCalculator.CalculateNights(
+                stay.CheckInAt,
+                effectiveCheckOut
+            );
+
+            return new BillingSummaryDto
+            {
+                Nights = nights,
+                RatePerNight = room.Price,
+
+                TotalCharge = bill.TotalCharge,
+
+                DepositPaid = stay.DepositPaid,
+                AdditionalPaid = stay.AmountPaid,
+                TotalPaid = bill.TotalPaid,
+
+                PendingAmount = bill.Pending
+            };
+        }
+}
 }

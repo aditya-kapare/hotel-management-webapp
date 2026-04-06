@@ -1,4 +1,5 @@
-﻿using HotelManagement.WebApp.Application.Dtos.Stays;
+﻿using HotelManagement.WebApp.Application.Dtos.Billing;
+using HotelManagement.WebApp.Application.Dtos.Stays;
 
 namespace HotelManagement.WebApp.Application.Interfaces.Services
 {
@@ -13,7 +14,8 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
 
         Task<StayDto> CheckInAsync(CheckInRequest request);                
         Task<StayDto> UpdateAsync(int stayId, UpdateStayRequest request);   
-        Task<StayDto> CheckOutAsync(int stayId, CheckOutRequest request);   
+        Task<StayDto> CheckOutAsync(int stayId, CheckOutRequest request);
+        Task<BillingSummaryDto> GetBillingSummaryAsync(int stayId);
 
         Task<bool> DeleteAsync(int stayId);
     }
