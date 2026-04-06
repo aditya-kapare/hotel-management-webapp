@@ -49,7 +49,7 @@ using (var scope = app.Services.CreateScope())
 app.UseStaticFiles();
 app.UseRouting();
 
-
+//This is for test purpose only. It will be removed in production.**************8
 //*****************************Configurations area **********************************
 app.MapControllerRoute(
     name: "default",
