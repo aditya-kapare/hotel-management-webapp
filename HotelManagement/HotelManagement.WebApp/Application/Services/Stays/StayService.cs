@@ -169,12 +169,10 @@ namespace HotelManagement.WebApp.Application.Services
                 additionalAmountPaid: normalized.AmountPaid
             );
 
-
-            f(bill.TotalPaid > bill.TotalCharge)
-    throw new InvalidOperationException(
-        $"Amount paid ({bill.TotalPaid}) exceeds total charge ({bill.TotalCharge})."
-    );
-
+            if(bill.TotalPaid > bill.TotalCharge)
+            {
+                throw new InvalidOperationException($"Amount paid ({bill.TotalPaid}) exceeds total charge ({bill.TotalCharge}).");
+            }
 
             stay.CheckOutAt = checkOutAt;
             stay.AmountPaid = normalized.AmountPaid;
