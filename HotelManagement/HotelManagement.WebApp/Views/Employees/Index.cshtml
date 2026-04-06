@@ -1,0 +1,32 @@
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Employee.EmployeeSummaryDto>
+
+<h2>All Employees</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No employees found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Aadhar No</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Mobile</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model)
+            {
+                <tr>
+                    <td>@e.AadharNo</td>
+                    <td>@e.Name</td>
+                    <td>@e.EmployeePosition</td>
+                    <td>@e.MobileNo</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
