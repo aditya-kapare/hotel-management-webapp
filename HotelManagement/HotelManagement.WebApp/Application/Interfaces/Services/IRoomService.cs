@@ -11,7 +11,6 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
 
         Task<RoomDto> CreateAsync(CreateRoomRequest request);
         Task<RoomDto> UpdateAsync(int roomNo, UpdateRoomRequest request);
-
         Task<bool> DeleteAsync(int roomNo);
     }
 }
