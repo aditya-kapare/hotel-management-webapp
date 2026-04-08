@@ -1,6 +1,68 @@
 ﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Employee.EmployeeSummaryDto>
 
-<h2>All Employees</h2>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Employees</title>
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+    <div class="container mt-4">
+
+        <!-- Page Heading -->
+        <div class="row mb-3">
+            <div class="col">
+                <h4 class="fw-bold">Employee Directory</h4>
+                <hr />
+            </div>
+        </div>
+
+        <!-- Employee Table -->
+        <div class="row">
+            <div class="col">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Aadhar No</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Mobile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var emp in Model)
+                            {
+                                <tr>
+                                    <td>@emp.AadharNo</td>
+                                    <td>@emp.Name</td>
+                                    <td>@emp.EmployeePosition</td>
+                                    <td>@emp.MobileNo</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    No employees found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
+@* <h2>All Employees</h2>
 
 @if (Model == null || !Model.Any())
 {
@@ -29,4 +91,4 @@ else
             }
         </tbody>
     </table>
-}
+} *@
