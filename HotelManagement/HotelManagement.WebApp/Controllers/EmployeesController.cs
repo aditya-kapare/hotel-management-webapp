@@ -1,7 +1,7 @@
 ﻿using HotelManagement.WebApp.Application.Interfaces.Facades;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagement.WebApp.Presentation.Controllers.Admin
+namespace HotelManagement.WebApp.Controllers
 { 
     [Route("admin/employees")]
     public sealed class EmployeesController : Controller
