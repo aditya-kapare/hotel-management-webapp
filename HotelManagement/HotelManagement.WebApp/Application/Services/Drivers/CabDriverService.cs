@@ -94,17 +94,5 @@ namespace HotelManagement.WebApp.Application.Services
             if (r.Age < 0)
                 throw new ArgumentException("Age cannot be negative.", nameof(r.Age));
         }
-
-        private static void ValidateUpdate(CabDriverRequest r)
-        {
-            if (string.IsNullOrWhiteSpace(r.Name))
-                throw new ArgumentException("Name is required.", nameof(r.Name));
-            if (string.IsNullOrWhiteSpace(r.CarVendor))
-                throw new ArgumentException("CarVendor is required.", nameof(r.CarVendor));
-            if (string.IsNullOrWhiteSpace(r.CarType))
-                throw new ArgumentException("CarType is required.", nameof(r.CarType));
-            if (r.Age < 0)
-                throw new ArgumentException("Age cannot be negative.", nameof(r.Age));
-        }
     }
 }
