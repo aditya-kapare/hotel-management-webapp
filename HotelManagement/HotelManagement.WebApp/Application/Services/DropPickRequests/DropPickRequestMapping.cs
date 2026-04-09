@@ -24,9 +24,9 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
             DriverId = r.DriverId
         };
 
-        internal static void Apply(UpdateDropPickRequest r, DropPickRequest entity)
+        internal static void Apply(UpdateDropPickRequest r, DropPickRequest entity, DateTime requestedAt)
         {
-            entity.RequestedAt = r.RequestedAt;
+            entity.RequestedAt = requestedAt;
             entity.Notes = r.Notes;
             entity.RequestType = r.RequestType;
             entity.DriverId = r.DriverId;

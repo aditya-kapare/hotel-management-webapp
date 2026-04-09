@@ -58,6 +58,7 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeCreate(request);
             ValidateCreate(normalized);
 
+            // These reads are justified (business validation)
             var stay = await _stayDal.GetStayByIdAsync(normalized.StayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{normalized.StayId}' was not found.");
@@ -70,8 +71,8 @@ namespace HotelManagement.WebApp.Application.Services
                 throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
 
             var requestedAt = normalized.RequestedAt ?? DateTime.Now;
-            var entity = DropPickRequestMapping.ToEntity(normalized, requestedAt);
 
+            var entity = DropPickRequestMapping.ToEntity(normalized, requestedAt);
             await _requestDal.AddRequestAsync(entity);
 
             return DropPickRequestMapping.ToDto(entity);
@@ -85,6 +86,7 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
+            // Required: need StayId from existing request to enforce "no update after checkout"
             var existing = await _requestDal.GetRequestByIdAsync(requestId);
             if (existing is null)
                 throw new KeyNotFoundException($"Request '{requestId}' was not found.");
@@ -96,13 +98,22 @@ namespace HotelManagement.WebApp.Application.Services
             if (stay.CheckOutAt is not null)
                 throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
 
-            var driver = await _driverDal.GetDriverByIdAsync(normalized.DriverId);
-            if (driver is null)
-                throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
+            // ✅ Optimization: only validate driver if it actually changed
+            if (normalized.DriverId != existing.DriverId)
+            {
+                var driver = await _driverDal.GetDriverByIdAsync(normalized.DriverId);
+                if (driver is null)
+                    throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
+            }
 
-            DropPickRequestMapping.Apply(normalized, existing);
+            // ✅ Prevent RequestedAt from being overwritten with null/default
+            var requestedAt = normalized.RequestedAt == default ? existing.RequestedAt : normalized.RequestedAt;
 
-            await _requestDal.UpdateRequestAsync(existing);
+            DropPickRequestMapping.Apply(normalized, existing, requestedAt);
+
+            var updated = await _requestDal.UpdateRequestAsync(existing);
+            if (!updated)
+                throw new KeyNotFoundException($"Request '{requestId}' was not found.");
 
             return DropPickRequestMapping.ToDto(existing);
         }
@@ -111,11 +122,8 @@ namespace HotelManagement.WebApp.Application.Services
         {
             if (requestId <= 0) return false;
 
-            var existing = await _requestDal.GetRequestByIdAsync(requestId);
-            if (existing is null) return false;
-
-            await _requestDal.DeleteRequestAsync(requestId);
-            return true;
+            // ✅ Single DB operation delete (no read-first)
+            return await _requestDal.DeleteRequestAsync(requestId);
         }
 
         // Normalize + validate helpers
@@ -140,7 +148,6 @@ namespace HotelManagement.WebApp.Application.Services
         {
             if (r.StayId <= 0)
                 throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
-
             if (r.DriverId <= 0)
                 throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
         }
