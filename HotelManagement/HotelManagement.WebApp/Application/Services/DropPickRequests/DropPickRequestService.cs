@@ -98,7 +98,6 @@ namespace HotelManagement.WebApp.Application.Services
             if (stay.CheckOutAt is not null)
                 throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
 
-            // ✅ Optimization: only validate driver if it actually changed
             if (normalized.DriverId != existing.DriverId)
             {
                 var driver = await _driverDal.GetDriverByIdAsync(normalized.DriverId);
@@ -106,7 +105,6 @@ namespace HotelManagement.WebApp.Application.Services
                     throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
             }
 
-            // ✅ Prevent RequestedAt from being overwritten with null/default
             var requestedAt = normalized.RequestedAt == default ? existing.RequestedAt : normalized.RequestedAt;
 
             DropPickRequestMapping.Apply(normalized, existing, requestedAt);

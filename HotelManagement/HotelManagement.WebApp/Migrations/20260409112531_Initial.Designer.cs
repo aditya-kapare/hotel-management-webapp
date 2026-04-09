@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagement.WebApp.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20260405190518_AddedDataSeeders")]
-    partial class AddedDataSeeders
+    [Migration("20260409112531_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,10 +158,7 @@ namespace HotelManagement.WebApp.Migrations
             modelBuilder.Entity("HotelManagement.WebApp.Domain.Models.Room", b =>
                 {
                     b.Property<int>("RoomNo")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomNo"));
 
                     b.Property<int>("AcOption")
                         .HasColumnType("int");

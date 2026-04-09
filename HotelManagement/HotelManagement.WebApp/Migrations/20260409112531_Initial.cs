@@ -52,7 +52,7 @@ namespace HotelManagement.WebApp.Migrations
                     AadharNo = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<int>(type: "int", nullable: false),
                     EmployeePosition = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Salary = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     MobileNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -67,8 +67,7 @@ namespace HotelManagement.WebApp.Migrations
                 name: "Rooms",
                 columns: table => new
                 {
-                    RoomNo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoomNo = table.Column<int>(type: "int", nullable: false),
                     RoomType = table.Column<int>(type: "int", nullable: false),
                     AcOption = table.Column<int>(type: "int", nullable: false),
                     AvailabilityStatus = table.Column<int>(type: "int", nullable: false),

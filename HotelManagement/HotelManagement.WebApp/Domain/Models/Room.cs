@@ -1,13 +1,17 @@
 ﻿using HotelManagement.WebApp.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelManagement.WebApp.Domain.Models
 {
     public class Room
     {
+
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int RoomNo { get; set; }
+
 
         [Required]
         public RoomType RoomType { get; set; }

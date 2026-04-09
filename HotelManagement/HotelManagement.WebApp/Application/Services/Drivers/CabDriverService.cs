@@ -47,7 +47,7 @@ namespace HotelManagement.WebApp.Application.Services
             if (driverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(driverId));
 
             var normalized = NormalizeUpdate(request);
-            ValidateUpdate(normalized);
+            ValidateCreate(normalized);
 
             var entity = CabDriverMapping.ToEntity(driverId, normalized);
 

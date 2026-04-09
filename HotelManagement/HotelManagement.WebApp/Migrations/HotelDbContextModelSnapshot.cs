@@ -155,10 +155,7 @@ namespace HotelManagement.WebApp.Migrations
             modelBuilder.Entity("HotelManagement.WebApp.Domain.Models.Room", b =>
                 {
                     b.Property<int>("RoomNo")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomNo"));
 
                     b.Property<int>("AcOption")
                         .HasColumnType("int");
