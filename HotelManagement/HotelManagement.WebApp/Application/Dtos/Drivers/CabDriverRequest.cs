@@ -2,7 +2,7 @@
 
 namespace HotelManagement.WebApp.Application.Dtos.Drivers
 {
-    public sealed class UpdateCabDriverRequest
+    public sealed class CabDriverRequest
     {
         public string Name { get; init; } = string.Empty;
         public int Age { get; init; }

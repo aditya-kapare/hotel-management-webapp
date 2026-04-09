@@ -15,7 +15,7 @@ namespace HotelManagement.WebApp.Application.Services.Drivers
             CarType = d.CarType
         };
 
-        internal static CabDriver ToEntity(CreateCabDriverRequest r) => new()
+        internal static CabDriver ToEntity(CabDriverRequest r) => new()
         {
             Name = r.Name,
             Age = r.Age,
@@ -24,7 +24,18 @@ namespace HotelManagement.WebApp.Application.Services.Drivers
             CarType = r.CarType
         };
 
-        internal static void Apply(UpdateCabDriverRequest r, CabDriver d)
+        internal static CabDriver ToEntity(int driverId, CabDriverRequest r) => new()
+        {
+            DriverId = driverId,
+            Name = r.Name,
+            Age = r.Age,
+            Gender = r.Gender,
+            CarVendor = r.CarVendor,
+            CarType = r.CarType
+        };
+
+
+        internal static void Apply(CabDriverRequest r, CabDriver d)
         {
             d.Name = r.Name;
             d.Age = r.Age;

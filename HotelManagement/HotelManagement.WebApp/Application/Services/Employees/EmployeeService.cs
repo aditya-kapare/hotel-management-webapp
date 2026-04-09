@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Employees;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -41,15 +42,18 @@ namespace HotelManagement.WebApp.Application.Services
 
             ValidateCreate(normalized);
 
-            var existing = await _employeeDal.GetEmployeeByAadharAsync(normalized.AadharNo); 
-            if (existing is not null)
-            {
-                throw new InvalidOperationException($"Employee with Aadhar '{normalized.AadharNo}' already exists.");
-            }
-
             Employee entity = EmployeeMapping.ToEntity(normalized);
 
-            await _employeeDal.AddEmployeeAsync(entity); 
+
+            try
+            {
+                await _employeeDal.AddEmployeeAsync(entity);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw 
+                    new InvalidOperationException($"Employee with Aadhar '{normalized.AadharNo}' already exists or insert failed.", ex);
+            }
 
             return EmployeeMapping.ToDetailsDto(entity);
         }
@@ -67,29 +71,20 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            var existing = await _employeeDal.GetEmployeeByAadharAsync(aadharNo); 
-            if (existing is null) throw new KeyNotFoundException($"Employee with Aadhar '{aadharNo}' was not found.");
+            var entity = EmployeeMapping.Apply(aadharNo, normalized);
 
-            EmployeeMapping.Apply(normalized, existing);
+            var updated = await _employeeDal.UpdateEmployeeAsync(entity);
+            if (!updated) throw new KeyNotFoundException($"Employee with Aadhar '{aadharNo}' was not found.");
 
-            await _employeeDal.UpdateEmployeeAsync(existing); 
-
-            return EmployeeMapping.ToDetailsDto(existing);
+            return EmployeeMapping.ToDetailsDto(entity);
         }
 
         public async Task<bool> DeleteAsync(string aadharNo)
         {
-            aadharNo = NormalizeAadhar(aadharNo);
-            
+            aadharNo = NormalizeAadhar(aadharNo);            
             if (string.IsNullOrWhiteSpace(aadharNo)) return false;
 
-            var existing = await _employeeDal.GetEmployeeByAadharAsync(aadharNo);
-
-            if (existing is null) return false;
-
-            await _employeeDal.DeleteEmployeeAsync(aadharNo); 
-            
-            return true;
+            return await _employeeDal.DeleteEmployeeAsync(aadharNo); 
         }
 
         // Minimal validation + normalize

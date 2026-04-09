@@ -7,8 +7,8 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<IReadOnlyList<CabDriverDto>> GetAllAsync();
         Task<CabDriverDto?> GetByIdAsync(int driverId);
 
-        Task<CabDriverDto> CreateAsync(CreateCabDriverRequest request);
-        Task<CabDriverDto> UpdateAsync(int driverId, UpdateCabDriverRequest request);
+        Task<CabDriverDto> CreateAsync(CabDriverRequest request);
+        Task<CabDriverDto> UpdateAsync(int driverId, CabDriverRequest request);
 
         Task<bool> DeleteAsync(int driverId);
     }

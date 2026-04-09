@@ -28,7 +28,7 @@ namespace HotelManagement.WebApp.Application.Services
             return driver is null ? null : CabDriverMapping.ToDto(driver);
         }
 
-        public async Task<CabDriverDto> CreateAsync(CreateCabDriverRequest request)
+        public async Task<CabDriverDto> CreateAsync(CabDriverRequest request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
@@ -36,13 +36,12 @@ namespace HotelManagement.WebApp.Application.Services
             ValidateCreate(normalized);
 
             var entity = CabDriverMapping.ToEntity(normalized);
-
             await _driverDal.AddDriverAsync(entity);
 
             return CabDriverMapping.ToDto(entity);
         }
 
-        public async Task<CabDriverDto> UpdateAsync(int driverId, UpdateCabDriverRequest request)
+        public async Task<CabDriverDto> UpdateAsync(int driverId, CabDriverRequest request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
             if (driverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(driverId));
@@ -50,30 +49,23 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            var existing = await _driverDal.GetDriverByIdAsync(driverId);
-            if (existing is null)
+            var entity = CabDriverMapping.ToEntity(driverId, normalized);
+
+            var updated = await _driverDal.UpdateDriverAsync(entity);
+            if (!updated)
                 throw new KeyNotFoundException($"Driver '{driverId}' was not found.");
 
-            CabDriverMapping.Apply(normalized, existing);
-
-            await _driverDal.UpdateDriverAsync(existing);
-
-            return CabDriverMapping.ToDto(existing);
+            return CabDriverMapping.ToDto(entity);
         }
 
         public async Task<bool> DeleteAsync(int driverId)
         {
             if (driverId <= 0) return false;
 
-            var existing = await _driverDal.GetDriverByIdAsync(driverId);
-            if (existing is null) return false;
-
-            await _driverDal.DeleteDriverAsync(driverId);
-            return true;
+            return await _driverDal.DeleteDriverAsync(driverId);
         }
 
-        // Minimal normalization/validation
-        private static CreateCabDriverRequest NormalizeCreate(CreateCabDriverRequest r) => new()
+        private static CabDriverRequest NormalizeCreate(CabDriverRequest r) => new()
         {
             Name = (r.Name ?? string.Empty).Trim(),
             Age = r.Age,
@@ -82,7 +74,7 @@ namespace HotelManagement.WebApp.Application.Services
             CarType = (r.CarType ?? string.Empty).Trim()
         };
 
-        private static UpdateCabDriverRequest NormalizeUpdate(UpdateCabDriverRequest r) => new()
+        private static CabDriverRequest NormalizeUpdate(CabDriverRequest r) => new()
         {
             Name = (r.Name ?? string.Empty).Trim(),
             Age = r.Age,
@@ -91,32 +83,26 @@ namespace HotelManagement.WebApp.Application.Services
             CarType = (r.CarType ?? string.Empty).Trim()
         };
 
-        private static void ValidateCreate(CreateCabDriverRequest r)
+        private static void ValidateCreate(CabDriverRequest r)
         {
             if (string.IsNullOrWhiteSpace(r.Name))
                 throw new ArgumentException("Name is required.", nameof(r.Name));
-
             if (string.IsNullOrWhiteSpace(r.CarVendor))
                 throw new ArgumentException("CarVendor is required.", nameof(r.CarVendor));
-
             if (string.IsNullOrWhiteSpace(r.CarType))
                 throw new ArgumentException("CarType is required.", nameof(r.CarType));
-
             if (r.Age < 0)
                 throw new ArgumentException("Age cannot be negative.", nameof(r.Age));
         }
 
-        private static void ValidateUpdate(UpdateCabDriverRequest r)
+        private static void ValidateUpdate(CabDriverRequest r)
         {
             if (string.IsNullOrWhiteSpace(r.Name))
                 throw new ArgumentException("Name is required.", nameof(r.Name));
-
             if (string.IsNullOrWhiteSpace(r.CarVendor))
                 throw new ArgumentException("CarVendor is required.", nameof(r.CarVendor));
-
             if (string.IsNullOrWhiteSpace(r.CarType))
                 throw new ArgumentException("CarType is required.", nameof(r.CarType));
-
             if (r.Age < 0)
                 throw new ArgumentException("Age cannot be negative.", nameof(r.Age));
         }

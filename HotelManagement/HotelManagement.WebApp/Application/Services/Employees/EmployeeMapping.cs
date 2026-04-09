@@ -38,15 +38,19 @@ namespace HotelManagement.WebApp.Application.Services.Employees
             EmailId = r.EmailId
         };
 
-        internal static void Apply(UpdateEmployeeRequest r, Employee e)
+        internal static Employee Apply(string aadharNo, UpdateEmployeeRequest r)
         {
-            e.Name = r.Name;
-            e.Age = r.Age;
-            e.Gender = r.Gender;
-            e.EmployeePosition = r.EmployeePosition;
-            e.Salary = r.Salary;
-            e.MobileNo = r.MobileNo;
-            e.EmailId = r.EmailId;
+            return new Employee
+            {
+                AadharNo = aadharNo,
+                Name = r.Name,
+                Age = r.Age,
+                Gender = r.Gender,
+                EmployeePosition = r.EmployeePosition,
+                Salary = r.Salary,
+                MobileNo = r.MobileNo,
+                EmailId = r.EmailId
+            };
         }
     }
 }
