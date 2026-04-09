@@ -2,9 +2,6 @@
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -28,28 +25,35 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(e => e.AadharNo == aadharNo);
         }
 
-        public async Task AddEmployeeAsync(Employee employee)
+        public async Task<bool> AddEmployeeAsync(Employee employee)
         {
             await _context.Employees.AddAsync(employee);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task UpdateEmployeeAsync(Employee employee)
+        public async Task<bool> UpdateEmployeeAsync(Employee employee)
         {
             _context.Employees.Update(employee);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteEmployeeAsync(string aadharNo)
-        {
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.AadharNo == aadharNo);
-
-            if (employee != null)
+            try
             {
-                _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+
         }
+
+        public async Task<bool> DeleteEmployeeAsync(string aadharNo)
+        {
+            var affected = await _context.Employees
+                .Where(e => e.AadharNo == aadharNo)
+                .ExecuteDeleteAsync();
+
+            return affected > 0;
+        }      
     }
 }

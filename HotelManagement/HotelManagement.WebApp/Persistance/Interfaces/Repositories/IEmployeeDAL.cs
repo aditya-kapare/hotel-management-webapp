@@ -6,8 +6,8 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
     {
         Task<IEnumerable<Employee>> GetAllEmployeesAsync();
         Task<Employee?> GetEmployeeByAadharAsync(string aadharNo);
-        Task AddEmployeeAsync(Employee employee);
-        Task UpdateEmployeeAsync(Employee employee);
-        Task DeleteEmployeeAsync(string aadharNo);
+        Task<bool> AddEmployeeAsync(Employee employee);
+        Task<bool> UpdateEmployeeAsync(Employee employee);
+        Task<bool> DeleteEmployeeAsync(string aadharNo);
     }
 }

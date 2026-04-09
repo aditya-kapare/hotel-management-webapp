@@ -2,9 +2,6 @@
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HotelManagementSystem.DAL
 {
@@ -42,28 +39,34 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-        public async Task AddRequestAsync(DropPickRequest request)
+        public async Task<bool> AddRequestAsync(DropPickRequest request)
         {
             await _context.DropPickRequests.AddAsync(request);
             await _context.SaveChangesAsync();
+            return true;        
         }
 
-        public async Task UpdateRequestAsync(DropPickRequest request)
+        public async Task<bool> UpdateRequestAsync(DropPickRequest request)
         {
             _context.DropPickRequests.Update(request);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteRequestAsync(int requestId)
+        public async Task<bool> DeleteRequestAsync(int requestId)
         {
             var request = await _context.DropPickRequests
-                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+                .Where(r => r.RequestId == requestId)
+                .ExecuteDeleteAsync();
 
-            if (request != null)
-            {
-                _context.DropPickRequests.Remove(request);
-                await _context.SaveChangesAsync();
-            }
+            return request > 0;
         }
     }
 }

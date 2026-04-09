@@ -51,28 +51,34 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-        public async Task AddStayAsync(Stay stay)
+        public async Task<bool> AddStayAsync(Stay stay)
         {
             await _context.Stays.AddAsync(stay);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task UpdateStayAsync(Stay stay)
+        public async Task<bool> UpdateStayAsync(Stay stay)
         {
             _context.Stays.Update(stay);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteStayAsync(int stayId)
+        public async Task<bool> DeleteStayAsync(int stayId)
         {
             var stay = await _context.Stays
-                .FirstOrDefaultAsync(s => s.StayId == stayId);
-
-            if (stay != null)
-            {
-                _context.Stays.Remove(stay);
-                await _context.SaveChangesAsync();
-            }
+                .Where(s => s.StayId == stayId)
+                .ExecuteDeleteAsync();
+            
+            return stay > 0;
         }
     }
 }

@@ -28,28 +28,30 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(d => d.DriverId == driverId);
         }
 
-        public async Task AddDriverAsync(CabDriver driver)
+        public async Task<bool> AddDriverAsync(CabDriver driver)
         {
             await _context.CabDrivers.AddAsync(driver);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task UpdateDriverAsync(CabDriver driver)
+        public async Task<bool> UpdateDriverAsync(CabDriver driver)
         {
             _context.CabDrivers.Update(driver);
-            await _context.SaveChangesAsync();
+            var affected = await _context.SaveChangesAsync();
+            return affected > 0;
         }
 
-        public async Task DeleteDriverAsync(int driverId)
+        public async Task<bool> DeleteDriverAsync(int driverId)
         {
             var driver = await _context.CabDrivers
                 .FirstOrDefaultAsync(d => d.DriverId == driverId);
 
-            if (driver != null)
-            {
-                _context.CabDrivers.Remove(driver);
-                await _context.SaveChangesAsync();
-            }
+            if (driver is null) return false;
+
+            _context.CabDrivers.Remove(driver);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

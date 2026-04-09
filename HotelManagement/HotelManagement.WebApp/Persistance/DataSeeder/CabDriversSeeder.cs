@@ -67,9 +67,6 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
             };
 
             await db.CabDrivers.AddRangeAsync(drivers, cancellationToken);
-
-            // Do NOT call SaveChangesAsync here
-            // SeedRunner handles it once after all seeders
         }
     }
 }

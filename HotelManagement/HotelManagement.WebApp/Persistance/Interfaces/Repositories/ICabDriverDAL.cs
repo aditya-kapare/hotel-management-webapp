@@ -6,8 +6,8 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
     {
         Task<IEnumerable<CabDriver>> GetAllDriversAsync();
         Task<CabDriver?> GetDriverByIdAsync(int driverId);
-        Task AddDriverAsync(CabDriver driver);
-        Task UpdateDriverAsync(CabDriver driver);
-        Task DeleteDriverAsync(int driverId);
+        Task<bool> AddDriverAsync(CabDriver driver);
+        Task<bool> UpdateDriverAsync(CabDriver driver);
+        Task<bool> DeleteDriverAsync(int driverId);
     }
 }

@@ -35,28 +35,35 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-        public async Task AddCustomerAsync(Customer customer)
+        public async Task<bool> AddCustomerAsync(Customer customer)
         {
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task UpdateCustomerAsync(Customer customer)
+        public async Task<bool> UpdateCustomerAsync(Customer customer)
         {
             _context.Customers.Update(customer);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteCustomerAsync(string identityId)
+        public async Task<bool> DeleteCustomerAsync(string identityId)
         {
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.IdentityId == identityId);
+                .Where(c => c.IdentityId == identityId)
+                .ExecuteDeleteAsync();
 
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-            }
+            return customer > 0;
         }
     }
 }

@@ -7,8 +7,8 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
         Task<IEnumerable<Room>> GetAllRoomsAsync();
         Task<IEnumerable<Room>> GetRoomsByTypeAsync(int roomType);
         Task<Room?> GetRoomByRoomNoAsync(int roomNo);
-        Task AddRoomAsync(Room room);
-        Task UpdateRoomAsync(Room room);
-        Task DeleteRoomAsync(int roomNo);
+        Task<bool> AddRoomAsync(Room room);
+        Task<bool> UpdateRoomAsync(Room room);
+        Task<bool> DeleteRoomAsync(int roomNo);
     }
 }

@@ -10,8 +10,8 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
         Task<DropPickRequest?> GetRequestByIdAsync(int requestId);
         Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId);
         Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId);
-        Task AddRequestAsync(DropPickRequest request);
-        Task UpdateRequestAsync(DropPickRequest request);
-        Task DeleteRequestAsync(int requestId);
+        Task<bool> AddRequestAsync(DropPickRequest request);
+        Task<bool> UpdateRequestAsync(DropPickRequest request);
+        Task<bool> DeleteRequestAsync(int requestId);
     }
 }

@@ -9,8 +9,8 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
         Task<IEnumerable<Stay>> GetStaysByRoomNoAsync(int roomNo);
         Task<IEnumerable<Stay>> GetStaysByCustomerIdentityIdAsync(string customerIdentityId);
         Task<IEnumerable<Stay>> GetStaysByCheckInDateAsync(DateTime date);
-        Task AddStayAsync(Stay stay);
-        Task UpdateStayAsync(Stay stay);
-        Task DeleteStayAsync(int stayId);
+        Task<bool> AddStayAsync(Stay stay);
+        Task<bool> UpdateStayAsync(Stay stay);
+        Task<bool> DeleteStayAsync(int stayId);
     }
 }

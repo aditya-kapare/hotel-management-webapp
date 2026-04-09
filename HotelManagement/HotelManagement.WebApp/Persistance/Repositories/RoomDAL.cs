@@ -32,28 +32,34 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(r => r.RoomNo == roomNo);
         }
 
-        public async Task AddRoomAsync(Room room)
+        public async Task<bool> AddRoomAsync(Room room)
         {
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
+            return true;    
         }
 
-        public async Task UpdateRoomAsync(Room room)
+        public async Task<bool> UpdateRoomAsync(Room room)
         {
             _context.Rooms.Update(room);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteRoomAsync(int roomNo)
+        public async Task<bool> DeleteRoomAsync(int roomNo)
         {
             var room = await _context.Rooms
-                .FirstOrDefaultAsync(r => r.RoomNo == roomNo);
-
-            if (room != null)
-            {
-                _context.Rooms.Remove(room);
-                await _context.SaveChangesAsync();
-            }
+                .Where(r => r.RoomNo == roomNo)
+                .ExecuteDeleteAsync();
+               
+            return room > 0;
         }
     }
 }
