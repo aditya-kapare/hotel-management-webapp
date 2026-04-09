@@ -14,36 +14,36 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
                 return;
 
             var rooms = new List<Room>
-            {
-                // ---------- Single Bed (4 rooms) ----------
-                new Room { RoomType = RoomType.SingleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1200m },
-                new Room { RoomType = RoomType.SingleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1500m },
-                new Room { RoomType = RoomType.SingleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1200m },
-                new Room { RoomType = RoomType.SingleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1500m },
+            {                      
+                // ---------- Singl,e Bed (4 rooms) ----------
+                new Room {RoomNo=101, RoomType = RoomType.SingleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1200m },
+                new Room {RoomNo=102, RoomType = RoomType.SingleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1500m },
+                new Room {RoomNo=103, RoomType = RoomType.SingleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1200m },
+                new Room {RoomNo=104, RoomType = RoomType.SingleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1500m },
+             
+                // -------RoomNo=106,--- Double Bed (8 rooms) ----------
+                new Room {RoomNo=106, RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1800m },
+                new Room {RoomNo=107, RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2200m },
+                new Room {RoomNo=108, RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2200m },
+                new Room {RoomNo=109, RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1800m },
 
-                // ---------- Double Bed (8 rooms) ----------
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1800m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2200m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2200m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1800m },
+                new Room {RoomNo=111, RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2300m },
+                new Room {RoomNo=112, RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1900m },
+                new Room {RoomNo=113, RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2300m },
+                new Room {RoomNo=114, RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1900m },
 
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2300m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1900m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2300m },
-                new Room { RoomType = RoomType.DoubleBed, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 1900m },
-
-                // ---------- Semi Deluxe (5 rooms) ----------
-                new Room { RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2800m },
-                new Room { RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 3000m },
-                new Room { RoomType = RoomType.SemiDeluxe, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2500m },
-                new Room { RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 3000m },
-                new Room { RoomType = RoomType.SemiDeluxe, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2600m },
-
-                // ---------- Deluxe (3 rooms) ----------
-                new Room { RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 4500m },
-                new Room { RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 4800m },
-                new Room { RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 5000m }
-            };
+                // -------RoomNo=116,--- Semi Deluxe (5 rooms) ----------
+                new Room {RoomNo=116, RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2800m },
+                new Room {RoomNo=117, RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 3000m },
+                new Room {RoomNo=118, RoomType = RoomType.SemiDeluxe, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2500m },
+                new Room {RoomNo=119, RoomType = RoomType.SemiDeluxe, AcOption = AcOption.AC,    AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 3000m },
+                new Room {RoomNo=120, RoomType = RoomType.SemiDeluxe, AcOption = AcOption.NonAC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 2600m },
+                         
+                // -------RoomNo=10,--- Deluxe (3 rooms) ----------
+                new Room {RoomNo=105, RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 4500m },
+                new Room {RoomNo=110, RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 4800m },
+                new Room {RoomNo=115, RoomType = RoomType.Deluxe, AcOption = AcOption.AC, AvailabilityStatus = AvailabilityStatus.Available, CleanStatus = CleanStatus.Clean, Price = 5000m }
+            };            
 
             await db.Rooms.AddRangeAsync(rooms, cancellationToken);
         }
