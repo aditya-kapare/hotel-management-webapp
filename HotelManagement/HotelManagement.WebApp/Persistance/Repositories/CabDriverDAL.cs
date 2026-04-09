@@ -2,9 +2,6 @@
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -38,20 +35,28 @@ namespace HotelManagementSystem.DAL
         public async Task<bool> UpdateDriverAsync(CabDriver driver)
         {
             _context.CabDrivers.Update(driver);
-            var affected = await _context.SaveChangesAsync();
-            return affected > 0;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+
         }
 
         public async Task<bool> DeleteDriverAsync(int driverId)
         {
-            var driver = await _context.CabDrivers
-                .FirstOrDefaultAsync(d => d.DriverId == driverId);
 
-            if (driver is null) return false;
+            var affected = await _context.CabDrivers
+                            .Where(d => d.DriverId == driverId)
+                            .ExecuteDeleteAsync();
 
-            _context.CabDrivers.Remove(driver);
-            await _context.SaveChangesAsync();
-            return true;
+            return affected > 0;
+
         }
     }
 }
