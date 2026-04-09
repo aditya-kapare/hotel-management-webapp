@@ -25,6 +25,16 @@ namespace HotelManagement.WebApp.Application.Services.Rooms
             Price = req.Price
         };
 
+        internal static Room ToEntity(int roomNo, UpdateRoomRequest req) => new()
+        {
+            RoomNo = roomNo,
+            RoomType = req.RoomType,
+            AcOption = req.AcOption,
+            AvailabilityStatus = req.AvailabilityStatus,
+            CleanStatus = req.CleanStatus,
+            Price = req.Price
+        };
+
         internal static void Apply(UpdateRoomRequest req, Room r)
         {
             r.RoomType = req.RoomType;

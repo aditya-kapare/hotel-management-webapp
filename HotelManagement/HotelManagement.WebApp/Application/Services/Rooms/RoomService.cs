@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Rooms;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -23,7 +24,6 @@ namespace HotelManagement.WebApp.Application.Services
 
         public async Task<IReadOnlyList<RoomDto>> GetByTypeAsync(RoomType roomType)
         {
-            // DAL expects int roomType
             var rooms = await _roomDal.GetRoomsByTypeAsync((int)roomType);
             return rooms.Select(RoomMapping.ToDto).ToList();
         }
@@ -42,14 +42,17 @@ namespace HotelManagement.WebApp.Application.Services
 
             ValidateCreate(request);
 
-            // prevent duplicate RoomNo
-            var existing = await _roomDal.GetRoomByRoomNoAsync(request.RoomNo);
-            if (existing is not null)
-                throw new InvalidOperationException($"Room '{request.RoomNo}' already exists.");
-
             var entity = RoomMapping.ToEntity(request);
 
-            await _roomDal.AddRoomAsync(entity);
+            try
+            {
+                await _roomDal.AddRoomAsync(entity);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Room '{request.RoomNo}' already exists or insert failed.", ex);
+            }
 
             return RoomMapping.ToDto(entity);
         }
@@ -61,34 +64,26 @@ namespace HotelManagement.WebApp.Application.Services
 
             ValidateUpdate(request);
 
-            var existing = await _roomDal.GetRoomByRoomNoAsync(roomNo);
-            if (existing is null)
+            var entity = RoomMapping.ToEntity(roomNo, request);
+
+            var updated = await _roomDal.UpdateRoomAsync(entity);
+            if (!updated)
                 throw new KeyNotFoundException($"Room '{roomNo}' was not found.");
 
-            RoomMapping.Apply(request, existing);
-
-            await _roomDal.UpdateRoomAsync(existing);
-
-            return RoomMapping.ToDto(existing);
+            return RoomMapping.ToDto(entity);
         }
 
         public async Task<bool> DeleteAsync(int roomNo)
         {
             if (roomNo <= 0) return false;
 
-            var existing = await _roomDal.GetRoomByRoomNoAsync(roomNo);
-            if (existing is null) return false;
-
-            await _roomDal.DeleteRoomAsync(roomNo);
-            return true;
+            return await _roomDal.DeleteRoomAsync(roomNo);
         }
 
-        // Minimal validation helpers
         private static void ValidateCreate(CreateRoomRequest r)
         {
             if (r.RoomNo <= 0)
                 throw new ArgumentException("RoomNo must be positive.", nameof(r.RoomNo));
-
             if (r.Price < 0)
                 throw new ArgumentException("Price cannot be negative.", nameof(r.Price));
         }
