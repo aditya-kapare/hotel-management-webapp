@@ -10,7 +10,7 @@ namespace HotelManagement.WebApp.Domain.Models
         public string IdentityId { get; set; } = string.Empty;
 
         [Required]
-        public IdentityIdType IdentityIdType { get; set; }
+        public IdentityIdType IdentityIdType { get; set; } = IdentityIdType.Aadhar;
 
         [Required]
         public string MobileNo { get; set; } = string.Empty;

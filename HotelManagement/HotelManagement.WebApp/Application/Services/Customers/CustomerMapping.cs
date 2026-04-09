@@ -27,6 +27,16 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             Country = r.Country
         };
 
+        internal static Customer ToUpdateEntity(string identityId, UpdateCustomerRequest r) => new()
+        {
+            IdentityId = identityId,
+            MobileNo = r.MobileNo,
+            Name = r.Name,
+            Gender = r.Gender,
+            Address = r.Address,
+            Country = r.Country
+        };
+
         internal static void Apply(UpdateCustomerRequest r, Customer c)
         {
             c.MobileNo = r.MobileNo;

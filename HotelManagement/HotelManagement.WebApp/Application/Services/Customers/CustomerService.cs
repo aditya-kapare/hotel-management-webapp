@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Customers;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -42,15 +43,17 @@ namespace HotelManagement.WebApp.Application.Services
 
             var normalized = NormalizeCreate(request);
             ValidateCreate(normalized);
-
-            // Prevent duplicate identity id
-            var existing = await _customerDal.GetCustomerByIdentityIdAsync(normalized.IdentityId);
-            if (existing is not null)
-                throw new InvalidOperationException($"Customer with IdentityId '{normalized.IdentityId}' already exists.");
-
             var entity = CustomerMapping.ToEntity(normalized);
 
-            await _customerDal.AddCustomerAsync(entity);
+            try
+            {
+                await _customerDal.AddCustomerAsync(entity);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Customer with IdentityId '{normalized.IdentityId}' already exists or insert failed.", ex);
+            }
 
             return CustomerMapping.ToDto(entity);
         }
@@ -66,15 +69,13 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            var existing = await _customerDal.GetCustomerByIdentityIdAsync(identityId);
-            if (existing is null)
+            var entity = CustomerMapping.ToUpdateEntity(identityId, normalized);
+
+            var updated = await _customerDal.UpdateCustomerAsync(entity);
+            if (!updated)
                 throw new KeyNotFoundException($"Customer with IdentityId '{identityId}' was not found.");
 
-            CustomerMapping.Apply(normalized, existing);
-
-            await _customerDal.UpdateCustomerAsync(existing);
-
-            return CustomerMapping.ToDto(existing);
+            return CustomerMapping.ToDto(entity);
         }
 
         public async Task<bool> DeleteAsync(string identityId)
@@ -82,12 +83,7 @@ namespace HotelManagement.WebApp.Application.Services
             identityId = NormalizeId(identityId);
             if (string.IsNullOrWhiteSpace(identityId)) return false;
 
-            // Read-first check so we can return whether delete actually happened
-            var existing = await _customerDal.GetCustomerByIdentityIdAsync(identityId);
-            if (existing is null) return false;
-
-            await _customerDal.DeleteCustomerAsync(identityId);
-            return true;
+            return await _customerDal.DeleteCustomerAsync(identityId);            
         }
 
         // -------------------------
