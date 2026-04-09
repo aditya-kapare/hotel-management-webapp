@@ -2,10 +2,6 @@
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HotelManagementSystem.DAL
 {

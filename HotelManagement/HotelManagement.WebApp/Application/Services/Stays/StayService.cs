@@ -4,7 +4,6 @@ using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Stays;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
-using HotelManagementSystem.DAL;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -16,9 +15,9 @@ namespace HotelManagement.WebApp.Application.Services
         private readonly ICustomerDAL _customerDal;
 
         public StayService(
-            IStayDAL stayDal, 
-            IRoomDAL roomDal, 
-            ICustomerDAL customerDal, 
+            IStayDAL stayDal,
+            IRoomDAL roomDal,
+            ICustomerDAL customerDal,
             IStayChargeCalculator chargeCalculator)
         {
             _stayDal = stayDal;
@@ -36,7 +35,6 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<StayDto?> GetByIdAsync(int stayId)
         {
             if (stayId <= 0) return null;
-
             var stay = await _stayDal.GetStayByIdAsync(stayId);
             return stay is null ? null : StayMapping.ToDto(stay);
         }
@@ -44,7 +42,6 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<IReadOnlyList<StayDto>> GetByRoomNoAsync(int roomNo)
         {
             if (roomNo <= 0) return [];
-
             var stays = await _stayDal.GetStaysByRoomNoAsync(roomNo);
             return stays.Select(StayMapping.ToDto).ToList();
         }
@@ -53,7 +50,6 @@ namespace HotelManagement.WebApp.Application.Services
         {
             customerIdentityId = NormalizeId(customerIdentityId);
             if (string.IsNullOrWhiteSpace(customerIdentityId)) return [];
-
             var stays = await _stayDal.GetStaysByCustomerIdentityIdAsync(customerIdentityId);
             return stays.Select(StayMapping.ToDto).ToList();
         }
@@ -72,19 +68,22 @@ namespace HotelManagement.WebApp.Application.Services
             ValidateCheckIn(normalized);
 
             var customer = await _customerDal.GetCustomerByIdentityIdAsync(normalized.CustomerIdentityId);
-            if (customer is null) throw new KeyNotFoundException($"Customer '{normalized.CustomerIdentityId}' was not found.");
+            if (customer is null)
+                throw new KeyNotFoundException($"Customer '{normalized.CustomerIdentityId}' was not found.");
 
             var room = await _roomDal.GetRoomByRoomNoAsync(normalized.RoomNo);
-            if (room is null) throw new KeyNotFoundException($"Room '{normalized.RoomNo}' was not found.");
+            if (room is null)
+                throw new KeyNotFoundException($"Room '{normalized.RoomNo}' was not found.");
 
             if (room.AvailabilityStatus != AvailabilityStatus.Available)
                 throw new InvalidOperationException($"Room '{normalized.RoomNo}' is not available.");
 
-            if (room.CleanStatus != CleanStatus.Clean) throw new InvalidOperationException($"Room '{normalized.RoomNo}' is not clean.");
+            if (room.CleanStatus != CleanStatus.Clean)
+                throw new InvalidOperationException($"Room '{normalized.RoomNo}' is not clean.");
 
             var checkInAt = normalized.CheckInAt ?? DateTime.Now;
-            var stay = StayMapping.ToEntity(normalized, checkInAt);
 
+            var stay = StayMapping.ToEntity(normalized, checkInAt);
             await _stayDal.AddStayAsync(stay);
 
             room.AvailabilityStatus = AvailabilityStatus.Occupied;
@@ -101,6 +100,7 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
+            // ✅ Read is required here to validate state & room move
             var stay = await _stayDal.GetStayByIdAsync(stayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
@@ -119,17 +119,14 @@ namespace HotelManagement.WebApp.Application.Services
                 }
 
                 var newRoom = await _roomDal.GetRoomByRoomNoAsync(normalized.RoomNo);
-                if (newRoom is null) throw new KeyNotFoundException($"Room '{normalized.RoomNo}' was not found.");
+                if (newRoom is null)
+                    throw new KeyNotFoundException($"Room '{normalized.RoomNo}' was not found.");
 
                 if (newRoom.AvailabilityStatus != AvailabilityStatus.Available)
-                {
                     throw new InvalidOperationException($"Room '{normalized.RoomNo}' is not available.");
-                }
 
                 if (newRoom.CleanStatus != CleanStatus.Clean)
-                {
                     throw new InvalidOperationException($"Room '{normalized.RoomNo}' is not clean.");
-                }
 
                 newRoom.AvailabilityStatus = AvailabilityStatus.Occupied;
                 await _roomDal.UpdateRoomAsync(newRoom);
@@ -137,7 +134,9 @@ namespace HotelManagement.WebApp.Application.Services
 
             StayMapping.Apply(normalized, stay);
 
-            await _stayDal.UpdateStayAsync(stay);
+            var updated = await _stayDal.UpdateStayAsync(stay);
+            if (!updated)
+                throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
 
             return StayMapping.ToDto(stay);
         }
@@ -171,16 +170,19 @@ namespace HotelManagement.WebApp.Application.Services
                 additionalAmountPaid: normalized.AmountPaid
             );
 
-            if(bill.TotalPaid > bill.TotalCharge)
-            {
+            if (bill.TotalPaid > bill.TotalCharge)
                 throw new InvalidOperationException($"Amount paid ({bill.TotalPaid}) exceeds total charge ({bill.TotalCharge}).");
-            }
 
             stay.CheckOutAt = checkOutAt;
+
+            // ✅ AmountPaid = additional paid beyond deposit
             stay.AmountPaid = normalized.AmountPaid;
+
             stay.PendingAmount = bill.Pending;
 
-            await _stayDal.UpdateStayAsync(stay);
+            var updated = await _stayDal.UpdateStayAsync(stay);
+            if (!updated)
+                throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
 
             room.AvailabilityStatus = AvailabilityStatus.Available;
             room.CleanStatus = CleanStatus.Dirty;
@@ -193,11 +195,8 @@ namespace HotelManagement.WebApp.Application.Services
         {
             if (stayId <= 0) return false;
 
-            var existing = await _stayDal.GetStayByIdAsync(stayId);
-            if (existing is null) return false;
-
-            await _stayDal.DeleteStayAsync(stayId);
-            return true;
+            // ✅ No read-first: single DB op delete
+            return await _stayDal.DeleteStayAsync(stayId);
         }
 
         // Normalize + validate helpers
@@ -229,32 +228,34 @@ namespace HotelManagement.WebApp.Application.Services
 
         private static void ValidateCheckIn(CheckInRequest r)
         {
-            if (string.IsNullOrWhiteSpace(r.CustomerIdentityId)) throw new ArgumentException("CustomerIdentityId is required.", nameof(r.CustomerIdentityId));
-
-            if (r.RoomNo <= 0) throw new ArgumentException("RoomNo must be positive.", nameof(r.RoomNo));
-
-            if (r.DepositPaid < 0) throw new ArgumentException("DepositPaid cannot be negative.", nameof(r.DepositPaid));
+            if (string.IsNullOrWhiteSpace(r.CustomerIdentityId))
+                throw new ArgumentException("CustomerIdentityId is required.", nameof(r.CustomerIdentityId));
+            if (r.RoomNo <= 0)
+                throw new ArgumentException("RoomNo must be positive.", nameof(r.RoomNo));
+            if (r.DepositPaid < 0)
+                throw new ArgumentException("DepositPaid cannot be negative.", nameof(r.DepositPaid));
         }
 
         private static void ValidateUpdate(UpdateStayRequest r)
         {
-            if (r.RoomNo <= 0) throw new ArgumentException("RoomNo must be positive.", nameof(r.RoomNo));
-
-            if (r.DepositPaid < 0) throw new ArgumentException("DepositPaid cannot be negative.", nameof(r.DepositPaid));
-
-            if (r.AmountPaid < 0) throw new ArgumentException("AmountPaid cannot be negative.", nameof(r.AmountPaid));
-
-            if (r.PendingAmount < 0) throw new ArgumentException("PendingAmount cannot be negative.", nameof(r.PendingAmount));
+            if (r.RoomNo <= 0)
+                throw new ArgumentException("RoomNo must be positive.", nameof(r.RoomNo));
+            if (r.DepositPaid < 0)
+                throw new ArgumentException("DepositPaid cannot be negative.", nameof(r.DepositPaid));
+            if (r.AmountPaid < 0)
+                throw new ArgumentException("AmountPaid cannot be negative.", nameof(r.AmountPaid));
+            if (r.PendingAmount < 0)
+                throw new ArgumentException("PendingAmount cannot be negative.", nameof(r.PendingAmount));
         }
 
         private static void ValidateCheckOut(CheckOutRequest r)
         {
-            if (r.AmountPaid < 0) throw new ArgumentException("AmountPaid cannot be negative.", nameof(r.AmountPaid));
-
-            if (r.PendingAmount < 0) throw new ArgumentException("PendingAmount cannot be negative.", nameof(r.PendingAmount));
+            if (r.AmountPaid < 0)
+                throw new ArgumentException("AmountPaid cannot be negative.", nameof(r.AmountPaid));
+            if (r.PendingAmount < 0)
+                throw new ArgumentException("PendingAmount cannot be negative.", nameof(r.PendingAmount));
         }
 
-        
         public async Task<BillingSummaryDto> GetBillingSummaryAsync(int stayId)
         {
             if (stayId <= 0)
@@ -285,15 +286,12 @@ namespace HotelManagement.WebApp.Application.Services
             {
                 Nights = nights,
                 RatePerNight = room.Price,
-
                 TotalCharge = bill.TotalCharge,
-
                 DepositPaid = stay.DepositPaid,
                 AdditionalPaid = stay.AmountPaid,
                 TotalPaid = bill.TotalPaid,
-
                 PendingAmount = bill.Pending
             };
         }
-}
+    }
 }

@@ -22,11 +22,8 @@ namespace HotelManagement.WebApp.Application.Services.Stays
             CheckInAt = checkInAt,
             CheckOutAt = null,
             DepositPaid = r.DepositPaid,
-
-            // Minimal sensible defaults:
-            AmountPaid = r.DepositPaid,
+            AmountPaid = 0,
             PendingAmount = 0,
-
             RoomNo = r.RoomNo,
             CustomerIdentityId = r.CustomerIdentityId
         };
@@ -35,7 +32,6 @@ namespace HotelManagement.WebApp.Application.Services.Stays
         {
             s.RoomNo = r.RoomNo;
             s.CheckInAt = r.CheckInAt;
-
             s.DepositPaid = r.DepositPaid;
             s.AmountPaid = r.AmountPaid;
             s.PendingAmount = r.PendingAmount;
