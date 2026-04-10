@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>View Employee by ID</title>
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+    <div class="container mt-4">
+
+        <h4 class="fw-bold">View Employee by Aadhaar No</h4>
+        <hr />
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <form method="get" action="/Admin/Employees/Details">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Aadhaar Number</label>
+                            <input name="aadharNo"
+                                   class="form-control"
+                                   placeholder="Enter Aadhaar number" />
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary w-100">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
