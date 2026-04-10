@@ -1,0 +1,33 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Employee.EmployeeDetailsDto
+
+<div class="container mt-5">
+
+    <div class="card border-danger shadow">
+        <div class="card-body text-center">
+
+            <h4 class="text-danger fw-bold">Delete Employee</h4>
+            <p class="mt-3">
+                Are you sure you want to permanently delete
+                <strong>@Model.Name</strong>?
+            </p>
+
+            <!-- ✅ FIXED ACTION -->
+            <form method="post" action="/admin/employees/delete/@Model.AadharNo">
+
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete
+                    </button>
+
+                    <a href="/admin/employees/details?aadharNo=@Model.AadharNo"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

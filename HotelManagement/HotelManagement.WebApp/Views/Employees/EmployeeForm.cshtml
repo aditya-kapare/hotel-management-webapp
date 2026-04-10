@@ -1,0 +1,67 @@
+﻿@model dynamic
+
+@{
+    var m = Model;
+}
+
+<div class="row g-3">
+
+    <div class="col-md-3">
+        <label class="form-label">Aadhaar</label>
+        <input class="form-control"
+               value="@(m?.AadharNo ?? "")"
+               readonly />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Name</label>
+        <input class="form-control"
+               name="Name"
+               value="@(m?.Name ?? "")" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Age</label>
+        <input type="number"
+               class="form-control"
+               name="Age"
+               value="@(m?.Age ?? "")" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Gender</label>
+        <input class="form-control"
+               name="Gender"
+               value="@(m?.Gender ?? "")" />
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Position</label>
+        <input class="form-control"
+               name="EmployeePosition"
+               value="@(m?.EmployeePosition ?? "")" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Salary</label>
+        <input type="number"
+               class="form-control"
+               name="Salary"
+               value="@(m?.Salary ?? "")" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Mobile</label>
+        <input class="form-control"
+               name="MobileNo"
+               value="@(m?.MobileNo ?? "")" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Email</label>
+        <input class="form-control"
+               name="EmailId"
+               value="@(m?.EmailId ?? "")" />
+    </div>
+
+</div>

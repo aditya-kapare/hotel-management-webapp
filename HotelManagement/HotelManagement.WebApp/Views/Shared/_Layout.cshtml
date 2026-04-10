@@ -1,11 +1,21 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hotel Management</title>
+
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body>
-    @RenderBody()
+
+<body class="bg-light">
+
+    <main class="container-fluid">
+        @RenderBody()
+    </main>
+
+    <!-- ✅ REQUIRED FOR ALERT CLOSE BUTTON -->
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

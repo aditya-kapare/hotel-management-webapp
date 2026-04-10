@@ -1,94 +1,58 @@
 ﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Employee.EmployeeSummaryDto>
 
+<link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Employees</title>
-    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-</head>
-<body class="bg-light">
+<div class="container mt-4">
 
-    <div class="container mt-4">
-
-        <!-- Page Heading -->
-        <div class="row mb-3">
-            <div class="col">
-                <h4 class="fw-bold">Employee Directory</h4>
-                <hr />
-            </div>
+    @* ✅ DELETE SUCCESS MESSAGE *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+    }
 
-        <!-- Employee Table -->
-        <div class="row">
-            <div class="col">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Aadhar No</th>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Mobile</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var emp in Model)
-                            {
-                                <tr>
-                                    <td>@emp.AadharNo</td>
-                                    <td>@emp.Name</td>
-                                    <td>@emp.EmployeePosition</td>
-                                    <td>@emp.MobileNo</td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">
-                                    No employees found.
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold">Employee Directory</h4>
 
+        <a href="/admin/employees/create" class="btn btn-primary btn-sm">
+            + Add Employee
+        </a>
     </div>
 
-</body>
-</html>
-@* <h2>All Employees</h2>
-
-@if (Model == null || !Model.Any())
-{
-    <p>No employees found.</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
             <tr>
-                <th>Aadhar No</th>
+                <th>Aadhaar</th>
                 <th>Name</th>
                 <th>Position</th>
                 <th>Mobile</th>
+                <th class="text-center">Action</th>
             </tr>
         </thead>
+
         <tbody>
-            @foreach (var e in Model)
+            @foreach (var emp in Model)
             {
                 <tr>
-                    <td>@e.AadharNo</td>
-                    <td>@e.Name</td>
-                    <td>@e.EmployeePosition</td>
-                    <td>@e.MobileNo</td>
+                    <td>@emp.AadharNo</td>
+                    <td>@emp.Name</td>
+                    <td>@emp.EmployeePosition</td>
+                    <td>@emp.MobileNo</td>
+                    <td class="text-center">
+                        <a href="/admin/employees/details?aadharNo=@emp.AadharNo"
+                           class="btn btn-success btn-sm">
+                            View
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
-} *@
+
+    <a href="/admin/home" class="btn btn-secondary mt-3">
+        ← Back
+    </a>
+
+</div>

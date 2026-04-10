@@ -1,0 +1,116 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Employee.EmployeeDetailsDto
+
+<link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    .field-box {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 10px 12px;
+        background-color: #fdfdfd;
+        font-weight: 500;
+    }
+
+    .field-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .section-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #0d6efd;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold mb-0">Employee Details</h4>
+            <small class="text-muted">Complete employee profile</small>
+        </div>
+
+        <a href="/admin/employees" class="btn btn-outline-secondary btn-sm">
+            ← Back
+        </a>
+    </div>
+
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <!-- ================= BASIC INFORMATION ================= -->
+            <div class="section-title">👤 Basic Information</div>
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-3">
+                    <div class="field-label">Aadhaar</div>
+                    <div class="field-box">@Model.AadharNo</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="field-label">Name</div>
+                    <div class="field-box">@Model.Name</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="field-label">Age</div>
+                    <div class="field-box">@Model.Age</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="field-label">Gender</div>
+                    <div class="field-box">@Model.Gender</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="field-label">Position</div>
+                    <div class="field-box">@Model.EmployeePosition</div>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <!-- ================= EMPLOYMENT DETAILS ================= -->
+            <div class="section-title text-success">💼 Employment Details</div>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <div class="field-label">Salary</div>
+                    <div class="field-box">₹ @Model.Salary</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="field-label">Mobile</div>
+                    <div class="field-box">@Model.MobileNo</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="field-label">Email</div>
+                    <div class="field-box">@Model.EmailId</div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="mt-4 d-flex gap-2">
+        <a href="/admin/employees/edit/@Model.AadharNo" class="btn btn-info">
+            ✏ Edit
+        </a>
+
+        <a href="/admin/employees/delete/@Model.AadharNo" class="btn btn-danger">
+            🗑 Delete
+        </a>
+    </div>
+
+</div>
