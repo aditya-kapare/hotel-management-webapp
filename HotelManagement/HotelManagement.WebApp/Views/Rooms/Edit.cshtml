@@ -1,0 +1,22 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Room.UpdateRoomRequest
+
+@{
+    ViewData["Title"] = "Edit Room";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-3">Edit Room - @ViewBag.RoomNo</h3>
+
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="id" value="@ViewBag.RoomNo" />
+
+        <partial name="RoomUIForm" model="Model" />
+
+        <div class="mt-4">
+            <button class="btn btn-warning">Update</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

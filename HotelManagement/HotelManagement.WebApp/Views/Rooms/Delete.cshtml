@@ -1,0 +1,22 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Room.RoomDto
+
+@{
+    ViewData["Title"] = "Delete Room";
+}
+
+<div class="container mt-4">
+    <h4 class="text-danger">Confirm Delete</h4>
+
+    <p>
+        Are you sure you want to delete
+        <strong>Room @Model.RoomNo</strong>?
+    </p>
+
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="RoomNo" />
+
+        <button class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
