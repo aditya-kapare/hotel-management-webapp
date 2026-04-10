@@ -1,0 +1,102 @@
+﻿@model dynamic
+@{
+    var m = Model;
+
+    // Aadhaar handling
+    var aadharProp = m?.GetType().GetProperty("AadharNo");
+    var aadharValue = aadharProp != null ? aadharProp.GetValue(m)?.ToString() : "";
+
+    bool isEdit = ViewBag.AadharNo != null;
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+
+        <h6 class="fw-bold text-primary mb-3">Basic Information</h6>
+
+        <div class="row g-3 mb-4">
+
+            <!-- ✅ AADHAAR FIELD (CREATE vs EDIT HANDLED) -->
+            <div class="col-md-3">
+                <label class="form-label">Aadhaar</label>
+
+                @if (!isEdit)
+                {
+                    <!-- ✅ CREATE: editable & posted -->
+                    <input class="form-control"
+                           name="AadharNo"
+                           value="@aadharValue"
+                           placeholder="Enter Aadhaar number"
+                           required />
+                }
+                else
+                {
+                    <!-- ✅ EDIT: readonly, not posted -->
+                    <input class="form-control"
+                           value="@ViewBag.AadharNo"
+                           readonly />
+                }
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Name</label>
+                <input name="Name"
+                       class="form-control"
+                       value="@(m?.Name ?? "")" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Age</label>
+                <input type="number"
+                       name="Age"
+                       class="form-control"
+                       value="@(m?.Age ?? "")" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Gender</label>
+                <input name="Gender"
+                       class="form-control"
+                       value="@(m?.Gender ?? "")" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Position</label>
+                <input name="EmployeePosition"
+                       class="form-control"
+                       value="@(m?.EmployeePosition ?? "")" />
+            </div>
+        </div>
+
+        <hr />
+
+        <h6 class="fw-bold text-success mb-3">Employment Details</h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Salary</label>
+                <input type="number"
+                       name="Salary"
+                       class="form-control"
+                       value="@(m?.Salary ?? "")" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Mobile</label>
+                <input name="MobileNo"
+                       class="form-control"
+                       value="@(m?.MobileNo ?? "")" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input name="EmailId"
+                       class="form-control"
+                       value="@(m?.EmailId ?? "")" />
+            </div>
+
+        </div>
+
+    </div>
+</div>
