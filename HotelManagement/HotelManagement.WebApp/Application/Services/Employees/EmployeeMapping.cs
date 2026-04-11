@@ -5,7 +5,7 @@ namespace HotelManagement.WebApp.Application.Services.Employees
 {
     internal static class EmployeeMapping
     {
-        internal static EmployeeDetailsDto ToDetailsDto(Employee e) => new()
+        internal static EmployeeDetailsDto ToDetailsDto(ApplicationEmployee e) => new()
         {
             AadharNo = e.AadharNo,
             Name = e.Name,
@@ -17,7 +17,7 @@ namespace HotelManagement.WebApp.Application.Services.Employees
             EmailId = e.EmailId
         };
 
-        internal static EmployeeSummaryDto ToSummaryDto(Employee e) => new()
+        internal static EmployeeSummaryDto ToSummaryDto(ApplicationEmployee e) => new()
         {
             AadharNo = e.AadharNo,
             Name = e.Name,
@@ -26,7 +26,7 @@ namespace HotelManagement.WebApp.Application.Services.Employees
             Gender = e.Gender
         };
 
-        internal static Employee ToEntity(CreateEmployeeRequest r) => new()
+        internal static ApplicationEmployee ToEntity(CreateEmployeeRequest r) => new()
         {
             AadharNo = r.AadharNo,
             Name = r.Name,
@@ -35,12 +35,16 @@ namespace HotelManagement.WebApp.Application.Services.Employees
             EmployeePosition = r.EmployeePosition,
             Salary = r.Salary,
             MobileNo = r.MobileNo,
-            EmailId = r.EmailId
+            EmailId = r.EmailId,
+
+            // Identity-required
+            UserName = r.EmailId ?? r.AadharNo,
+            EmailConfirmed = true
         };
 
-        internal static Employee Apply(string aadharNo, UpdateEmployeeRequest r)
+        internal static ApplicationEmployee Apply(string aadharNo, UpdateEmployeeRequest r)
         {
-            return new Employee
+            return new ApplicationEmployee
             {
                 AadharNo = aadharNo,
                 Name = r.Name,
@@ -49,7 +53,8 @@ namespace HotelManagement.WebApp.Application.Services.Employees
                 EmployeePosition = r.EmployeePosition,
                 Salary = r.Salary,
                 MobileNo = r.MobileNo,
-                EmailId = r.EmailId
+                EmailId = r.EmailId,
+                UserName = r.EmailId ?? aadharNo
             };
         }
     }
