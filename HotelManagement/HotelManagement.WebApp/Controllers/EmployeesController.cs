@@ -1,9 +1,12 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Employee;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.WebApp.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     [Route("admin/employees")]
     public sealed class EmployeesController : Controller
     {

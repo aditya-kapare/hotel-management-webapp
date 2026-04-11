@@ -1,0 +1,30 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverDto
+
+<div class="container mt-5">
+
+    <div class="card border-danger shadow">
+        <div class="card-body text-center">
+
+            <h4 class="text-danger fw-bold">Delete Cab Driver</h4>
+
+            <p class="mt-3">
+                Are you sure you want to permanently delete
+                <strong>@Model.Name</strong>?
+            </p>
+
+            <form method="post" action="/admin/cabdrivers/delete/@Model.DriverId">
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete
+                    </button>
+
+                    <a href="/admin/cabdrivers" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
