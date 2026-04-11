@@ -1,6 +1,8 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.DropPickRequests;
+using HotelManagement.WebApp.Domain.Enums;
+using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 
 namespace HotelManagement.WebApp.Application.Services
@@ -9,16 +11,13 @@ namespace HotelManagement.WebApp.Application.Services
     {
         private readonly IDropPickRequestDAL _requestDal;
         private readonly IStayDAL _stayDal;
-        private readonly ICabDriverDAL _driverDal;
 
         public DropPickRequestService(
             IDropPickRequestDAL requestDal,
-            IStayDAL stayDal,
-            ICabDriverDAL driverDal)
+            IStayDAL stayDal)
         {
             _requestDal = requestDal;
             _stayDal = stayDal;
-            _driverDal = driverDal;
         }
 
         public async Task<IReadOnlyList<DropPickRequestDto>> GetAllAsync()
@@ -30,7 +29,6 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<DropPickRequestDto?> GetByIdAsync(int requestId)
         {
             if (requestId <= 0) return null;
-
             var req = await _requestDal.GetRequestByIdAsync(requestId);
             return req is null ? null : DropPickRequestMapping.ToDto(req);
         }
@@ -38,7 +36,6 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<IReadOnlyList<DropPickRequestDto>> GetByStayIdAsync(int stayId)
         {
             if (stayId <= 0) return [];
-
             var requests = await _requestDal.GetRequestsByStayIdAsync(stayId);
             return requests.Select(DropPickRequestMapping.ToDto).ToList();
         }
@@ -46,9 +43,13 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<IReadOnlyList<DropPickRequestDto>> GetByDriverIdAsync(int driverId)
         {
             if (driverId <= 0) return [];
-
             var requests = await _requestDal.GetRequestsByDriverIdAsync(driverId);
             return requests.Select(DropPickRequestMapping.ToDto).ToList();
+        }
+
+        public async Task<IReadOnlyList<CabDriver>> GetAvailableDriversAsync()
+        {
+            return (await _requestDal.GetAvailableDriversAsync()).ToList();
         }
 
         public async Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request)
@@ -58,22 +59,29 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeCreate(request);
             ValidateCreate(normalized);
 
-            // These reads are justified (business validation)
             var stay = await _stayDal.GetStayByIdAsync(normalized.StayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{normalized.StayId}' was not found.");
-
             if (stay.CheckOutAt is not null)
                 throw new InvalidOperationException($"Stay '{normalized.StayId}' is already checked out.");
 
-            var driver = await _driverDal.GetDriverByIdAsync(normalized.DriverId);
-            if (driver is null)
-                throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
+            var availableDrivers = await _requestDal.GetAvailableDriversAsync();
+            if (!availableDrivers.Any(d => d.DriverId == normalized.DriverId))
+                throw new InvalidOperationException("Selected driver is not available.");
 
-            var requestedAt = normalized.RequestedAt ?? DateTime.Now;
+            var entity = new DropPickRequest
+            {
+                StayId = normalized.StayId,
+                DriverId = normalized.DriverId,
+                RequestType = normalized.RequestType,
+                Notes = normalized.Notes,
+                RequestedAt = normalized.RequestedAt ?? DateTime.Now,
+                Status = DropPickStatus.Assigned
+            };
 
-            var entity = DropPickRequestMapping.ToEntity(normalized, requestedAt);
-            await _requestDal.AddRequestAsync(entity);
+            var created = await _requestDal.AddRequestAsync(entity);
+            if (!created)
+                throw new InvalidOperationException("Failed to create drop/pick request.");
 
             return DropPickRequestMapping.ToDto(entity);
         }
@@ -86,7 +94,6 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            // Required: need StayId from existing request to enforce "no update after checkout"
             var existing = await _requestDal.GetRequestByIdAsync(requestId);
             if (existing is null)
                 throw new KeyNotFoundException($"Request '{requestId}' was not found.");
@@ -94,24 +101,20 @@ namespace HotelManagement.WebApp.Application.Services
             var stay = await _stayDal.GetStayByIdAsync(existing.StayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{existing.StayId}' was not found.");
-
             if (stay.CheckOutAt is not null)
                 throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
 
             if (normalized.DriverId != existing.DriverId)
             {
-                var driver = await _driverDal.GetDriverByIdAsync(normalized.DriverId);
-                if (driver is null)
-                    throw new KeyNotFoundException($"Driver '{normalized.DriverId}' was not found.");
+                var availableDrivers = await _requestDal.GetAvailableDriversAsync();
+                if (!availableDrivers.Any(d => d.DriverId == normalized.DriverId))
+                    throw new InvalidOperationException("Selected driver is not available.");
             }
 
-            var requestedAt = normalized.RequestedAt == default ? existing.RequestedAt : normalized.RequestedAt;
-
-            DropPickRequestMapping.Apply(normalized, existing, requestedAt);
-
+            DropPickRequestMapping.Apply(normalized, existing);
             var updated = await _requestDal.UpdateRequestAsync(existing);
             if (!updated)
-                throw new KeyNotFoundException($"Request '{requestId}' was not found.");
+                throw new InvalidOperationException($"Failed to update request '{requestId}'.");
 
             return DropPickRequestMapping.ToDto(existing);
         }
@@ -119,12 +122,9 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<bool> DeleteAsync(int requestId)
         {
             if (requestId <= 0) return false;
-
-            // ✅ Single DB operation delete (no read-first)
             return await _requestDal.DeleteRequestAsync(requestId);
         }
 
-        // Normalize + validate helpers
         private static CreateDropPickRequest NormalizeCreate(CreateDropPickRequest r) => new()
         {
             RequestedAt = r.RequestedAt,
@@ -144,16 +144,13 @@ namespace HotelManagement.WebApp.Application.Services
 
         private static void ValidateCreate(CreateDropPickRequest r)
         {
-            if (r.StayId <= 0)
-                throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
-            if (r.DriverId <= 0)
-                throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
+            if (r.StayId <= 0) throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
+            if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
         }
 
         private static void ValidateUpdate(UpdateDropPickRequest r)
         {
-            if (r.DriverId <= 0)
-                throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
+            if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
         }
     }
 }

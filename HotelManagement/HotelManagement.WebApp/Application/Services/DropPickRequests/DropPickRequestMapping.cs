@@ -31,5 +31,11 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
             entity.RequestType = r.RequestType;
             entity.DriverId = r.DriverId;
         }
+        internal static void Apply(UpdateDropPickRequest r, DropPickRequest entity)
+        {
+            entity.Notes = r.Notes;
+            entity.RequestType = r.RequestType;
+            entity.DriverId = r.DriverId;
+        }
     }
 }

@@ -18,6 +18,8 @@ namespace HotelManagement.WebApp.Domain.Models
         public Stay Stay { get; set; } = null!;
         [Required]
         public int DriverId { get; set; }
-        public CabDriver CabDriver { get; set; } = null!; 
+        public CabDriver CabDriver { get; set; } = null!;
+
+        public DropPickStatus Status { get; set; }
     }
 }
