@@ -1,0 +1,77 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Drivers.UpdateCabDriverRequest
+
+<div class="container mt-4">
+
+    <h4 class="fw-bold">Edit Cab Driver</h4>
+    <hr />
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <form method="post">
+
+                <!-- ✅ DRIVER ID PASSED VIA ROUTE, NO NEED IN MODEL -->
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input type="text"
+                               name="Name"
+                               class="form-control"
+                               value="@Model.Name" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Age</label>
+                        <input type="number"
+                               name="Age"
+                               class="form-control"
+                               value="@Model.Age" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Gender</label>
+                        <select name="Gender" class="form-select">
+                            @foreach (var g in Enum.GetValues(typeof(HotelManagement.WebApp.Domain.Enums.Gender)))
+                            {
+                                <option value="@g" selected="@(Model.Gender == (HotelManagement.WebApp.Domain.Enums.Gender)g)">
+                                    @g
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Car Vendor</label>
+                        <input type="text"
+                               name="CarVendor"
+                               class="form-control"
+                               value="@Model.CarVendor" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Car Type</label>
+                        <input type="text"
+                               name="CarType"
+                               class="form-control"
+                               value="@Model.CarType" />
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Update
+                    </button>
+
+                    <a href="/admin/cabdrivers" class="btn btn-secondary">
+                        ← Back
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
