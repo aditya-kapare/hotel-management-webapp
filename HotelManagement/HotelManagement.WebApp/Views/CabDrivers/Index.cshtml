@@ -1,0 +1,54 @@
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverDto>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4 class="fw-bold">Cab Drivers</h4>
+
+        <a href="/admin/cabdrivers/create" class="btn btn-primary">
+            + Add Driver
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Car Vendor</th>
+                <th>Car Type</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td>@d.Name</td>
+                    <td>@d.Age</td>
+                    <td>@d.Gender</td>
+                    <td>@d.CarVendor</td>
+                    <td>@d.CarType</td>
+                    <td class="text-center">
+                        <a href="/admin/cabdrivers/edit/@d.DriverId"
+                           class="btn btn-sm btn-info">
+                            Edit
+                        </a>
+
+                        <a href="/admin/cabdrivers/delete/@d.DriverId"
+                           class="btn btn-sm btn-danger ms-2">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a href="/admin/home" class="btn btn-secondary mt-3">
+        ← Back
+    </a>
+
+</div>
