@@ -10,13 +10,8 @@
 @functions {
     string FormatRoomType(string value)
     {
-        // Option A: space before capital letters
         return System.Text.RegularExpressions.Regex
             .Replace(value, "(\\B[A-Z])", " $1");
-
-        // Examples:
-        // SingleBed   -> Single Bed
-        // SemiDeluxe  -> Semi Deluxe
     }
 }
 @functions {
@@ -26,7 +21,6 @@
         if (string.IsNullOrWhiteSpace(value))
             return value;
 
-        // ✅ Explicit handling for AC / NonAC
         if (value.Equals("AC", StringComparison.OrdinalIgnoreCase))
             return "AC";
 
@@ -34,9 +28,6 @@
             value.Equals("NonAc", StringComparison.OrdinalIgnoreCase))
             return "Non AC";
 
-        // ✅ Default: split PascalCase words
-        // SingleBed   -> Single Bed
-        // SemiDeluxe  -> Semi Deluxe
         return System.Text.RegularExpressions.Regex
             .Replace(value, "(?<=[a-z])([A-Z])", " $1");
     }
@@ -49,27 +40,12 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Rooms</h3>
-        <a asp-action="Create" class="btn btn-primary">Add Room</a>
+        @if (!ViewBag.IsReadOnly)
+        {
+            <a asp-action="Create" class="btn btn-primary mb-3">Add Room</a>
+        }
+
     </div>
-
- @*    <form method="get" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <select name="type" class="form-select">
-                <option value="">All Room Types</option>
-
-                @foreach (var rt in ViewBag.RoomTypes)
-                {
-                    <option value="@rt" selected="@(ViewBag.SelectedType == rt)">
-                        @FormatRoomType(rt)
-                    </option>
-                }
-            </select>
-
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100">Filter</button>
-        </div>
-    </form> *@
 
     <form method="get" class="row g-2 mb-3">
 
@@ -161,10 +137,11 @@
                 <td>@r.CleanStatus</td>
                 <td class="text-end">₹ @r.Price</td>
                 <td class="text-center">
-                    <a asp-action="Edit" asp-route-id="@r.RoomNo"
-                       class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@r.RoomNo"
-                       class="btn btn-sm btn-danger">Delete</a>
+                @if (!ViewBag.IsReadOnly)
+                    {
+                        <a asp-action="Edit" asp-route-id="@r.RoomNo">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@r.RoomNo">Delete</a>
+                    }
                 </td>
             </tr>
                         }

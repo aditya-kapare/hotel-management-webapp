@@ -1,6 +1,6 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Room;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
-using HotelManagement.WebApp.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.WebApp.Controllers
@@ -14,31 +14,52 @@ namespace HotelManagement.WebApp.Controllers
             _admin = admin;
         }
 
-        // Common: Admin + Receptionist
-        //public async Task<IActionResult> Index(string? type)
-        //{
-        //    var rooms = string.IsNullOrEmpty(type)
-        //        ? await _admin.Rooms.GetAllAsync()
-        //        : Enum.TryParse<RoomType>(type, out var parsed)
-        //            ? await _admin.Rooms.GetByTypeAsync(parsed)
-        //            : await _admin.Rooms.GetAllAsync();
 
-        //    // Prepare UI data (no enum exposure to view)
-        //    ViewBag.RoomTypes = rooms
-        //        .Select(r => r.RoomType.ToString())
-        //        .Distinct()
-        //        .ToList();
+        [HttpGet("/rooms")]
+        [Authorize(Roles = "Admin,Receptionist")]
+        public async Task<IActionResult> PublicIndex(
+            string? type,
+            string? acOption,
+            string? cleanStatus,
+            string? availabilityStatus)
+        {
+            return await IndexInternal(
+                type,
+                acOption,
+                cleanStatus,
+                availabilityStatus,
+                isAdmin: false
+            );
+        }
 
-        //    ViewBag.SelectedType = type;
 
-        //    return View(rooms);
-        //}
+        [HttpGet("/admin/rooms")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminIndex(
+            string? type,
+            string? acOption,
+            string? cleanStatus,
+            string? availabilityStatus)
+        {
+            return await IndexInternal(
+                type,
+                acOption,
+                cleanStatus,
+                availabilityStatus,
+                isAdmin: true
+            );
+        }
 
-        public async Task<IActionResult> Index(
-        string? type,
-        string? acOption,
-        string? cleanStatus,
-        string? availabilityStatus)
+        /* =========================================================
+           SHARED LOGIC (NO DUPLICATION)
+           ========================================================= */
+
+        private async Task<IActionResult> IndexInternal(
+            string? type,
+            string? acOption,
+            string? cleanStatus,
+            string? availabilityStatus,
+            bool isAdmin)
         {
             var rooms = await _admin.Rooms.GetAllAsync();
 
@@ -56,15 +77,24 @@ namespace HotelManagement.WebApp.Controllers
 
             PrepareFilters(rooms, type, acOption, cleanStatus, availabilityStatus);
 
-            return View(rooms);
+            ViewBag.IsReadOnly = !isAdmin;
+
+            return View("Index", rooms);
         }
-        // Admin only
+
+        /* =========================================================
+           ADMIN‑ONLY ACTIONS
+           ========================================================= */
+
+        [HttpGet("/admin/rooms/create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("/admin/rooms/create")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateRoomRequest request)
         {
@@ -72,29 +102,30 @@ namespace HotelManagement.WebApp.Controllers
                 return View(request);
 
             await _admin.Rooms.CreateAsync(request);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminIndex));
         }
 
-        // Admin only
+        [HttpGet("/admin/rooms/edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var room = await _admin.Rooms.GetByRoomNoAsync(id);
             if (room == null) return NotFound();
 
-            var model = new UpdateRoomRequest
+            ViewBag.RoomNo = id;
+
+            return View(new UpdateRoomRequest
             {
                 RoomType = room.RoomType,
                 AcOption = room.AcOption,
                 AvailabilityStatus = room.AvailabilityStatus,
                 CleanStatus = room.CleanStatus,
                 Price = room.Price
-            };
-
-            ViewBag.RoomNo = id;
-            return View(model);
+            });
         }
 
-        [HttpPost]
+        [HttpPost("/admin/rooms/edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UpdateRoomRequest request)
         {
@@ -105,10 +136,11 @@ namespace HotelManagement.WebApp.Controllers
             }
 
             await _admin.Rooms.UpdateAsync(id, request);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminIndex));
         }
 
-        // Admin only
+        [HttpGet("/admin/rooms/delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var room = await _admin.Rooms.GetByRoomNoAsync(id);
@@ -117,20 +149,21 @@ namespace HotelManagement.WebApp.Controllers
             return View(room);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("/admin/rooms/delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _admin.Rooms.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminIndex));
         }
 
         private void PrepareFilters(
-         IEnumerable<RoomDto> rooms,
-         string? type,
-         string? acOption,
-         string? cleanStatus,
-         string? availabilityStatus)
+            IEnumerable<RoomDto> rooms,
+            string? type,
+            string? acOption,
+            string? cleanStatus,
+            string? availabilityStatus)
         {
             ViewBag.RoomTypes = rooms
                 .Select(r => r.RoomType.ToString())
