@@ -14,52 +14,11 @@ namespace HotelManagement.WebApp.Controllers
             _admin = admin;
         }
 
-
-        [HttpGet("/rooms")]
-        [Authorize(Roles = "Admin,Receptionist")]
-        public async Task<IActionResult> PublicIndex(
-            string? type,
-            string? acOption,
-            string? cleanStatus,
-            string? availabilityStatus)
-        {
-            return await IndexInternal(
-                type,
-                acOption,
-                cleanStatus,
-                availabilityStatus,
-                isAdmin: false
-            );
-        }
-
-
-        [HttpGet("/admin/rooms")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AdminIndex(
-            string? type,
-            string? acOption,
-            string? cleanStatus,
-            string? availabilityStatus)
-        {
-            return await IndexInternal(
-                type,
-                acOption,
-                cleanStatus,
-                availabilityStatus,
-                isAdmin: true
-            );
-        }
-
-        /* =========================================================
-           SHARED LOGIC (NO DUPLICATION)
-           ========================================================= */
-
-        private async Task<IActionResult> IndexInternal(
-            string? type,
-            string? acOption,
-            string? cleanStatus,
-            string? availabilityStatus,
-            bool isAdmin)
+        public async Task<IActionResult> Index(
+        string? type,
+        string? acOption,
+        string? cleanStatus,
+        string? availabilityStatus)
         {
             var rooms = await _admin.Rooms.GetAllAsync();
 
