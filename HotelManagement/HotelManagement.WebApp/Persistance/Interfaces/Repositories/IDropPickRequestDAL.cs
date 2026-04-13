@@ -13,5 +13,6 @@ namespace HotelManagement.WebApp.Persistance.Interfaces.Repositories
         Task<bool> AddRequestAsync(DropPickRequest request);
         Task<bool> UpdateRequestAsync(DropPickRequest request);
         Task<bool> DeleteRequestAsync(int requestId);
+        Task<IEnumerable<CabDriver>> GetAvailableDriversAsync();
     }
 }

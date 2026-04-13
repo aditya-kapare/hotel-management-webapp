@@ -5,6 +5,46 @@
     ViewData["Title"] = "Rooms";
 }
 
+
+
+@functions {
+    string FormatRoomType(string value)
+    {
+        // Option A: space before capital letters
+        return System.Text.RegularExpressions.Regex
+            .Replace(value, "(\\B[A-Z])", " $1");
+
+        // Examples:
+        // SingleBed   -> Single Bed
+        // SemiDeluxe  -> Semi Deluxe
+    }
+}
+@functions {
+
+    string FormatEnumText(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return value;
+
+        // ✅ Explicit handling for AC / NonAC
+        if (value.Equals("AC", StringComparison.OrdinalIgnoreCase))
+            return "AC";
+
+        if (value.Equals("NonAC", StringComparison.OrdinalIgnoreCase) ||
+            value.Equals("NonAc", StringComparison.OrdinalIgnoreCase))
+            return "Non AC";
+
+        // ✅ Default: split PascalCase words
+        // SingleBed   -> Single Bed
+        // SemiDeluxe  -> Semi Deluxe
+        return System.Text.RegularExpressions.Regex
+            .Replace(value, "(?<=[a-z])([A-Z])", " $1");
+    }
+}
+
+
+
+
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -12,27 +52,95 @@
         <a asp-action="Create" class="btn btn-primary">Add Room</a>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+ @*    <form method="get" class="row g-2 mb-3">
         <div class="col-md-4">
-            <select name="type"
-                    class="form-select"
-                    asp-items="Html.GetEnumSelectList<RoomType>()">
+            <select name="type" class="form-select">
                 <option value="">All Room Types</option>
+
+                @foreach (var rt in ViewBag.RoomTypes)
+                {
+                    <option value="@rt" selected="@(ViewBag.SelectedType == rt)">
+                        @FormatRoomType(rt)
+                    </option>
+                }
             </select>
+
         </div>
         <div class="col-md-2">
             <button class="btn btn-outline-secondary w-100">Filter</button>
         </div>
-    </form>
+    </form> *@
 
+    <form method="get" class="row g-2 mb-3">
+
+        <!-- Room Type -->
+        <div class="col-md-3">
+            <select name="type" class="form-select">
+                <option value="">All Room Types</option>
+                @foreach (var rt in ViewBag.RoomTypes)
+                {
+                    <option value="@rt" selected="@(ViewBag.SelectedType == rt)">
+                        @FormatEnumText(rt)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- AC Option -->
+        <div class="col-md-2">
+            <select name="acOption" class="form-select">
+                <option value="">All AC Options</option>
+                @foreach (var ac in ViewBag.AcOptions)
+                {
+                    <option value="@ac" selected="@(ViewBag.SelectedAc == ac)">
+                        @FormatEnumText(ac)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Clean Status -->
+        <div class="col-md-2">
+            <select name="cleanStatus" class="form-select">
+                <option value="">All Cleanliness</option>
+                @foreach (var cs in ViewBag.CleanStatuses)
+                {
+                    <option value="@cs" selected="@(ViewBag.SelectedClean == cs)">
+                        @cs
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Availability Status -->
+        <div class="col-md-3">
+            <select name="availabilityStatus" class="form-select">
+                <option value="">All Availability</option>
+                @foreach (var av in ViewBag.AvailabilityStatuses)
+                {
+                    <option value="@av" selected="@(ViewBag.SelectedAvailability == av)">
+                        @av
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100">
+                Filter
+            </button>
+        </div>
+
+    </form>
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-light">
             <tr>
                 <th>Room No</th>
                 <th>Type</th>
                 <th>AC</th>
-                <th>Status</th>
-                <th>Clean</th>
+                <th>Availability Status</th>
+                <th>Cleanliness status</th>
                 <th class="text-end">Price</th>
                 <th class="text-center">Actions</th>
             </tr>
@@ -42,8 +150,8 @@
             {
                 <tr>
                     <td>@r.RoomNo</td>
-                    <td>@r.RoomType</td>
-                    <td>@r.AcOption</td>
+                    <td>@FormatEnumText(r.RoomType.ToString())</td>
+                    <td>@FormatEnumText(r.AcOption.ToString())</td>
                     <td>
                         <span class="badge @(r.AvailabilityStatus.ToString() == "Available"
                                                       ? "bg-success" : "bg-danger")">

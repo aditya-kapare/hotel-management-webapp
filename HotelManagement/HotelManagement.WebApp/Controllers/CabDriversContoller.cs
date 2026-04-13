@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace HotelManagement.WebApp.Controllers.Admin
 {
     [Route("admin/cabdrivers")]
@@ -39,7 +40,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
                 string carVendor,
                 string carType)
             {
-                var request = new CreateCabDriverRequest
+                var request = new CabDriverRequest
                 {
                     Name = name,
                     Age = age,
@@ -65,7 +66,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
             var driver = await _admin.Drivers.GetByIdAsync(driverId);
             if (driver is null) return NotFound();
 
-            var model = new UpdateCabDriverRequest
+            var model = new CabDriverRequest
             {
                 Name = driver.Name,
                 Age = driver.Age,
@@ -80,7 +81,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
 
         // ✅ m. Update driver details (POST)
         [HttpPost("edit/{driverId}")]
-        public async Task<IActionResult> Edit(int driverId, UpdateCabDriverRequest request)
+        public async Task<IActionResult> Edit(int driverId, CabDriverRequest request)
         {
             if (!ModelState.IsValid)
             {

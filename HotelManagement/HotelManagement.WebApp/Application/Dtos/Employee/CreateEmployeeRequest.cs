@@ -12,5 +12,6 @@ namespace HotelManagement.WebApp.Application.Dtos.Employee
         public decimal Salary { get; init; }
         public string MobileNo { get; init; } = string.Empty;
         public string? EmailId { get; init; }
+        public string Password { get; init; } = string.Empty;
     }
 }

@@ -10,7 +10,7 @@ namespace HotelManagementSystem.Data
         {
         }
 
-        public DbSet<Employee> Employees { get; set; }
+        //public DbSet<Employee> Employees { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Stay> Stays { get; set; }
@@ -22,8 +22,8 @@ namespace HotelManagementSystem.Data
             base.OnModelCreating(modelBuilder);
 
             // Employee: string PK
-            modelBuilder.Entity<Employee>()
-                        .HasKey(e => e.AadharNo);
+            //modelBuilder.Entity<Employee>()
+            //            .HasKey(e => e.AadharNo);
 
             // Room: PK by convention if RoomNo is int and named RoomNo
             modelBuilder.Entity<Room>()
@@ -62,9 +62,9 @@ namespace HotelManagementSystem.Data
                         .OnDelete(DeleteBehavior.Restrict);
 
             // Optional but very useful: decimal precision for money
-            modelBuilder.Entity<Employee>()
-                        .Property(e => e.Salary)
-                        .HasPrecision(18, 2);
+            //modelBuilder.Entity<Employee>()
+            //            .Property(e => e.Salary)
+            //            .HasPrecision(18, 2);
 
             modelBuilder.Entity<Room>()
                         .Property(r => r.Price)

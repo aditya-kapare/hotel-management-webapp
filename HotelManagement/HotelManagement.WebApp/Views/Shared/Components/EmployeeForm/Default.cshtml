@@ -16,13 +16,12 @@
 
         <div class="row g-3 mb-4">
 
-            <!-- ✅ AADHAAR FIELD (CREATE vs EDIT HANDLED) -->
+            <!-- Aadhaar -->
             <div class="col-md-3">
                 <label class="form-label">Aadhaar</label>
 
                 @if (!isEdit)
                 {
-                    <!-- ✅ CREATE: editable & posted -->
                     <input class="form-control"
                            name="AadharNo"
                            value="@aadharValue"
@@ -31,7 +30,6 @@
                 }
                 else
                 {
-                    <!-- ✅ EDIT: readonly, not posted -->
                     <input class="form-control"
                            value="@ViewBag.AadharNo"
                            readonly />
@@ -42,7 +40,8 @@
                 <label class="form-label">Name</label>
                 <input name="Name"
                        class="form-control"
-                       value="@(m?.Name ?? "")" />
+                       value="@(m?.Name ?? "")"
+                       required />
             </div>
 
             <div class="col-md-3">
@@ -86,7 +85,8 @@
                 <label class="form-label">Mobile</label>
                 <input name="MobileNo"
                        class="form-control"
-                       value="@(m?.MobileNo ?? "")" />
+                       value="@(m?.MobileNo ?? "")"
+                       required />
             </div>
 
             <div class="col-md-4">
@@ -97,6 +97,25 @@
             </div>
 
         </div>
+
+        @* ✅ PASSWORD — CREATE ONLY *@
+        @if (!isEdit)
+        {
+            <hr />
+
+            <h6 class="fw-bold text-warning mb-3">Login Credentials</h6>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Password</label>
+                    <input type="password"
+                           name="Password"
+                           class="form-control"
+                           placeholder="Set initial password"
+                           required />
+                </div>
+            </div>
+        }
 
     </div>
 </div>
