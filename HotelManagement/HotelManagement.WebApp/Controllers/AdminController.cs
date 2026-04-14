@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.WebApp.Controllers.Admin
 {
     [Route("admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
             [HttpGet("home")]
