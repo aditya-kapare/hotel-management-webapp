@@ -16,7 +16,6 @@ namespace HotelManagement.WebApp.Controllers.Admin
             _admin = admin;
         }
 
-        // ✅ k. View all cab drivers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -24,14 +23,12 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View(drivers);
         }
 
-            // ✅ CREATE PAGE
             [HttpGet("create")]
             public IActionResult Create()
             {
                 return View();
             }
 
-            // ✅ CREATE POST (NO antiforgery)
             [HttpPost("create")]
             public async Task<IActionResult> Create(
                 string name,
@@ -54,12 +51,10 @@ namespace HotelManagement.WebApp.Controllers.Admin
                 // ✅ Success message
                 TempData["SuccessMessage"] = "Cab driver added successfully";
 
-                // ✅ Go back to list page
                 return RedirectToAction(nameof(Index));
             }
         
 
-    // ✅ m. Update driver details (GET)
     [HttpGet("edit/{driverId}")]
         public async Task<IActionResult> Edit(int driverId)
         {
@@ -79,7 +74,6 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View(model);
         }
 
-        // ✅ m. Update driver details (POST)
         [HttpPost("edit/{driverId}")]
         public async Task<IActionResult> Edit(int driverId, CabDriverRequest request)
         {
@@ -93,7 +87,6 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return RedirectToAction(nameof(Index));
         }
 
-        // ✅ DELETE (GET – confirmation)
         [HttpGet("delete/{driverId}")]
         public async Task<IActionResult> Delete(int driverId)
         {
@@ -103,7 +96,6 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View(driver);
         }
 
-        // ✅ DELETE (POST)
         [HttpPost("delete/{driverId}")]
         public async Task<IActionResult> DeleteConfirmed(int driverId)
         {

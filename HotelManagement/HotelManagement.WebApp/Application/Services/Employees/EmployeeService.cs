@@ -61,9 +61,10 @@ namespace HotelManagement.WebApp.Application.Services
             return EmployeeMapping.ToDetailsDto(entity);
         }
 
-        public async Task<EmployeeDetailsDto> UpdateAsync(string aadharNo, UpdateEmployeeRequest request)
+        public async Task<EmployeeDetailsDto> UpdateAsync( string aadharNo, UpdateEmployeeRequest request)
         {
-            if (request is null) throw new ArgumentNullException(nameof(request));
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
 
             aadharNo = NormalizeAadhar(aadharNo);
             if (string.IsNullOrWhiteSpace(aadharNo))
@@ -72,13 +73,18 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            var entity = EmployeeMapping.Apply(aadharNo, normalized);
+            var existing = await _employeeDal.GetEmployeeByAadharAsync(aadharNo);
+            if (existing == null)
+            {
+                throw new KeyNotFoundException(
+                    $"Employee with Aadhar '{aadharNo}' was not found.");
+            }
 
-            var updated = await _employeeDal.UpdateEmployeeAsync(entity);
-            if (!updated)
-                throw new KeyNotFoundException($"Employee with Aadhar '{aadharNo}' was not found.");
+            EmployeeMapping.Apply(existing, normalized);
 
-            return EmployeeMapping.ToDetailsDto(entity);
+            await _employeeDal.UpdateEmployeeAsync(existing);
+
+            return EmployeeMapping.ToDetailsDto(existing);
         }
 
         public async Task<bool> DeleteAsync(string aadharNo)
@@ -89,7 +95,6 @@ namespace HotelManagement.WebApp.Application.Services
             return await _employeeDal.DeleteEmployeeByAadharAsync(aadharNo);
         }
 
-        // ---- helpers unchanged ----
         private static string NormalizeAadhar(string aadharNo)
             => (aadharNo ?? string.Empty).Trim();
 
