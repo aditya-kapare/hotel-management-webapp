@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.WebApp.Controllers
 {
-    [Authorize(Roles = "Receptionist")]
+    //[Authorize(Roles = "Receptionist")]
     [Route("stays")]
     public sealed class StaysController : Controller
     {
