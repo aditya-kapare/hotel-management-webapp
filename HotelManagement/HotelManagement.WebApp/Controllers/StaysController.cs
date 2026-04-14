@@ -127,5 +127,89 @@ namespace HotelManagement.WebApp.Controllers
             await _stayService.Stays.CheckOutAsync(stayId, request);
             return RedirectToAction("Index");
         }
+
+        // --------------------------------------------------
+        // CHECK-IN CUSTOMER (GET)
+        // --------------------------------------------------
+        [HttpGet("checkin")]
+        public async Task<IActionResult> CheckIn(string? identityId)
+        {
+            var model = new CheckInStayViewModel
+            {
+                CheckInAt = DateTime.Now
+            };
+
+            // Case 1: coming from Customers list
+            if (!string.IsNullOrWhiteSpace(identityId))
+            {
+                var customer = await _stayService.Customers
+                    .GetByIdentityIdAsync(identityId);
+
+                if (customer == null)
+                    return NotFound();
+
+                model.CustomerIdentityId = customer.IdentityId;
+                model.CustomerFound = true;
+            }
+
+            return View(model);
+        }
+
+        // --------------------------------------------------
+        // CHECK-IN CUSTOMER (POST)
+        // --------------------------------------------------
+        [HttpPost("checkin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckIn(CheckInStayViewModel model, string action)
+        {
+            // -------------------------------
+            // SEARCH CUSTOMER
+            // -------------------------------
+            if (action == "search")
+            {
+                if (string.IsNullOrWhiteSpace(model.SearchIdentityId))
+                {
+                    ModelState.AddModelError("", "Please enter Identity ID");
+                    return View(model);
+                }
+
+                var customer = await _stayService.Customers
+                    .GetByIdentityIdAsync(model.SearchIdentityId);
+
+                if (customer == null)
+                {
+                    ModelState.AddModelError("", "Customer not found");
+                    return View(model);
+                }
+
+                model.CustomerIdentityId = customer.IdentityId;
+                model.CustomerFound = true;
+                if (model.CheckInAt == null)
+                {
+                    model.CheckInAt = DateTime.Now;
+                }
+
+                return View(model);
+            }
+
+            // -------------------------------
+            // FINAL CHECK-IN
+            // -------------------------------
+            if (!ModelState.IsValid || !model.CustomerFound)
+                return View(model);
+
+            var request = new CheckInRequest
+            {
+                CustomerIdentityId = model.CustomerIdentityId!,
+                RoomNo = model.RoomNo,
+                CheckInAt = model.CheckInAt,
+                DepositPaid = model.DepositPaid
+            };
+
+            await _stayService.Stays.CheckInAsync(request);
+
+            return RedirectToAction("Index");
+        }
+
     }
 }   

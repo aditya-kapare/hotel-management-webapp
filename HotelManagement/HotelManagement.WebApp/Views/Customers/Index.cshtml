@@ -1,0 +1,129 @@
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Customers.CustomerDto>
+@using HotelManagement.WebApp.Domain.Enums
+
+@{
+    ViewData["Title"] = "Customers";
+}
+
+@functions {
+    string FormatEnumText(string value)
+    {
+        return System.Text.RegularExpressions.Regex
+            .Replace(value, "(?<!^)([A-Z])", " $1");
+    }
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Customers</h3>
+        <a asp-action="Create" class="btn btn-primary">
+            Add Customer
+        </a>
+    </div>
+
+    <!-- FILTER FORM -->
+    <form method="get" class="row g-2 mb-3">
+
+        <!-- Identity Type -->
+        <div class="col-md-3">
+            <select name="identityType" class="form-select">
+                <option value="">All ID Types</option>
+                @foreach (var it in ViewBag.IdentityTypes)
+                {
+                    <option value="@it"
+                            selected="@(ViewBag.SelectedIdentityType == it)">
+                        @FormatEnumText(it)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Gender -->
+        <div class="col-md-2">
+            <select name="gender" class="form-select">
+                <option value="">All Genders</option>
+                @foreach (var g in ViewBag.Genders)
+                {
+                    <option value="@g"
+                            selected="@(ViewBag.SelectedGender == g)">
+                        @g
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Country -->
+        <div class="col-md-3">
+            <select name="country" class="form-select">
+                <option value="">All Countries</option>
+                @foreach (var c in ViewBag.Countries)
+                {
+                    <option value="@c"
+                            selected="@(ViewBag.SelectedCountry == c)">
+                        @c
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- Identity ID -->
+        <div class="col-md-2">
+            <input name="identityId"
+                   class="form-control"
+                   placeholder="Search ID" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100">
+                Filter
+            </button>
+        </div>
+
+    </form>
+
+    <!-- TABLE -->
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID Type</th>
+                <th>ID Number</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Gender</th>
+                <th>Country</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@FormatEnumText(c.IdentityIdType.ToString())</td>
+                    <td>@c.IdentityId</td>
+                    <td>@c.Name</td>
+                    <td>@c.MobileNo</td>
+                    <td>@c.Gender</td>
+                    <td>@c.Country</td>
+                    <td class="text-center">
+                        <a asp-action="Edit"
+                           asp-route-id="@c.IdentityId">Edit</a>
+                        |
+                        <a asp-controller="Stays"
+                           asp-action="CheckIn"
+                           asp-route-identityId="@c.IdentityId">
+                            Check‑In
+                        </a>
+                        |
+                        <a asp-controller="CabService"
+                           asp-action="Create"
+                           asp-route-identityId="@c.IdentityId">
+                            Cab
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
