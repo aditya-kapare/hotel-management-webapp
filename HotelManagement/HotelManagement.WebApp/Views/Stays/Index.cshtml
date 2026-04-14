@@ -1,0 +1,50 @@
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Stays.StayDto>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4 class="fw-bold">Active Stays</h4>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Customer ID</th>
+                <th>Room No</th>
+                <th>Check‑In At</th>
+                <th>Amount Paid</th>
+                <th>Pending Amount</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var stay in Model)
+            {
+                <tr>
+                    <td>@stay.CustomerIdentityId</td>
+                    <td>@stay.RoomNo</td>
+                    <td>@stay.CheckInAt</td>
+                    <td>@stay.AmountPaid</td>
+                    <td>@stay.PendingAmount</td>
+                    <td class="text-center">
+                        <a href="/stays/edit/@stay.StayId"
+                           class="btn btn-sm btn-info">
+                            Edit
+                        </a>
+
+                        <a href="/stays/checkout/@stay.StayId"
+                           class="btn btn-sm btn-danger ms-2">
+                            Check‑Out
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a href="/stays" class="btn btn-secondary mt-3">
+        ← Back
+    </a>
+
+</div>
