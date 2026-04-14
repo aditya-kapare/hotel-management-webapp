@@ -1,0 +1,51 @@
+﻿@model HotelManagement.WebApp.ViewModels.Stays.UpdateStayViewModel
+
+@{
+    ViewData["Title"] = "Update Stay Details";
+}
+
+<h2>Update Checked-In Customer</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="StayId" />
+
+    <div class="form-group">
+        <label asp-for="CustomerIdentityId"></label>
+        <input asp-for="CustomerIdentityId" class="form-control" />
+        <span asp-validation-for="CustomerIdentityId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RoomNo"></label>
+        <input asp-for="RoomNo" class="form-control" />
+        <span asp-validation-for="RoomNo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CheckInAt"></label>
+        <input asp-for="CheckInAt" type="datetime-local" class="form-control" />
+        <span asp-validation-for="CheckInAt" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AmountPaid"></label>
+        <input asp-for="AmountPaid" class="form-control" />
+        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PendingAmount"></label>
+        <input asp-for="PendingAmount" class="form-control" />
+        <span asp-validation-for="PendingAmount" class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Update
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancel
+    </a>
+</form>

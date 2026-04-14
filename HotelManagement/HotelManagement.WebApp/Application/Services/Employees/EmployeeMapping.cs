@@ -42,20 +42,24 @@ namespace HotelManagement.WebApp.Application.Services.Employees
             EmailConfirmed = true
         };
 
-        internal static ApplicationEmployee Apply(string aadharNo, UpdateEmployeeRequest r)
+        internal static void Apply(ApplicationEmployee existing, UpdateEmployeeRequest r)
         {
-            return new ApplicationEmployee
+            if (existing == null)
+                throw new ArgumentNullException(nameof(existing));
+
+            existing.Name = r.Name;
+            existing.Age = r.Age;
+            existing.Gender = r.Gender;
+            existing.EmployeePosition = r.EmployeePosition;
+            existing.Salary = r.Salary;
+            existing.MobileNo = r.MobileNo;
+
+            if (!string.IsNullOrWhiteSpace(r.EmailId) &&
+                !string.Equals(existing.EmailId, r.EmailId, StringComparison.OrdinalIgnoreCase))
             {
-                AadharNo = aadharNo,
-                Name = r.Name,
-                Age = r.Age,
-                Gender = r.Gender,
-                EmployeePosition = r.EmployeePosition,
-                Salary = r.Salary,
-                MobileNo = r.MobileNo,
-                EmailId = r.EmailId,
-                UserName = r.EmailId ?? aadharNo
-            };
+                existing.EmailId = r.EmailId;
+                existing.UserName = r.EmailId; // Only update when email actually changes
+            }
         }
     }
 }
