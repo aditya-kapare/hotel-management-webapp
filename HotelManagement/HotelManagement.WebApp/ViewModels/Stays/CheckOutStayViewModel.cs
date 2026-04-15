@@ -10,6 +10,8 @@ namespace HotelManagement.WebApp.ViewModels.Stays
 
         [Display(Name = "Customer Identity ID")]
         public string CustomerIdentityId { get; set; } = string.Empty;
+        public string? CustomerName { get; set; }
+        public string? MobileNo { get; set; }
 
         [Display(Name = "Room Number")]
         public int RoomNo { get; set; }

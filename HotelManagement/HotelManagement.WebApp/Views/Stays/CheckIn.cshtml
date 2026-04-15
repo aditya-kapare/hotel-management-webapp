@@ -1,75 +1,61 @@
 ﻿@model HotelManagement.WebApp.ViewModels.Stays.CheckInStayViewModel
 
 <div class="container mt-4">
-    <h3>Customer Check-In</h3>
+    <h3>Customer Check‑In</h3>
 
     <form method="post" class="row g-3">
 
-        @* CUSTOMER SEARCH *@
-        @if (!Model.CustomerFound)
+        <!-- CUSTOMER INFO (READ‑ONLY) -->
+        <div class="col-md-6">
+            <label class="form-label">Customer Identity ID</label>
+            <input asp-for="CustomerIdentityId"
+                   class="form-control"
+                   readonly />
+        </div>
+
+        @* Optional display *@
+        @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
         {
             <div class="col-md-6">
-                <label class="form-label">Search Customer (Identity ID)</label>
-                <input asp-for="SearchIdentityId" class="form-control" />
-            </div>
-
-            <div class="col-md-3 align-self-end">
-                <button type="submit"
-                        name="action"
-                        value="search"
-                        class="btn btn-outline-primary">
-                    Search
-                </button>
-            </div>
-
-            <div class="col-12">
-                <a asp-controller="Customers"
-                   asp-action="Create">
-                    Customer not found? Add new customer
-                </a>
-            </div>
-        }
-
-        @* STAY DETAILS *@
-        @if (Model.CustomerFound)
-        {
-            <div class="col-md-6">
-                <label class="form-label">Customer Identity ID</label>
-                <input asp-for="CustomerIdentityId"
+                <label class="form-label">Customer Name</label>
+                <input value="@Model.CustomerName"
                        class="form-control"
                        readonly />
             </div>
-
-            <div class="col-md-6">
-                <label asp-for="RoomNo" class="form-label"></label>
-                <input asp-for="RoomNo" class="form-control" />
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="CheckInAt" class="form-label"></label>
-                <input asp-for="CheckInAt"
-                       type="datetime-local"
-                       class="form-control" />
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="DepositPaid" class="form-label"></label>
-                <input asp-for="DepositPaid" class="form-control" />
-            </div>
-
-            <div class="col-12">
-                <button type="submit"
-                        name="action"
-                        value="checkin"
-                        class="btn btn-success">
-                    Check In
-                </button>
-                <a asp-action="Index"
-                   class="btn btn-secondary ms-2">
-                    Cancel
-                </a>
-            </div>
         }
+
+        <!-- STAY DETAILS -->
+        <div class="col-md-6">
+            <label asp-for="RoomNo" class="form-label"></label>
+            <input asp-for="RoomNo" class="form-control" />
+            <span asp-validation-for="RoomNo" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="CheckInAt" class="form-label"></label>
+            <input asp-for="CheckInAt"
+                   type="datetime-local"
+                   class="form-control" />
+            <span asp-validation-for="CheckInAt" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="DepositPaid" class="form-label"></label>
+            <input asp-for="DepositPaid" class="form-control" />
+            <span asp-validation-for="DepositPaid" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <button type="submit"
+                    class="btn btn-success">
+                Check In
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary ms-2">
+                Cancel
+            </a>
+        </div>
 
     </form>
 </div>

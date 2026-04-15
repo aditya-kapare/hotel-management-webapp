@@ -26,9 +26,30 @@ namespace HotelManagement.WebApp.Controllers
 
         // List page
         [HttpGet("list")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+    string? customer,
+    int? roomNo)
         {
             var stays = await _stayService.Stays.GetAllAsync();
+
+            if (!string.IsNullOrWhiteSpace(customer))
+            {
+                customer = customer.Trim().ToLower();
+
+                stays = stays.Where(s =>
+                    s.CustomerIdentityId.ToLower().Contains(customer) ||
+                    s.CustomerName.ToLower().Contains(customer)
+                ).ToList();
+            }
+
+            if (roomNo.HasValue)
+            {
+                stays = stays.Where(s => s.RoomNo == roomNo.Value).ToList();
+            }
+
+            ViewBag.Customer = customer;
+            ViewBag.RoomNo = roomNo;
+
             return View(stays);
         }
 
@@ -42,11 +63,12 @@ namespace HotelManagement.WebApp.Controllers
             if (stay is null)
                 return NotFound();
 
-            // Domain → ViewModel
             var model = new UpdateStayViewModel
             {
                 StayId = stay.StayId,
                 CustomerIdentityId = stay.CustomerIdentityId,
+                CustomerName = stay.CustomerName,
+                MobileNo = stay.MobileNo,
                 RoomNo = stay.RoomNo,
                 CheckInAt = stay.CheckInAt,
                 AmountPaid = stay.AmountPaid,
@@ -96,6 +118,8 @@ namespace HotelManagement.WebApp.Controllers
             {
                 StayId = stay.StayId,
                 CustomerIdentityId = stay.CustomerIdentityId,
+                CustomerName = stay.CustomerName,
+                MobileNo = stay.MobileNo,
                 RoomNo = stay.RoomNo,
                 CheckInAt = stay.CheckInAt,
                 CheckOutAt = DateTime.Now,
@@ -131,76 +155,40 @@ namespace HotelManagement.WebApp.Controllers
         // --------------------------------------------------
         // CHECK-IN CUSTOMER (GET)
         // --------------------------------------------------
-        [HttpGet("checkin")]
-        public async Task<IActionResult> CheckIn(string? identityId)
+        [HttpGet("checkin/{identityId}")]
+        public async Task<IActionResult> CheckIn(string identityId)
         {
+            var customer = await _stayService.Customers
+                .GetByIdentityIdAsync(identityId);
+
+            if (customer is null)
+                return NotFound();
+
             var model = new CheckInStayViewModel
             {
+                CustomerIdentityId = customer.IdentityId,
+                CustomerName = customer.Name,     
+                MobileNo = customer.MobileNo,
                 CheckInAt = DateTime.Now
             };
-
-            // Case 1: coming from Customers list
-            if (!string.IsNullOrWhiteSpace(identityId))
-            {
-                var customer = await _stayService.Customers
-                    .GetByIdentityIdAsync(identityId);
-
-                if (customer == null)
-                    return NotFound();
-
-                model.CustomerIdentityId = customer.IdentityId;
-                model.CustomerFound = true;
-            }
 
             return View(model);
         }
 
+
         // --------------------------------------------------
         // CHECK-IN CUSTOMER (POST)
         // --------------------------------------------------
-        [HttpPost("checkin")]
+        [HttpPost("checkin/{identityId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CheckIn(CheckInStayViewModel model, string action)
+        public async Task<IActionResult> CheckIn( string identityId, CheckInStayViewModel model)
         {
-            // -------------------------------
-            // SEARCH CUSTOMER
-            // -------------------------------
-            if (action == "search")
-            {
-                if (string.IsNullOrWhiteSpace(model.SearchIdentityId))
-                {
-                    ModelState.AddModelError("", "Please enter Identity ID");
-                    return View(model);
-                }
-
-                var customer = await _stayService.Customers
-                    .GetByIdentityIdAsync(model.SearchIdentityId);
-
-                if (customer == null)
-                {
-                    ModelState.AddModelError("", "Customer not found");
-                    return View(model);
-                }
-
-                model.CustomerIdentityId = customer.IdentityId;
-                model.CustomerFound = true;
-                if (model.CheckInAt == null)
-                {
-                    model.CheckInAt = DateTime.Now;
-                }
-
-                return View(model);
-            }
-
-            // -------------------------------
-            // FINAL CHECK-IN
-            // -------------------------------
-            if (!ModelState.IsValid || !model.CustomerFound)
+            if (!ModelState.IsValid)
                 return View(model);
 
             var request = new CheckInRequest
             {
-                CustomerIdentityId = model.CustomerIdentityId!,
+                CustomerIdentityId = identityId,
                 RoomNo = model.RoomNo,
                 CheckInAt = model.CheckInAt,
                 DepositPaid = model.DepositPaid
@@ -210,6 +198,21 @@ namespace HotelManagement.WebApp.Controllers
 
             return RedirectToAction("Index");
         }
+        // --------------------------------------------------
+        // VIEW STAY DETAILS (GET)
+        // --------------------------------------------------
+        [HttpGet("details/{stayId:int}")]
+        public async Task<IActionResult> ViewDetails(int stayId)
+        {
+            if (stayId <= 0)
+                return BadRequest();
 
+            var stay = await _stayService.Stays.GetByIdAsync(stayId);
+
+            if (stay is null)
+                return NotFound();
+
+            return View(stay);
+        }
     }
 }   
