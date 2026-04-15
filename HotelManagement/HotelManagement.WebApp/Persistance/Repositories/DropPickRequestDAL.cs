@@ -17,27 +17,44 @@ namespace HotelManagementSystem.DAL
 
         public async Task<IEnumerable<DropPickRequest>> GetAllRequestsAsync()
         {
-            return await _context.DropPickRequests.ToListAsync();
+            return await _context.DropPickRequests
+                                    .Include(r => r.CabDriver)
+                                    .Include(r => r.Stay)
+                                        .ThenInclude(s => s.Customer)
+                                    .AsNoTracking()
+                                    .ToListAsync();
         }
 
         public async Task<DropPickRequest?> GetRequestByIdAsync(int requestId)
         {
+
             return await _context.DropPickRequests
+                .Include(r => r.Stay)
+                    .ThenInclude(s => s.Customer)
+                .Include(r => r.CabDriver)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
         }
 
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId)
         {
             return await _context.DropPickRequests
-                .Where(r => r.StayId == stayId)
-                .ToListAsync();
+                                .Where(r => r.StayId == stayId)
+                                .Include(r => r.Stay)
+                                    .ThenInclude(s => s.Customer)
+                                .Include(r => r.CabDriver)
+                                .ToListAsync();
+
         }
 
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId)
         {
             return await _context.DropPickRequests
-                .Where(r => r.DriverId == driverId)
-                .ToListAsync();
+                                .Where(r => r.DriverId == driverId)
+                                .Include(r => r.Stay)
+                                    .ThenInclude(s => s.Customer)
+                                .Include(r => r.CabDriver)
+                                .ToListAsync();
         }
 
         public async Task<IEnumerable<CabDriver>> GetAvailableDriversAsync()
