@@ -1,20 +1,63 @@
 ﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Stays.StayDto>
 
-<div class="container mt-4">
+<style>
+    /* Make table denser */
+    .table.compact-table th,
+    .table.compact-table td {
+        padding: 0.4rem 0.5rem; /* default is ~0.75rem */
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    /* Actions column alignment */
+    .actions-cell .btn {
+        margin-bottom: 2px;
+    }
+</style>
+
+<div class="container-fluid mt-4 px-4">
 
     <div class="d-flex justify-content-between mb-3">
         <h4 class="fw-bold">Active Stays</h4>
     </div>
 
-    <table class="table table-bordered table-hover align-middle">
+    <form method="get" class="row g-2 mb-3">
+
+        <div class="col-md-4">
+            <input name="customer"
+                   value="@ViewBag.Customer"
+                   class="form-control"
+                   placeholder="Search Customer Name / ID" />
+        </div>
+
+        <div class="col-md-2">
+            <input name="roomNo"
+                   value="@ViewBag.RoomNo"
+                   class="form-control"
+                   placeholder="Room No" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100">
+                Search
+            </button>
+        </div>
+
+        <div class="col-md-2">
+            <a asp-action="Index" class="btn btn-outline-danger w-100">
+                Reset
+            </a>
+        </div>
+
+    </form>
+
+    <table class="table table-bordered table-hover align-middle compact-table">
         <thead class="table-dark">
             <tr>
                 <th>Customer ID</th>
+                <th class="col-customer-name">Customer Name</th>
+                <th>Mobile No</th>
                 <th>Room No</th>
-                <th>Check‑In At</th>
-                <th>Amount Paid</th>
-                <th>Pending Amount</th>
-                <th class="text-center">Action</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
 
@@ -23,19 +66,33 @@
             {
                 <tr>
                     <td>@stay.CustomerIdentityId</td>
+                    <td class="col-customer-name">@stay.CustomerName</td>
+                    <td>@stay.MobileNo</td>
                     <td>@stay.RoomNo</td>
-                    <td>@stay.CheckInAt</td>
-                    <td>@stay.AmountPaid</td>
-                    <td>@stay.PendingAmount</td>
-                    <td class="text-center">
-                        <a href="/stays/edit/@stay.StayId"
-                           class="btn btn-sm btn-info">
+                    <td class="text-center actions-cell">
+                        <a asp-action="ViewDetails"
+                           asp-route-stayId="@stay.StayId"
+                           class="btn btn-sm btn-secondary">
+                            View Details
+                        </a>
+
+                        <a asp-action="Edit"
+                           asp-route-stayId="@stay.StayId"
+                           class="btn btn-sm btn-info ms-1">
                             Edit
                         </a>
 
-                        <a href="/stays/checkout/@stay.StayId"
-                           class="btn btn-sm btn-danger ms-2">
+                        <a asp-action="CheckOut"
+                           asp-route-stayId="@stay.StayId"
+                           class="btn btn-sm btn-danger ms-1">
                             Check‑Out
+                        </a>
+
+                        <a asp-controller="CabService"
+                           asp-action="Create"
+                           asp-route-identityId="@stay.CustomerIdentityId"
+                           class="btn btn-sm btn-warning ms-1">
+                            Book Cab
                         </a>
                     </td>
                 </tr>
@@ -43,7 +100,7 @@
         </tbody>
     </table>
 
-    <a href="/stays" class="btn btn-secondary mt-3">
+    <a asp-action="Home" class="btn btn-secondary mt-3">
         ← Back
     </a>
 

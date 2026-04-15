@@ -4,9 +4,10 @@ namespace HotelManagement.WebApp.ViewModels.Stays
 {
     public sealed class CheckInStayViewModel
     {
-        public string? SearchIdentityId { get; set; }
         [Required]
         public string CustomerIdentityId { get; set; } = string.Empty;
+        public string? CustomerName { get; set; }
+        public string? MobileNo { get; set; }
 
         [Required]
         [Display(Name = "Room Number")]
@@ -14,12 +15,10 @@ namespace HotelManagement.WebApp.ViewModels.Stays
 
         [Required]
         [Display(Name = "Check-In Date & Time")]
-        public DateTime? CheckInAt { get; set; } = DateTime.Now;
+        public DateTime CheckInAt { get; set; } = DateTime.Now;
 
         [Required]
         [Display(Name = "Deposit Paid")]
         public decimal DepositPaid { get; set; }
-
-        public bool CustomerFound { get; set; }
     }
 }

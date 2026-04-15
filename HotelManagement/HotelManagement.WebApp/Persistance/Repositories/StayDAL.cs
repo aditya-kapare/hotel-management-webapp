@@ -16,12 +16,14 @@ namespace HotelManagementSystem.DAL
 
         public async Task<IEnumerable<Stay>> GetAllStaysAsync()
         {
-            return await _context.Stays.ToListAsync();
+            return await _context.Stays
+                                 .Include(s => s.Customer).ToListAsync();
         }
 
         public async Task<Stay?> GetStayByIdAsync(int stayId)
         {
             return await _context.Stays
+                .Include(s => s.Customer)
                 .FirstOrDefaultAsync(s => s.StayId == stayId);
         }
 
@@ -29,6 +31,7 @@ namespace HotelManagementSystem.DAL
         {
             return await _context.Stays
                 .Where(s => s.RoomNo == roomNo)
+                .Include(s => s.Customer)
                 .ToListAsync();
         }
 
@@ -36,6 +39,7 @@ namespace HotelManagementSystem.DAL
         {
             return await _context.Stays
                 .Where(s => s.CustomerIdentityId == customerIdentityId)
+                .Include(s => s.Customer)
                 .ToListAsync();
         }
 
@@ -44,6 +48,7 @@ namespace HotelManagementSystem.DAL
             var target = date.Date;
             return await _context.Stays
                 .Where(s => s.CheckInAt.Date == target)
+                .Include(s => s.Customer)
                 .ToListAsync();
         }
 
