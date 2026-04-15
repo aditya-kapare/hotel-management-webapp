@@ -10,7 +10,7 @@
             <small class="text-muted">Register a new employee</small>
         </div>
 
-        <a href="/admin/employees/home" class="btn btn-outline-secondary btn-sm">
+        <a href="/admin/employees/home" class="btn btn-secondary btn-sm">
             ← Back
         </a>
     </div>
@@ -20,11 +20,7 @@
 
         @await Component.InvokeAsync("EmployeeForm", Model)
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-success px-4">
-                Add Employee
-            </button>
-        </div>
+      
 
     </form>
 </div>

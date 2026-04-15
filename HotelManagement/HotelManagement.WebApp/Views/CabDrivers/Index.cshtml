@@ -4,11 +4,81 @@
 
     <div class="d-flex justify-content-between mb-3">
         <h4 class="fw-bold">Cab Drivers</h4>
-
-        <a href="/admin/cabdrivers/create" class="btn btn-primary">
-            + Add Driver
-        </a>
+        <div>
+            <a href="/admin/home" class="btn btn-secondary mt-3">
+                ← Back
+            </a>
+            <a href="/admin/cabdrivers/create" class="btn btn-primary mt-3">
+                + Add Driver
+            </a>
+           
+        </div>
     </div>
+    @using HotelManagement.WebApp.Domain.Enums
+
+    <form method="get" class="row g-3 mb-4 align-items-end">
+
+        <!-- ✅ GENDER FILTER -->
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Gender</label>
+            <select name="gender" class="form-select">
+                <option value="">All</option>
+                @foreach (Gender g in ViewBag.Genders)
+                {
+                    <option value="@( (int)g )"
+                            selected="@(ViewBag.SelectedGender != null && (int)g == ViewBag.SelectedGender)">
+                        @g
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- ✅ CAR VENDOR FILTER -->
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Car Vendor</label>
+            <select name="carVendor" class="form-select">
+                <option value="">All</option>
+                @foreach (var vendor in ViewBag.CarVendors)
+                {
+                    <option value="@vendor"
+                            selected="@(vendor == ViewBag.SelectedCarVendor)">
+                        @vendor
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- ✅ CAR TYPE FILTER -->
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Car Type</label>
+            <select name="carType" class="form-select">
+                <option value="">All</option>
+                @foreach (var type in ViewBag.CarTypes)
+                {
+                    <option value="@type"
+                            selected="@(type == ViewBag.SelectedCarType)">
+                        @type
+                    </option>
+                }
+            </select>
+        </div>
+
+        <!-- ✅ FILTER BUTTON -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                Filter
+            </button>
+        </div>
+
+        <!-- ✅ RESET -->
+        <div class="col-md-1">
+            <a asp-action="Index"
+               class="btn btn-danger w-100">
+                Reset
+            </a>
+        </div>
+
+    </form>
 
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
@@ -47,8 +117,6 @@
         </tbody>
     </table>
 
-    <a href="/admin/home" class="btn btn-secondary mt-3">
-        ← Back
-    </a>
+
 
 </div>
