@@ -1,0 +1,56 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.Stays.StayDto
+
+@{
+    ViewData["Title"] = "Stay Details";
+}
+
+<div class="container mt-4">
+    <h3>Stay Details</h3>
+
+    <div class="card mt-3">
+        <div class="card-body">
+
+            <h5 class="card-title">Customer Information</h5>
+            <p><strong>Customer ID:</strong> @Model.CustomerIdentityId</p>
+            <p><strong>Name:</strong> @Model.CustomerName</p>
+            <p><strong>Mobile No:</strong> @Model.MobileNo</p>
+
+            <hr />
+
+            <h5 class="card-title">Stay Information</h5>
+            <p><strong>Room No:</strong> @Model.RoomNo</p>
+            <p><strong>Check‑In At:</strong> @Model.CheckInAt</p>
+            <p>
+                <strong>Check‑Out At:</strong>
+                @(Model.CheckOutAt?.ToString() ?? "Not checked out yet")
+            </p>
+
+            <hr />
+
+            <h5 class="card-title">Payment Details</h5>
+            <p><strong>Deposit Paid:</strong> @Model.DepositPaid</p>
+            <p><strong>Amount Paid:</strong> @Model.AmountPaid</p>
+            <p><strong>Pending Amount:</strong> @Model.PendingAmount</p>
+
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Edit"
+           asp-route-stayId="@Model.StayId"
+           class="btn btn-info">
+            Edit
+        </a>
+
+        <a asp-action="CheckOut"
+           asp-route-stayId="@Model.StayId"
+           class="btn btn-danger ms-2">
+            Check‑Out
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-secondary ms-2">
+            Back to List
+        </a>
+    </div>
+</div>
