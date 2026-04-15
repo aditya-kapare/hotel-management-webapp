@@ -67,6 +67,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 //This is for test purpose only. It will be removed in production.**************8
 //*****************************Configurations area **********************************
