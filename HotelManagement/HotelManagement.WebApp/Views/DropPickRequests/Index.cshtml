@@ -1,0 +1,93 @@
+﻿@using HotelManagement.WebApp.ViewModels.DropPickRequests
+@model IReadOnlyList<DropPickRequestViewListModel>
+
+@{
+    ViewData["Title"] = "Drop / Pick Requests";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold">Drop / Pick Requests</h4>
+
+        <!-- ✅ CREATE NEW REQUEST BUTTON -->
+        <a asp-controller="DropPickRequests"
+           asp-action="Create"
+           class="btn btn-primary btn-sm">
+            + Create New Request
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Req ID</th>
+                <th>Room No</th>
+                <th>Driver Name</th>
+                <th>Request Type</th>
+                <th>Requested For</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.RequestId</td>
+                    <td>@r.RoomNo</td>
+
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(r.DriverName) &&
+                                            !r.DriverName.StartsWith("Driver #"))
+                        {
+                            @r.DriverName
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not Assigned</span>
+                        }
+                    </td>
+
+                    <td>@r.RequestType</td>
+                    <td>@r.CustomerName</td>
+
+                    <td class="text-center">
+                        @if (r.CanEdit)
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@r.RequestId"
+                               class="btn btn-sm btn-info">
+                                Edit
+                            </a>
+                        }
+
+                        <form asp-action="Delete"
+                              asp-route-id="@r.RequestId"
+                              method="post"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete this request?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["Success"]
+        </div>
+    }
+
+    <a href="/reception/home" class="btn btn-secondary mt-3">
+        ← Back
+    </a>
+
+</div>

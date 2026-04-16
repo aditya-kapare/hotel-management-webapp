@@ -1,0 +1,32 @@
+﻿@model HotelManagement.WebApp.Application.Dtos.DropPickRequests.DropPickRequestDto
+
+@{
+    ViewData["Title"] = "Drop / Pick Details";
+}
+
+<div class="container mt-4">
+
+    <h4 class="fw-bold mb-3">Request Details</h4>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <p><strong>Customer:</strong> @Model.CustomerName</p>
+            <p><strong>Room No:</strong> @Model.RoomNo</p>
+            <p><strong>Driver:</strong> @Model.DriverName</p>
+            <p><strong>Request Type:</strong> @Model.RequestType</p>
+            <p><strong>Requested At:</strong> @Model.RequestedAt</p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Notes))
+            {
+                <p><strong>Notes:</strong> @Model.Notes</p>
+            }
+
+        </div>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-secondary mt-3">
+        ← Back
+    </a>
+</div>

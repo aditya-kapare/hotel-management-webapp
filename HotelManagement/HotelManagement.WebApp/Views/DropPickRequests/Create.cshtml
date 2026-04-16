@@ -1,0 +1,75 @@
+﻿@using HotelManagement.WebApp.ViewModels.DropPickRequests
+@using HotelManagement.WebApp.Domain.Enums
+@model CreateDropPickRequestViewModel
+  
+
+@{
+    ViewData["Title"] = "Create Drop / Pick Request";
+}
+
+<div class="container mt-4">
+    <h4 class="fw-bold mb-3">Create Drop / Pick Request</h4>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="StayId" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3"></div>
+
+        <!-- ✅ CUSTOMER (FROM STAY) -->
+        <div class="mb-3">
+            <label class="form-label">Customer</label>
+            <input class="form-control"
+                   value="@Model.CustomerName"
+                   readonly />
+        </div>
+
+        <!-- ✅ ROOM NO (FROM STAY) -->
+        <div class="mb-3">
+            <label class="form-label">Room No</label>
+            <input class="form-control"
+                   value="@Model.RoomNo"
+                   readonly />
+        </div>
+
+        <!-- ✅ DRIVER NAME DROPDOWN -->
+        <div class="mb-3">
+            <label asp-for="DriverId" class="form-label"></label>
+            <select asp-for="DriverId"
+                    asp-items="ViewBag.Drivers"
+                    class="form-select">
+                <option value="">-- Select Available Driver --</option>
+            </select>
+            <span asp-validation-for="DriverId"
+                  class="text-danger"></span>
+        </div>
+
+        <!-- ✅ REQUEST TYPE -->
+        <div class="mb-3">
+            <label asp-for="RequestType" class="form-label"></label>
+            <select asp-for="RequestType"
+                    asp-items="Html.GetEnumSelectList<RequestType>()"
+                    class="form-select">
+            </select>
+        </div>
+
+        <!-- ✅ NOTES (OPTIONAL) -->
+        <div class="mb-3">
+            <label asp-for="Notes" class="form-label"></label>
+            <textarea asp-for="Notes"
+                      class="form-control"
+                      rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Create Request
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary ms-2">
+            Cancel
+        </a>
+    </form>
+</div>
