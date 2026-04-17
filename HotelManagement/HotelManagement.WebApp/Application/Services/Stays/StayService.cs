@@ -32,6 +32,17 @@ namespace HotelManagement.WebApp.Application.Services
             return stays.Select(StayMapping.ToDto).ToList();
         }
 
+        public async Task<IReadOnlyList<StayDto>> GetActiveAsync()
+        {
+            var stays = await _stayDal.GetAllStaysAsync();
+
+            return stays
+                .Where(s => s.CheckOutAt == null)
+                .Select(StayMapping.ToDto)
+                .ToList();
+        }
+
+
         public async Task<StayDto?> GetByIdAsync(int stayId)
         {
             if (stayId <= 0) return null;

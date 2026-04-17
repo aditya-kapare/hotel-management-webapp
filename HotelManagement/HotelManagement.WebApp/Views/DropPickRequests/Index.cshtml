@@ -10,7 +10,6 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold">Drop / Pick Requests</h4>
 
-        <!-- ✅ CREATE NEW REQUEST BUTTON -->
         <a asp-controller="DropPickRequests"
            asp-action="Create"
            class="btn btn-primary btn-sm">
@@ -21,11 +20,11 @@
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
             <tr>
-                <th>Req ID</th>
+                <th>Request ID</th>
                 <th>Room No</th>
-                <th>Driver Name</th>
-                <th>Request Type</th>
-                <th>Requested For</th>
+                <th>Customer Name</th>
+                <th>Customer No</th>
+                <th>Cab Driver</th>
                 <th class="text-center">Actions</th>
             </tr>
         </thead>
@@ -37,9 +36,12 @@
                     <td>@r.RequestId</td>
                     <td>@r.RoomNo</td>
 
+                    <td>@r.CustomerName</td>
+                    <td>@r.CustomerMobileNo</td>
+
                     <td>
                         @if (!string.IsNullOrWhiteSpace(r.DriverName) &&
-                                            !r.DriverName.StartsWith("Driver #"))
+                                            !r.DriverName.Equals("Unassigned", StringComparison.OrdinalIgnoreCase))
                         {
                             @r.DriverName
                         }
@@ -49,19 +51,25 @@
                         }
                     </td>
 
-                    <td>@r.RequestType</td>
-                    <td>@r.CustomerName</td>
-
                     <td class="text-center">
+                        <!-- VIEW DETAILS -->
+                        <a asp-action="Details"
+                           asp-route-id="@r.RequestId"
+                           class="btn btn-sm btn-secondary me-1">
+                            View
+                        </a>
+
+                        <!-- EDIT -->
                         @if (r.CanEdit)
                         {
                             <a asp-action="Edit"
                                asp-route-id="@r.RequestId"
-                               class="btn btn-sm btn-info">
+                               class="btn btn-sm btn-info me-1">
                                 Edit
                             </a>
                         }
 
+                        <!-- DELETE -->
                         <form asp-action="Delete"
                               asp-route-id="@r.RequestId"
                               method="post"
@@ -89,5 +97,4 @@
     <a href="/reception/home" class="btn btn-secondary mt-3">
         ← Back
     </a>
-
 </div>

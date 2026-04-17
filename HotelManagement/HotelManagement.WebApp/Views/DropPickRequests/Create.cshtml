@@ -1,7 +1,5 @@
-﻿@using HotelManagement.WebApp.ViewModels.DropPickRequests
+﻿@model HotelManagement.WebApp.ViewModels.DropPickRequests.DropPickRequestViewListModel
 @using HotelManagement.WebApp.Domain.Enums
-@model CreateDropPickRequestViewModel
-  
 
 @{
     ViewData["Title"] = "Create Drop / Pick Request";
@@ -10,66 +8,92 @@
 <div class="container mt-4">
     <h4 class="fw-bold mb-3">Create Drop / Pick Request</h4>
 
-    <form asp-action="Create" method="post">
+    <!-- LOAD BY STAY -->
+    <form asp-action="LoadStay" method="post" class="mb-3">
         @Html.AntiForgeryToken()
 
-        <input type="hidden" asp-for="StayId" />
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="StayId" class="form-label">Stay ID</label>
+                <input asp-for="StayId" class="form-control" />
+                <span asp-validation-for="StayId" class="text-danger"></span>
+            </div>
 
-        <div asp-validation-summary="ModelOnly"
-             class="text-danger mb-3"></div>
-
-        <!-- ✅ CUSTOMER (FROM STAY) -->
-        <div class="mb-3">
-            <label class="form-label">Customer</label>
-            <input class="form-control"
-                   value="@Model.CustomerName"
-                   readonly />
+            <div class="col-md-2 align-self-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    Load Stay
+                </button>
+            </div>
         </div>
-
-        <!-- ✅ ROOM NO (FROM STAY) -->
-        <div class="mb-3">
-            <label class="form-label">Room No</label>
-            <input class="form-control"
-                   value="@Model.RoomNo"
-                   readonly />
-        </div>
-
-        <!-- ✅ DRIVER NAME DROPDOWN -->
-        <div class="mb-3">
-            <label asp-for="DriverId" class="form-label"></label>
-            <select asp-for="DriverId"
-                    asp-items="ViewBag.Drivers"
-                    class="form-select">
-                <option value="">-- Select Available Driver --</option>
-            </select>
-            <span asp-validation-for="DriverId"
-                  class="text-danger"></span>
-        </div>
-
-        <!-- ✅ REQUEST TYPE -->
-        <div class="mb-3">
-            <label asp-for="RequestType" class="form-label"></label>
-            <select asp-for="RequestType"
-                    asp-items="Html.GetEnumSelectList<RequestType>()"
-                    class="form-select">
-            </select>
-        </div>
-
-        <!-- ✅ NOTES (OPTIONAL) -->
-        <div class="mb-3">
-            <label asp-for="Notes" class="form-label"></label>
-            <textarea asp-for="Notes"
-                      class="form-control"
-                      rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            Create Request
-        </button>
-
-        <a asp-action="Index"
-           class="btn btn-secondary ms-2">
-            Cancel
-        </a>
     </form>
+
+    <!-- LOAD BY CUSTOMER -->
+    <form asp-action="LoadCustomer" method="post" class="mb-4">
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="CustomerMobileNo" class="form-label">Customer Mobile No</label>
+                <input asp-for="CustomerMobileNo" class="form-control" />
+                <span asp-validation-for="CustomerMobileNo" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-2 align-self-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    Load Customer
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.RoomNo > 0)
+    {
+        <div class="alert alert-info">
+            @if(Model.RoomNo != 0){
+                <p><strong>Room No:</strong> @Model.RoomNo</p>
+            }
+            <p><strong>Customer:</strong> @Model.CustomerName</p>
+            <p><strong>Mobile:</strong> @Model.CustomerMobileNo</p>
+        </div>
+
+        <!-- FINAL CREATE -->
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="StayId" />
+
+            <div class="mb-3">
+                <label asp-for="DriverId" class="form-label">Cab Driver</label>
+                <select asp-for="DriverId"
+                        asp-items="ViewBag.Drivers"
+                        class="form-select">
+                    <option value="">-- Select Driver --</option>
+                </select>
+                <span asp-validation-for="DriverId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="RequestType" class="form-label"></label>
+                <select asp-for="RequestType"
+                        asp-items="Html.GetEnumSelectList<RequestType>()"
+                        class="form-select">
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes"
+                          class="form-control"
+                          rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Create Request
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                Cancel
+            </a>
+        </form>
+    }
 </div>

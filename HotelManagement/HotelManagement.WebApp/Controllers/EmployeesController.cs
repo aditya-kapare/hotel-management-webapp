@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.WebApp.Controllers
 {
-
     [Authorize(Roles = "Admin")]
     [Route("admin/employees")]
     public sealed class EmployeesController : Controller
@@ -17,21 +16,31 @@ namespace HotelManagement.WebApp.Controllers
             _admin = admin;
         }
 
+        // ✅ INDEX : View All | View By Aadhaar | Search
         // GET: /admin/employees
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+        string filterType,
+        string aadharNo,
+        string search)
         {
             var employees = await _admin.Employees.GetAllAsync();
+
+          
+
+            // ✅ SEARCH
+            if (!string.IsNullOrEmpty(search))
+            {
+                employees = employees
+                    .Where(e =>
+                        e.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                        e.MobileNo.Contains(search)||e.AadharNo.Contains(search))
+                    .ToList();
+            }
+
             return View(employees);
         }
-
-        // GET: /admin/employees/home
-        [HttpGet("home")]
-        public IActionResult Home()
-        {
-            return View();
-        }
-
+        // ✅ CREATE
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -50,25 +59,24 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet("ViewById")]
-        public IActionResult ViewById()
-        {
-            return View();
-        }
-
-        [HttpGet("Details")]
+        // ✅ DETAILS
+        [HttpGet("details")]
         public async Task<IActionResult> Details(string aadharNo)
         {
             var employee = await _admin.Employees.GetByAadharAsync(aadharNo);
+            if (employee is null)
+                return NotFound();
+
             return View(employee);
         }
 
-        // EDIT
+        // ✅ EDIT
         [HttpGet("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(string aadharNo)
         {
             var employee = await _admin.Employees.GetByAadharAsync(aadharNo);
-            if (employee is null) return NotFound();
+            if (employee is null)
+                return NotFound();
 
             var model = new UpdateEmployeeRequest
             {
@@ -86,7 +94,9 @@ namespace HotelManagement.WebApp.Controllers
         }
 
         [HttpPost("edit/{aadharNo}")]
-        public async Task<IActionResult> Edit(string aadharNo, UpdateEmployeeRequest request)
+        public async Task<IActionResult> Edit(
+            string aadharNo,
+            UpdateEmployeeRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -98,25 +108,41 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Details), new { aadharNo });
         }
 
-        // DELETE
+        // ✅ DELETE
         [HttpGet("delete/{aadharNo}")]
+       
         public async Task<IActionResult> Delete(string aadharNo)
         {
             var employee = await _admin.Employees.GetByAadharAsync(aadharNo);
-            if (employee is null) return NotFound();
+            if (employee is null)
+                return NotFound();
+
+            // ✅ Capture where the user came from
+            var referer = Request.Headers["Referer"].ToString();
+
+            TempData["ReturnUrl"] = referer;
+
             return View(employee);
         }
 
         [HttpPost("delete/{aadharNo}")]
         public async Task<IActionResult> DeleteConfirmed(string aadharNo)
         {
-            var success = await _admin.Employees.DeleteAsync(aadharNo);
-            if (!success) return BadRequest("Delete failed.");
+            await _admin.Employees.DeleteAsync(aadharNo);
 
-            TempData["SuccessMessage"] =
-                $"Employee with Aadhaar {aadharNo} deleted successfully.";
+            TempData["SuccessMessage"] = "Employee deleted successfully.";
+
+            // ✅ Redirect back to where delete was initiated
+            if (TempData["ReturnUrl"] != null)
+            {
+                return Redirect(TempData["ReturnUrl"].ToString());
+            }
 
             return RedirectToAction(nameof(Index));
         }
     }
 }
+
+
+
+

@@ -6,6 +6,7 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
     public interface IStayService
     {
         Task<IReadOnlyList<StayDto>> GetAllAsync();
+        Task<IReadOnlyList<StayDto>> GetActiveAsync();
         Task<StayDto?> GetByIdAsync(int stayId);
 
         Task<IReadOnlyList<StayDto>> GetByRoomNoAsync(int roomNo);

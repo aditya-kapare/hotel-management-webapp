@@ -30,7 +30,7 @@ namespace HotelManagement.WebApp.Controllers
     string? customer,
     int? roomNo)
         {
-            var stays = await _stayService.Stays.GetAllAsync();
+            var stays = await _stayService.Stays.GetActiveAsync();
 
             if (!string.IsNullOrWhiteSpace(customer))
             {
