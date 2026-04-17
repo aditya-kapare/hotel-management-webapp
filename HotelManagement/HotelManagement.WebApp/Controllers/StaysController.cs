@@ -214,5 +214,36 @@ namespace HotelManagement.WebApp.Controllers
 
             return View(stay);
         }
+
+        // --------------------------------------------------
+        // List page - Past / Historical stays
+        // --------------------------------------------------
+        [HttpGet("history")]
+        public async Task<IActionResult> History(
+            string? customer,
+            int? roomNo)
+        {
+            // Fetch NON-ACTIVE (checked-out) stays
+            var stays = await _stayService.Stays.GetPastAsync();
+
+            if (!string.IsNullOrWhiteSpace(customer))
+            {
+                customer = customer.Trim().ToLower();
+                stays = stays.Where(s =>
+                    s.CustomerIdentityId.ToLower().Contains(customer) ||
+                    s.CustomerName.ToLower().Contains(customer)
+                ).ToList();
+            }
+
+            if (roomNo.HasValue)
+            {
+                stays = stays.Where(s => s.RoomNo == roomNo.Value).ToList();
+            }
+
+            ViewBag.Customer = customer;
+            ViewBag.RoomNo = roomNo;
+
+            return View(stays);
+        }
     }
 }   
