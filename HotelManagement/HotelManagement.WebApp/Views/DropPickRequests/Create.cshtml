@@ -1,4 +1,4 @@
-﻿@model HotelManagement.WebApp.ViewModels.DropPickRequests.DropPickRequestViewListModel
+﻿@model HotelManagement.WebApp.ViewModels.DropPickRequests.CreateDropPickRequestCompositeViewModel
 @using HotelManagement.WebApp.Domain.Enums
 
 @{
@@ -33,7 +33,9 @@
 
         <div class="row">
             <div class="col-md-4">
-                <label asp-for="CustomerMobileNo" class="form-label">Customer Mobile No</label>
+                <label asp-for="CustomerMobileNo" class="form-label">
+                    Customer Mobile No
+                </label>
                 <input asp-for="CustomerMobileNo" class="form-control" />
                 <span asp-validation-for="CustomerMobileNo" class="text-danger"></span>
             </div>
@@ -46,10 +48,12 @@
         </div>
     </form>
 
-    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.RoomNo > 0)
+    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.StayId > 0)
     {
+        <!-- CONTEXT SUMMARY -->
         <div class="alert alert-info">
-            @if(Model.RoomNo != 0){
+            @if (Model.RoomNo > 0)
+            {
                 <p><strong>Room No:</strong> @Model.RoomNo</p>
             }
             <p><strong>Customer:</strong> @Model.CustomerName</p>
@@ -61,7 +65,11 @@
             @Html.AntiForgeryToken()
 
             <input type="hidden" asp-for="StayId" />
+            <input type="hidden" asp-for="CustomerName" />
+            <input type="hidden" asp-for="CustomerMobileNo" />
+            <input type="hidden" asp-for="RoomNo" />
 
+            <!-- DRIVER -->
             <div class="mb-3">
                 <label asp-for="DriverId" class="form-label">Cab Driver</label>
                 <select asp-for="DriverId"
@@ -72,6 +80,7 @@
                 <span asp-validation-for="DriverId" class="text-danger"></span>
             </div>
 
+            <!-- REQUEST TYPE -->
             <div class="mb-3">
                 <label asp-for="RequestType" class="form-label"></label>
                 <select asp-for="RequestType"
@@ -80,6 +89,18 @@
                 </select>
             </div>
 
+            <!-- REQUESTED DATE & TIME -->
+            <div class="mb-3">
+                <label asp-for="RequestedAt" class="form-label">
+                    Pick / Drop Date & Time
+                </label>
+                <input asp-for="RequestedAt"
+                       type="datetime-local"
+                       class="form-control" />
+                <span asp-validation-for="RequestedAt" class="text-danger"></span>
+            </div>
+
+            <!-- NOTES -->
             <div class="mb-3">
                 <label asp-for="Notes" class="form-label"></label>
                 <textarea asp-for="Notes"
@@ -91,7 +112,8 @@
                 Create Request
             </button>
 
-            <a asp-action="Index" class="btn btn-secondary ms-2">
+            <a asp-action="Index"
+               class="btn btn-secondary ms-2">
                 Cancel
             </a>
         </form>

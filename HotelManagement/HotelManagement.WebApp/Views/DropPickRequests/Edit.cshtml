@@ -18,6 +18,16 @@
         <div asp-validation-summary="ModelOnly"
              class="text-danger mb-3"></div>
 
+        <!-- CONTEXT -->
+        <div class="alert alert-info mb-3">
+            <p class="mb-1">
+                <strong>Customer:</strong> @Model.CustomerName
+            </p>
+            <p class="mb-0">
+                <strong>Current Driver:</strong> @Model.CurrentDriverName
+            </p>
+        </div>
+
         <!-- DRIVER -->
         <div class="mb-3">
             <label asp-for="DriverId" class="form-label"></label>
@@ -25,6 +35,8 @@
                     asp-items="ViewBag.Drivers"
                     class="form-select">
             </select>
+            <span asp-validation-for="DriverId"
+                  class="text-danger"></span>
         </div>
 
         <!-- REQUEST TYPE -->
@@ -36,13 +48,31 @@
             </select>
         </div>
 
+        <!-- REQUESTED AT -->
+        <div class="mb-3">
+            <label asp-for="RequestedAt" class="form-label"></label>
+            <input asp-for="RequestedAt"
+                   type="datetime-local"
+                   class="form-control" />
+            <span asp-validation-for="RequestedAt"
+                  class="text-danger"></span>
+        </div>
+
+        <!-- STATUS -->
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status"
+                    asp-items="Html.GetEnumSelectList<DropPickStatus>()"
+                    class="form-select">
+            </select>
+        </div>
+
         <!-- NOTES -->
         <div class="mb-3">
             <label asp-for="Notes" class="form-label"></label>
             <textarea asp-for="Notes"
                       class="form-control"
-                      rows="3">
-            </textarea>
+                      rows="3"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">

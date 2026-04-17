@@ -1,5 +1,6 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
+using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.ViewModels.DropPickRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -32,38 +33,25 @@ public sealed class DropPickRequestsController : Controller
 
             StayId = r.StayId,
             DriverId = r.DriverId,
-            
+
             RoomNo = r.RoomNo,
-            
+
             DriverName = r.DriverName,
-            
+
             CustomerName = r.CustomerName,
             CustomerMobileNo = r.CustomerPhone,
-            
+
             CanEdit = r.CanEdit
 
         }).ToList();
 
         return View(model);
     }
-    //====================================================
-    // CREATE (GET)
-    // =====================================================
-
-    //[HttpGet("create")]
-    //public async Task<IActionResult> Create()
-    //{
-    //    ViewBag.Drivers = (await _receptionist.DropPickRequests.GetAvailableDriversAsync())
-    //        .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
-    //        .ToList();
-
-    //    return View(new DropPickRequestViewListModel());
-    //}
 
     [HttpGet("create")]
     public async Task<IActionResult> Create(int? stayId, int? identityId)
     {
-        var model = new DropPickRequestViewListModel();
+        var model = new CreateDropPickRequestCompositeViewModel();
 
         // 1️⃣ If stayId is provided → load stay + customer
         if (stayId.HasValue && stayId.Value > 0)
@@ -102,16 +90,31 @@ public sealed class DropPickRequestsController : Controller
         return View(model);
     }
 
-
-    // =====================================================
-    // CREATE (POST)
-    // =====================================================
     //[HttpPost("create")]
     //[ValidateAntiForgeryToken]
     //public async Task<IActionResult> Create(CreateDropPickRequestViewModel model)
     //{
     //    if (!ModelState.IsValid)
-    //        return View(model);
+    //    {
+    //        // 🔁 Map Create VM → List VM (required for Create view)
+    //        var viewModel = new DropPickRequestViewListModel
+    //        {
+    //            StayId = model.StayId,
+    //            RoomNo = model.RoomNo,
+    //            CustomerName = model.CustomerName,
+    //            DriverId = model.DriverId,
+    //            Notes = model.Notes,
+    //            RequestType = model.RequestType.ToString()
+    //        };
+
+    //        ViewBag.Drivers = (await _receptionist
+    //            .DropPickRequests
+    //            .GetAvailableDriversAsync())
+    //            .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
+    //            .ToList();
+
+    //        return View("Create", viewModel);
+    //    }
 
     //    await _receptionist.DropPickRequests.CreateAsync(
     //        new CreateDropPickRequest
@@ -119,40 +122,19 @@ public sealed class DropPickRequestsController : Controller
     //            StayId = model.StayId,
     //            DriverId = model.DriverId,
     //            RequestType = model.RequestType,
-
-    //            // ✅ FIXED: derive DateTime from selected time
     //            RequestedAt = DateTime.Today.Add(model.SelectedTime),
-
     //            Notes = model.Notes
     //        });
 
     //    return RedirectToAction(nameof(Index));
     //}
+
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateDropPickRequestViewModel model)
+    public async Task<IActionResult> Create(CreateDropPickRequestCompositeViewModel model)
     {
         if (!ModelState.IsValid)
-        {
-            // 🔁 Map Create VM → List VM (required for Create view)
-            var viewModel = new DropPickRequestViewListModel
-            {
-                StayId = model.StayId,
-                RoomNo = model.RoomNo,
-                CustomerName = model.CustomerName,
-                DriverId = model.DriverId,
-                Notes = model.Notes,
-                RequestType = model.RequestType.ToString()
-            };
-
-            ViewBag.Drivers = (await _receptionist
-                .DropPickRequests
-                .GetAvailableDriversAsync())
-                .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
-                .ToList();
-
-            return View("Create", viewModel);
-        }
+            return await ReloadCreateView(model);
 
         await _receptionist.DropPickRequests.CreateAsync(
             new CreateDropPickRequest
@@ -160,36 +142,44 @@ public sealed class DropPickRequestsController : Controller
                 StayId = model.StayId,
                 DriverId = model.DriverId,
                 RequestType = model.RequestType,
-                RequestedAt = DateTime.Today.Add(model.SelectedTime),
+                RequestedAt = model.RequestedAt,
                 Notes = model.Notes
             });
 
         return RedirectToAction(nameof(Index));
     }
 
-    // =====================================================
-    // EDIT
-    // =====================================================
+
     [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int id)
     {
         var req = await _receptionist.DropPickRequests.GetByIdAsync(id);
-        if (req == null) return RedirectToAction(nameof(Index));
-
-        var stay = await _receptionist.Stays.GetByIdAsync(req.StayId);
-        if (stay?.CheckOutAt != null)
+        if (req == null)
             return RedirectToAction(nameof(Index));
 
-        ViewBag.Drivers = (await _receptionist.DropPickRequests.GetAvailableDriversAsync())
+        if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
+            return RedirectToAction(nameof(Index));
+
+        ViewBag.Drivers = (await _receptionist
+            .DropPickRequests
+            .GetAvailableDriversAsync())
             .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
             .ToList();
+
+        var stay = await _receptionist.Stays.GetByIdAsync(req.StayId);
 
         return View(new UpdateDropPickRequestViewModel
         {
             RequestId = req.RequestId,
             DriverId = req.DriverId,
             RequestType = req.RequestType,
+            Status = req.RequestStatus,
             RequestedAt = req.RequestedAt,
+
+            CustomerName = req.CustomerName,
+            CustomerPhone = req.CustomerPhone,
+            CurrentDriverName = req.DriverName,
+
             Notes = req.Notes
         });
     }
@@ -199,28 +189,37 @@ public sealed class DropPickRequestsController : Controller
     public async Task<IActionResult> Edit(int id, UpdateDropPickRequestViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(model);
-
-        await _receptionist.DropPickRequests.UpdateAsync(id, new UpdateDropPickRequest
         {
-            DriverId = model.DriverId,
-            RequestType = model.RequestType,
-            RequestedAt = model.RequestedAt,
-            Notes = model.Notes
-        });
+            ViewBag.Drivers = (await _receptionist
+                .DropPickRequests
+                .GetAvailableDriversAsync())
+                .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
+                .ToList();
+
+            return View(model);
+        }
+
+        await _receptionist.DropPickRequests.UpdateAsync(
+            id,
+            new UpdateDropPickRequest
+            {
+                RequestId = id,
+                DriverId = model.DriverId,
+                RequestType = model.RequestType,
+                RequestedAt = model.RequestedAt,
+                Status = model.Status,
+                Notes = model.Notes
+            });
 
         return RedirectToAction(nameof(Index));
     }
 
-    // =====================================================
-    // DELETE
-    // =====================================================
     [HttpPost("delete/{id:int}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         await _receptionist.DropPickRequests.DeleteAsync(id);
-        TempData["Success"] = "Request deleted successfully";
+        TempData["Success"] = "Request cancelled successfully";
         return RedirectToAction(nameof(Index));
     }
 
@@ -261,10 +260,9 @@ public sealed class DropPickRequestsController : Controller
         return View(model);
     }
 
-
     [HttpPost("create/load-stay")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoadStay(DropPickRequestViewListModel model)
+    public async Task<IActionResult> LoadStay(CreateDropPickRequestCompositeViewModel model)
     {
         if (model.StayId <= 0)
         {
@@ -279,7 +277,9 @@ public sealed class DropPickRequestsController : Controller
             return await ReloadCreateView(model);
         }
 
-        var customer = await _receptionist.Customers.GetByIdentityIdAsync(stay.CustomerIdentityId);
+        var customer = await _receptionist
+            .Customers
+            .GetByIdentityIdAsync(stay.CustomerIdentityId);
 
         model.RoomNo = stay.RoomNo;
         model.CustomerName = customer?.Name ?? "Unknown";
@@ -288,18 +288,22 @@ public sealed class DropPickRequestsController : Controller
         return await ReloadCreateView(model);
     }
 
-    private async Task<IActionResult> ReloadCreateView(DropPickRequestViewListModel model)
+    private async Task<IActionResult> ReloadCreateView(
+    CreateDropPickRequestCompositeViewModel model)
     {
-        ViewBag.Drivers = (await _receptionist.DropPickRequests.GetAvailableDriversAsync())
+        ViewBag.Drivers = (await _receptionist
+            .DropPickRequests
+            .GetAvailableDriversAsync())
             .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
             .ToList();
 
         return View("Create", model);
     }
 
+
     [HttpPost("create/load-customer")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoadCustomer(DropPickRequestViewListModel model)
+    public async Task<IActionResult> LoadCustomer(CreateDropPickRequestCompositeViewModel model)
     {
         if (string.IsNullOrWhiteSpace(model.CustomerMobileNo))
         {
@@ -309,7 +313,6 @@ public sealed class DropPickRequestsController : Controller
             return await ReloadCreateView(model);
         }
 
-        // 1️⃣ Find customer (no stay requirement)
         var customer = (await _receptionist.Customers.GetAllAsync())
             .FirstOrDefault(c => c.MobileNo == model.CustomerMobileNo);
 
@@ -321,11 +324,8 @@ public sealed class DropPickRequestsController : Controller
             return await ReloadCreateView(model);
         }
 
-        // 2️⃣ Populate ONLY customer details
         model.CustomerName = customer.Name;
         model.CustomerMobileNo = customer.MobileNo;
-
-        // ⚠️ StayId intentionally NOT resolved here
 
         return await ReloadCreateView(model);
     }

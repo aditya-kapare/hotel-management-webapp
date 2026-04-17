@@ -1,4 +1,5 @@
 ﻿@using HotelManagement.WebApp.ViewModels.DropPickRequests
+@using HotelManagement.WebApp.Domain.Enums
 @model IReadOnlyList<DropPickRequestViewListModel>
 
 @{
@@ -25,6 +26,7 @@
                 <th>Customer Name</th>
                 <th>Customer No</th>
                 <th>Cab Driver</th>
+                <th>Status</th>
                 <th class="text-center">Actions</th>
             </tr>
         </thead>
@@ -35,7 +37,6 @@
                 <tr>
                     <td>@r.RequestId</td>
                     <td>@r.RoomNo</td>
-
                     <td>@r.CustomerName</td>
                     <td>@r.CustomerMobileNo</td>
 
@@ -51,36 +52,56 @@
                         }
                     </td>
 
+                    <!-- STATUS -->
+                    <td>
+                        @switch (r.Status)
+                        {
+                            case DropPickStatus.Assigned:
+                                <span class="badge bg-secondary">Assigned</span>
+                                break;
+                            case DropPickStatus.InProgress:
+                                <span class="badge bg-info text-dark">In Progress</span>
+                                break;
+                            case DropPickStatus.Completed:
+                                <span class="badge bg-success">Completed</span>
+                                break;
+                            case DropPickStatus.Cancelled:
+                                <span class="badge bg-danger">Cancelled</span>
+                                break;
+                        }
+                    </td>
+
+                    <!-- ACTIONS -->
                     <td class="text-center">
-                        <!-- VIEW DETAILS -->
+                        <!-- VIEW -->
                         <a asp-action="Details"
                            asp-route-id="@r.RequestId"
                            class="btn btn-sm btn-secondary me-1">
                             View
                         </a>
 
-                        <!-- EDIT -->
                         @if (r.CanEdit)
                         {
+                            <!-- EDIT -->
                             <a asp-action="Edit"
                                asp-route-id="@r.RequestId"
                                class="btn btn-sm btn-info me-1">
                                 Edit
                             </a>
-                        }
 
-                        <!-- DELETE -->
-                        <form asp-action="Delete"
-                              asp-route-id="@r.RequestId"
-                              method="post"
-                              class="d-inline"
-                              onsubmit="return confirm('Delete this request?');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit"
-                                    class="btn btn-sm btn-danger">
-                                Delete
-                            </button>
-                        </form>
+                            <!-- CANCEL (SOFT DELETE) -->
+                            <form asp-action="Delete"
+                                  asp-route-id="@r.RequestId"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Cancel this request?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-sm btn-warning">
+                                    Cancel
+                                </button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }

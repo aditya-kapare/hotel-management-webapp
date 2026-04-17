@@ -1,4 +1,6 @@
-﻿namespace HotelManagement.WebApp.ViewModels.DropPickRequests
+﻿using HotelManagement.WebApp.Domain.Enums;
+
+namespace HotelManagement.WebApp.ViewModels.DropPickRequests
 {
     public sealed class DropPickRequestViewListModel
     {
@@ -7,6 +9,7 @@
         public string RequestType { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
 
+        public DropPickStatus Status { get; set; }
         public int StayId { get; set; }
         public int RoomNo { get; set; }
 

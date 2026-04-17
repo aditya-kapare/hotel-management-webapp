@@ -8,6 +8,8 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
     {
         Task<IReadOnlyList<DropPickRequestDto>> GetAllAsync();
         Task<IReadOnlyList<DropPickRequestDto>> GetRequestListAsync();
+        Task<IReadOnlyList<DropPickRequestDto>> GetOngoingListAsync();
+        Task<IReadOnlyList<DropPickRequestDto>> GetPastListAsync();
         Task<DropPickRequestDto?> GetByIdAsync(int requestId);
 
         Task<IReadOnlyList<DropPickRequestDto>> GetByStayIdAsync(int stayId);

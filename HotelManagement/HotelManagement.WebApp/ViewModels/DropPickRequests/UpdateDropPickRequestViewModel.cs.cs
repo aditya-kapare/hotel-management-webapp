@@ -24,6 +24,11 @@ namespace HotelManagement.WebApp.ViewModels.DropPickRequests
         [Display(Name = "Requested At")]
         public DateTime RequestedAt { get; set; }
 
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
+        
+        public string CurrentDriverName { get; set; } = string.Empty;
+
         public string Notes { get; set; } = string.Empty;
     }
 }

@@ -155,11 +155,11 @@ namespace HotelManagement.WebApp.Application.Services
             if (existing is null)
                 throw new KeyNotFoundException($"Request '{requestId}' was not found.");
 
-            var stay = await _stayDal.GetStayByIdAsync(existing.StayId);
-            if (stay is null)
-                throw new KeyNotFoundException($"Stay '{existing.StayId}' was not found.");
-            if (stay.CheckOutAt is not null)
-                throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
+            //var stay = await _stayDal.GetStayByIdAsync(existing.StayId);
+            //if (stay is null)
+            //    throw new KeyNotFoundException($"Stay '{existing.StayId}' was not found.");
+            //if (stay.CheckOutAt is not null)
+            //    throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
 
             if (normalized.DriverId != existing.DriverId)
             {
@@ -168,7 +168,17 @@ namespace HotelManagement.WebApp.Application.Services
                     throw new InvalidOperationException("Selected driver is not available.");
             }
 
+
+
+            if (existing.Status == DropPickStatus.Completed ||
+                existing.Status == DropPickStatus.Cancelled)
+            {
+                throw new InvalidOperationException(
+                    $"Request '{requestId}' is already {existing.Status} and cannot be modified.");
+            }
+
             DropPickRequestMapping.Apply(normalized, existing);
+
             var updated = await _requestDal.UpdateRequestAsync(existing);
             if (!updated)
                 throw new InvalidOperationException($"Failed to update request '{requestId}'.");
@@ -179,7 +189,16 @@ namespace HotelManagement.WebApp.Application.Services
         public async Task<bool> DeleteAsync(int requestId)
         {
             if (requestId <= 0) return false;
-            return await _requestDal.DeleteRequestAsync(requestId);
+
+            var existing = await _requestDal.GetRequestByIdAsync(requestId);
+            if (existing is null) return false;
+
+            if (existing.Status == DropPickStatus.Cancelled)
+                return true;
+
+            existing.Status = DropPickStatus.Cancelled;
+
+            return await _requestDal.UpdateRequestAsync(existing);
         }
 
         private static CreateDropPickRequest NormalizeCreate(CreateDropPickRequest r) => new()
@@ -196,7 +215,8 @@ namespace HotelManagement.WebApp.Application.Services
             RequestedAt = r.RequestedAt,
             Notes = (r.Notes ?? string.Empty).Trim(),
             RequestType = r.RequestType,
-            DriverId = r.DriverId
+            DriverId = r.DriverId,
+            Status = r.Status
         };
 
         private static void ValidateCreate(CreateDropPickRequest r) 
@@ -207,7 +227,29 @@ namespace HotelManagement.WebApp.Application.Services
 
         private static void ValidateUpdate(UpdateDropPickRequest r)
         {
-            if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
+            if (r.DriverId <= 0)
+                throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
+
+            if (!Enum.IsDefined(typeof(DropPickStatus), r.Status))
+                throw new ArgumentException("Invalid DropPickStatus.", nameof(r.Status));
+        }
+
+        public async Task<IReadOnlyList<DropPickRequestDto>> GetOngoingListAsync()
+        {
+            var requests = (await _requestDal.GetAllRequestsAsync())
+                    .Where(r => r.Status != DropPickStatus.Cancelled && r.Status != DropPickStatus.Completed)
+                    .ToList();
+
+            return requests.Select(DropPickRequestMapping.ToDto).ToList();
+        }
+
+        public async Task<IReadOnlyList<DropPickRequestDto>> GetPastListAsync()
+        {
+            var requests = (await _requestDal.GetAllRequestsAsync())
+                    .Where(r => r.Status == DropPickStatus.Completed || r.Status == DropPickStatus.Cancelled)
+                    .ToList();
+
+            return requests.Select(DropPickRequestMapping.ToDto).ToList();
         }
     }
 }
