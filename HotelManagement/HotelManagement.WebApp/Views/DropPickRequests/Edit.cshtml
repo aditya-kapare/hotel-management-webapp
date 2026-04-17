@@ -1,7 +1,6 @@
 ﻿@model HotelManagement.WebApp.ViewModels.DropPickRequests.UpdateDropPickRequestViewModel
 @using HotelManagement.WebApp.Domain.Enums
 
-
 @{
     ViewData["Title"] = "Edit Drop / Pick Request";
 }
@@ -16,8 +15,10 @@
 
         <input type="hidden" asp-for="RequestId" />
 
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3"></div>
 
+        <!-- DRIVER -->
         <div class="mb-3">
             <label asp-for="DriverId" class="form-label"></label>
             <select asp-for="DriverId"
@@ -26,6 +27,7 @@
             </select>
         </div>
 
+        <!-- REQUEST TYPE -->
         <div class="mb-3">
             <label asp-for="RequestType" class="form-label"></label>
             <select asp-for="RequestType"
@@ -34,10 +36,13 @@
             </select>
         </div>
 
+        <!-- NOTES -->
         <div class="mb-3">
             <label asp-for="Notes" class="form-label"></label>
             <textarea asp-for="Notes"
-                      class="form-control"></textarea>
+                      class="form-control"
+                      rows="3">
+            </textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -48,6 +53,5 @@
            class="btn btn-secondary ms-2">
             Cancel
         </a>
- 
     </form>
 </div>

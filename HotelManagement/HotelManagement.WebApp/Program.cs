@@ -44,7 +44,7 @@ builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
 builder.Services.AddScoped<IReceptionistServiceFacade, ReceptionistServiceFacade>();
 builder.Services.ConfigureApplicationCookie(options =>
-{
+{   
     options.LoginPath = "/auth/login";
     options.AccessDeniedPath = "/auth/denied";
 });
@@ -53,7 +53,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 //************************Middleware********************
 var app = builder.Build();
 
-
+//later to comment this out.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();

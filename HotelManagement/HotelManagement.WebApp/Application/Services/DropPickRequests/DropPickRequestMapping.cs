@@ -15,6 +15,18 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
             DriverId = r.DriverId
         };
 
+        internal static DropPickRequestDto ToDto(DropPickRequest r, string driver, string customer) => new()
+        {
+            RequestId = r.RequestId,
+            RequestedAt = r.RequestedAt,
+            Notes = r.Notes,
+            RequestType = r.RequestType,
+            StayId = r.StayId,
+            DriverId = r.DriverId,
+            DriverName = driver,
+            CustomerName = customer
+        };
+
         internal static DropPickRequest ToEntity(CreateDropPickRequest r, DateTime requestedAt) => new()
         {
             RequestedAt = requestedAt,

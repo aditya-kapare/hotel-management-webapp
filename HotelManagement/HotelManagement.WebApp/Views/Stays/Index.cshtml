@@ -53,6 +53,7 @@
     <table class="table table-bordered table-hover align-middle compact-table">
         <thead class="table-dark">
             <tr>
+                <th>Stay Id</th>
                 <th>Customer ID</th>
                 <th class="col-customer-name">Customer Name</th>
                 <th>Mobile No</th>
@@ -65,6 +66,7 @@
             @foreach (var stay in Model)
             {
                 <tr>
+                    <td>@stay.StayId</td>
                     <td>@stay.CustomerIdentityId</td>
                     <td class="col-customer-name">@stay.CustomerName</td>
                     <td>@stay.MobileNo</td>
@@ -90,6 +92,7 @@
 
                         <a asp-controller="CabService"
                            asp-action="Create"
+                           asp-route-stayId="@stay.StayId"
                            asp-route-identityId="@stay.CustomerIdentityId"
                            class="btn btn-sm btn-warning ms-1">
                             Book Cab
