@@ -41,9 +41,22 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Rooms</h3>
         <div>
-        <a href="/admin/home" class="btn btn-secondary mt-3">
-            ← Back
-        </a>
+
+            @if (ViewBag.IsReadOnly)
+            {
+                <!-- Receptionist -->
+                <a href="/reception/home" class="btn btn-secondary mt-3">
+                    ← Back
+                </a>
+            }
+            else
+            {
+                <!-- Admin -->
+                <a href="/admin/home" class="btn btn-secondary mt-3">
+                    ← Back
+                </a>
+            }
+
         @if (!ViewBag.IsReadOnly)
         {
             <a asp-action="Create" class="btn btn-primary mt-3 ">Add Room</a>

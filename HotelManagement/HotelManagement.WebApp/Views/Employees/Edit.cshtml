@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Edit Employee";
+    var returnUrl = ViewBag.ReturnUrl as string;
 }
 
 <div class="container mt-5">
@@ -10,9 +11,23 @@
             <small class="text-muted">Update employee information</small>
         </div>
 
-        <a href="/admin/employees" class="btn btn-outline-secondary btn-sm">
-            ← Back
-        </a>
+        @if (!string.IsNullOrEmpty(returnUrl))
+        {
+            <div class="col-md-2 ms-auto text-end">
+            <a href="@returnUrl" class="btn btn-secondary btn-sm mb-5">
+                ← Back
+            </a>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-2 ms-auto text-end">
+            <a asp-action="Index"
+               class="btn btn-secondary btn-sm mb-5">
+                ← Back
+            </a>
+            </div>
+        }
     </div>
 
     <form method="post">
