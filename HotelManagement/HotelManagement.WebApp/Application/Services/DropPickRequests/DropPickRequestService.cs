@@ -143,6 +143,35 @@ namespace HotelManagement.WebApp.Application.Services
             return DropPickRequestMapping.ToDto(entity);
         }
 
+        public async Task<DropPickRequest> CreateAsync(DropPickRequest request)
+        {
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            // Normalize
+            if(request.RequestedAt == default)
+                request.RequestedAt = DateTime.Now;
+
+            var stay = await _stayDal.GetStayByIdAsync(request.StayId);
+            if (stay is null)
+                throw new KeyNotFoundException($"Stay '{request.StayId}' was not found.");
+
+            if (stay.CheckOutAt is not null)
+                throw new InvalidOperationException($"Stay '{request.StayId}' is already checked out.");
+
+            var availableDrivers = await _requestDal.GetAvailableDriversAsync();
+            if (!availableDrivers.Any(d => d.DriverId == request.DriverId))
+                throw new InvalidOperationException("Selected driver is not available.");
+
+            request.Status = DropPickStatus.Assigned;
+
+            var created = await _requestDal.AddRequestAsync(request);
+            if (!created)
+                throw new InvalidOperationException("Failed to create drop/pick request.");
+
+            return request;
+        }
+
         public async Task<DropPickRequestDto> UpdateAsync(int requestId, UpdateDropPickRequest request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));

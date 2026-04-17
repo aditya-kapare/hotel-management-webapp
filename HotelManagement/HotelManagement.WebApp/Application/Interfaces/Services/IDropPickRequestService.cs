@@ -18,6 +18,7 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<IReadOnlyList<CabDriver>> GetAvailableDriversAsync();
 
         Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request);
+        Task<DropPickRequest> CreateAsync(DropPickRequest request);
         Task<DropPickRequestDto> UpdateAsync(int requestId, UpdateDropPickRequest request);
 
         Task<bool> DeleteAsync(int requestId);

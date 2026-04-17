@@ -1,6 +1,8 @@
-﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
+﻿using Azure.Core;
+using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Domain.Enums;
+using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.ViewModels.DropPickRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -137,7 +139,7 @@ public sealed class DropPickRequestsController : Controller
             return await ReloadCreateView(model);
 
         await _receptionist.DropPickRequests.CreateAsync(
-            new CreateDropPickRequest
+            new DropPickRequest
             {
                 StayId = model.StayId,
                 DriverId = model.DriverId,
