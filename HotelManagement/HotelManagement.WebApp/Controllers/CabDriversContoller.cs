@@ -63,6 +63,39 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View(drivers);
         }
 
+        [HttpGet("create")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // ✅ CREATE POST (NO antiforgery)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create(
+            string name,
+            int age,
+            int gender,
+            string carVendor,
+            string carType)
+        {
+            var request = new CabDriverRequest
+            {
+                Name = name,
+                Age = age,
+                Gender = (Gender)gender,
+                CarVendor = carVendor,
+                CarType = carType
+            };
+
+            await _admin.Drivers.CreateAsync(request);
+
+            // ✅ Success message
+            TempData["SuccessMessage"] = "Cab driver added successfully";
+
+            // ✅ Go back to list page
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpGet("edit/{driverId}")]
         public async Task<IActionResult> Edit(int driverId)
         {
