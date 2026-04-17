@@ -88,6 +88,8 @@ namespace HotelManagement.WebApp.Controllers
             return View("Index", customers);
         }
 
+
+
         // --------------------------------------------------
         // SHARED FILTER PREP
         // --------------------------------------------------
