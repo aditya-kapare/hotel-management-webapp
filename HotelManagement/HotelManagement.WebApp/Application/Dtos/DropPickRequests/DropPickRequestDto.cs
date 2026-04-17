@@ -1,4 +1,5 @@
 ﻿using HotelManagement.WebApp.Domain.Enums;
+using HotelManagement.WebApp.Migrations;
 
 namespace HotelManagement.WebApp.Application.Dtos.DropPickRequests
 {
@@ -8,6 +9,8 @@ namespace HotelManagement.WebApp.Application.Dtos.DropPickRequests
         public DateTime RequestedAt { get; init; }
         public string Notes { get; init; } = string.Empty;
         public RequestType RequestType { get; init; }
+
+        public DropPickStatus RequestStatus { get; init; }
 
         public int StayId { get; init; }
         public int DriverId { get; init; }

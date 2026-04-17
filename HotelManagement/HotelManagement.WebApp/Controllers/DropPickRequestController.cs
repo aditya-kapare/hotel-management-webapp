@@ -106,12 +106,53 @@ public sealed class DropPickRequestsController : Controller
     // =====================================================
     // CREATE (POST)
     // =====================================================
+    //[HttpPost("create")]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Create(CreateDropPickRequestViewModel model)
+    //{
+    //    if (!ModelState.IsValid)
+    //        return View(model);
+
+    //    await _receptionist.DropPickRequests.CreateAsync(
+    //        new CreateDropPickRequest
+    //        {
+    //            StayId = model.StayId,
+    //            DriverId = model.DriverId,
+    //            RequestType = model.RequestType,
+
+    //            // ✅ FIXED: derive DateTime from selected time
+    //            RequestedAt = DateTime.Today.Add(model.SelectedTime),
+
+    //            Notes = model.Notes
+    //        });
+
+    //    return RedirectToAction(nameof(Index));
+    //}
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateDropPickRequestViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(model);
+        {
+            // 🔁 Map Create VM → List VM (required for Create view)
+            var viewModel = new DropPickRequestViewListModel
+            {
+                StayId = model.StayId,
+                RoomNo = model.RoomNo,
+                CustomerName = model.CustomerName,
+                DriverId = model.DriverId,
+                Notes = model.Notes,
+                RequestType = model.RequestType.ToString()
+            };
+
+            ViewBag.Drivers = (await _receptionist
+                .DropPickRequests
+                .GetAvailableDriversAsync())
+                .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
+                .ToList();
+
+            return View("Create", viewModel);
+        }
 
         await _receptionist.DropPickRequests.CreateAsync(
             new CreateDropPickRequest
@@ -119,10 +160,7 @@ public sealed class DropPickRequestsController : Controller
                 StayId = model.StayId,
                 DriverId = model.DriverId,
                 RequestType = model.RequestType,
-
-                // ✅ FIXED: derive DateTime from selected time
                 RequestedAt = DateTime.Today.Add(model.SelectedTime),
-
                 Notes = model.Notes
             });
 
