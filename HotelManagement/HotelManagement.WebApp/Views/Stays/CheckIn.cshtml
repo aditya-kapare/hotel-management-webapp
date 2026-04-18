@@ -2,7 +2,12 @@
 
 <h3>Check In Guest</h3>
 
-<form method="post">
+
+<form method="post"
+      action="/stays/checkin/@Model.CustomerIdentityId">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="ActionType" value="Submit" />
 
     <input type="hidden" asp-for="CustomerIdentityId" />
 
@@ -14,6 +19,18 @@
     <div class="mb-3">
         <label>Mobile No</label>
         <input class="form-control" value="@Model.MobileNo" readonly />
+    </div>
+
+    @* <div>
+        <input type="hidden" asp-for="CheckInAt" value="@DateTime.Now" />
+    </div> *@
+
+    <div class="mb-3">
+        <label>Check-In Date & Time</label>
+        <input asp-for="CheckInAt"
+               type="datetime-local"
+               class="form-control" />
+        @Html.ValidationMessageFor(m => m.CheckInAt, "", new { style = "color:red" })
     </div>
 
     <!-- Room Type -->

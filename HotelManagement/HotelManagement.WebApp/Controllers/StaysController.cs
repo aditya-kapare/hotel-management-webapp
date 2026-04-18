@@ -185,24 +185,22 @@ namespace HotelManagement.WebApp.Controllers
         // --------------------------------------------------
         // CHECK-IN CUSTOMER (POST)
         // --------------------------------------------------
+
         [HttpPost("checkin/{identityId}")]
-        public async Task<IActionResult> CheckIn(
-      string identityId,
-      CheckInStayViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckIn(string identityId, CheckInStayViewModel model)
         {
-            // ✅ Always rebind dropdowns
+            // Always rebind dropdowns
             model.RoomTypes = Enum.GetNames(typeof(RoomType))
                 .Select(x => new SelectListItem(x, x));
 
             model.AcOptions = Enum.GetNames(typeof(AcOption))
                 .Select(x => new SelectListItem(x, x));
 
-            // ✅ Load available rooms when RoomType & AC chosen
             if (!string.IsNullOrEmpty(model.RoomType) &&
                 !string.IsNullOrEmpty(model.AcOption))
             {
                 var rooms = await _stayService.Rooms.GetAllAsync();
-
                 var availableRooms = rooms
                     .Where(r =>
                         r.AvailabilityStatus == AvailabilityStatus.Available &&
@@ -211,26 +209,24 @@ namespace HotelManagement.WebApp.Controllers
                     .ToList();
 
                 model.AvailableRooms = availableRooms
-                    .Select(r => new SelectListItem(
-                        r.RoomNo.ToString(),
-                        r.RoomNo.ToString()));
+                    .Select(r => new SelectListItem(r.RoomNo.ToString(), r.RoomNo.ToString()));
 
-                // ✅ Set price after room selection
                 if (model.RoomNo.HasValue)
                 {
-                    var room = availableRooms
-                        .FirstOrDefault(r => r.RoomNo == model.RoomNo.Value);
-
+                    var room = availableRooms.FirstOrDefault(r => r.RoomNo == model.RoomNo.Value);
                     if (room != null)
                         model.Price = room.Price;
                 }
             }
 
-            // 🔁 FILTER MODE → stay on same page
+            // FILTER
             if (model.ActionType == "Filter")
+            {
+                ModelState.Clear();
                 return View(model);
+            }
 
-            // ✅ FINAL SUBMIT
+            // FINAL SUBMIT
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -243,10 +239,10 @@ namespace HotelManagement.WebApp.Controllers
             });
 
             TempData["Success"] = "Customer checked in successfully";
-
-            // ✅ Redirect only after submit
-            return RedirectToAction("Index", "Customers");
+            return RedirectToAction("Index", "Stays");
         }
+
+
         [HttpGet("GetAvailableRooms")]
         public async Task<IActionResult> GetAvailableRooms(
     string roomType,
