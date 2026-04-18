@@ -1,11 +1,9 @@
-﻿using Azure.Core;
-using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
+﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.DropPickRequests;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
-using HotelManagement.WebApp.ViewModels.DropPickRequests;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -88,6 +86,23 @@ namespace HotelManagement.WebApp.Application.Services
             if (requestId <= 0) return null;
             var req = await _requestDal.GetRequestByIdAsync(requestId);
             return req is null ? null : DropPickRequestMapping.ToDto(req);
+        }
+
+        public async Task<DropPickRequestDto?> GetRequestByIdAsync(int requestId)
+        {
+            var requests = await _requestDal.GetAllRequestsAsync();
+            var request = requests.FirstOrDefault(r => r.RequestId == requestId);
+            if (request == null) return null;
+
+            var stays = await _stayDal.GetAllStaysAsync();
+            var customers = await _customerDal.GetAllCustomersAsync();
+            var drivers = await _driverDal.GetAllDriversAsync();
+
+            var stayMap = stays.ToDictionary(s => s.StayId);
+            var customerMap = customers.ToDictionary(c => c.IdentityId);
+            var driverMap = drivers.ToDictionary(d => d.DriverId);
+
+            return DropPickRequestMapping.MapToDto(request, stayMap, customerMap, driverMap);
         }
 
         public async Task<IReadOnlyList<DropPickRequestDto>> GetByStayIdAsync(int stayId)

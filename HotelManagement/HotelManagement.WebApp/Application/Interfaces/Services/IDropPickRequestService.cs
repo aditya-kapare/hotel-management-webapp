@@ -20,7 +20,7 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request);
         Task<DropPickRequest> CreateAsync(DropPickRequest request);
         Task<DropPickRequestDto> UpdateAsync(int requestId, UpdateDropPickRequest request);
-
+        Task<DropPickRequestDto?> GetRequestByIdAsync(int requestId);
         Task<bool> DeleteAsync(int requestId);
     }
 }

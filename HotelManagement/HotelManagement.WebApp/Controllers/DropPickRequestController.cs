@@ -157,20 +157,50 @@ public sealed class DropPickRequestsController : Controller
     [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int id)
     {
-        var req = await _receptionist.DropPickRequests.GetByIdAsync(id);
+        var req = await _receptionist.DropPickRequests.GetRequestByIdAsync(id);
         if (req == null)
             return RedirectToAction(nameof(Index));
+
+        //var customer = await _receptionist.Customers.GetByIdentityIdAsync(req.CustomerPhone);
+        //var driver = await _receptionist.Drivers.GetByIdAsync(req.DriverId);
 
         if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
             return RedirectToAction(nameof(Index));
 
-        ViewBag.Drivers = (await _receptionist
+        // 1. Get available drivers
+        var availableDrivers = (await _receptionist
             .DropPickRequests
             .GetAvailableDriversAsync())
-            .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
+            .Select(d => new SelectListItem
+            {
+                Text = d.Name,
+                Value = d.DriverId.ToString()
+            })
             .ToList();
 
-        var stay = await _receptionist.Stays.GetByIdAsync(req.StayId);
+        // 2. Check if current driver is already in available list
+        bool currentDriverExists = availableDrivers
+            .Any(d => d.Value == req.DriverId.ToString());
+
+        // 3. If not, add current driver at top
+        if (!currentDriverExists && req.DriverId != null)
+        {
+            availableDrivers.Insert(0, new SelectListItem
+            {
+                Text = $"{req.DriverName} (Current)",
+                Value = req.DriverId.ToString(),
+                Selected = true
+            });
+        }
+        else
+        {
+            // 4. If exists, just mark it selected
+            availableDrivers
+                .First(d => d.Value == req.DriverId.ToString())
+                .Selected = true;
+        }
+
+        ViewBag.Drivers = availableDrivers;
 
         return View(new UpdateDropPickRequestViewModel
         {
