@@ -93,10 +93,14 @@
                     <div class="field-box">@Model.MobileNo</div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="field-label">Email</div>
-                    <div class="field-box">@Model.EmailId</div>
-                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.EmailId))
+                {
+                    <div class="col-md-4">
+                        <div class="field-label">Email</div>
+                        <div class="field-box">@Model.EmailId</div>
+                    </div>
+                }
+
 
             </div>
 

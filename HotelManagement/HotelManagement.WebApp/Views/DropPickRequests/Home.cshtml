@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Drop & Pick Service";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Drop & Pick Service</h3>
+
+        <a href="/reception/home" class="btn btn-dark btn-sm">
+            ← Back
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- CREATE NEW REQUEST -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5>Create New Request</h5>
+                    <p class="text-muted">
+                        Create a new cab drop or pick request
+                    </p>
+                    <a asp-controller="DropPickRequests"
+                       asp-action="Create"
+                       class="btn btn-primary">
+                        Create
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW REQUESTS -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5>View Requests</h5>
+                    <p class="text-muted">
+                        View and manage existing requests
+                    </p>
+                    <a asp-controller="DropPickRequests"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

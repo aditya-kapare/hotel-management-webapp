@@ -121,5 +121,56 @@ namespace HotelManagement.WebApp.Controllers
             ViewBag.SelectedGender = gender;
             ViewBag.SelectedCountry = country;
         }
+
+        [HttpGet("edit/{identityId}")]
+        public async Task<IActionResult> Edit(string identityId)
+        {
+            var customer = (await _receptionistService.Customers.GetAllAsync())
+                .FirstOrDefault(c => c.IdentityId == identityId);
+
+            if (customer == null)
+                return NotFound();
+
+            var vm = new EditCustomerViewModel
+            {
+                IdentityId = customer.IdentityId,
+                IdentityIdType = customer.IdentityIdType,
+                Name = customer.Name,
+                MobileNo = customer.MobileNo,
+                Gender = customer.Gender,
+                Country = customer.Country,
+                Address = customer.Address
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("edit/{identityId}")]
+        public async Task<IActionResult> Edit(
+       string identityId,
+       EditCustomerViewModel model)
+        {
+            if (identityId != model.IdentityId)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var request = new UpdateCustomerRequest
+            {
+                Name = model.Name,
+                MobileNo = model.MobileNo,
+                Gender = model.Gender,
+                Country = model.Country,
+                Address = model.Address
+            };
+
+            await _receptionistService.Customers.UpdateAsync(
+                model.IdentityId,
+                request);
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

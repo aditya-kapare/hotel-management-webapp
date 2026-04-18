@@ -1,0 +1,75 @@
+﻿@model HotelManagement.WebApp.ViewModels.Customers.EditCustomerViewModel
+
+@{
+    ViewData["Title"] = "Edit Customer";
+}
+
+<h3>Edit Customer</h3>
+
+<form method="post">
+
+    <!-- IdentityId (hidden + readonly display) -->
+    <input type="hidden" name="IdentityId" value="@Model.IdentityId" />
+
+    <div class="mb-3">
+        <label class="form-label">Identity ID</label>
+        <input type="text"
+               class="form-control"
+               value="@Model.IdentityId"
+               readonly />
+    </div>
+
+    <!-- Name -->
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text"
+               name="Name"
+               value="@Model.Name"
+               class="form-control" />
+    </div>
+
+    <!-- Mobile -->
+    <div class="mb-3">
+        <label class="form-label">Mobile No</label>
+        <input type="text"
+               name="MobileNo"
+               value="@Model.MobileNo"
+               class="form-control" />
+    </div>
+
+    <!-- Gender (plain text, no enum binding) -->
+    <div class="mb-3">
+        <label class="form-label">Gender</label>
+        <input type="text"
+               name="Gender"
+               value="@Model.Gender"
+               class="form-control" />
+    </div>
+
+    <!-- Country -->
+    <div class="mb-3">
+        <label class="form-label">Country</label>
+        <input type="text"
+               name="Country"
+               value="@Model.Country"
+               class="form-control" />
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+        <label class="form-label">Address</label>
+        <textarea name="Address"
+                  class="form-control"
+                  rows="3">@Model.Address</textarea>
+    </div>
+
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">
+        Update
+    </button>
+
+    <a href="/customers" class="btn btn-secondary ms-2">
+        Cancel
+    </a>
+
+</form>

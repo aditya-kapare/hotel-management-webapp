@@ -21,35 +21,37 @@ public sealed class DropPickRequestsController : Controller
     // =====================================================
     // INDEX
     // =====================================================
+
     [HttpGet("")]
-    public async Task<IActionResult> Index()
+    public IActionResult Home()
     {
-        var requests = await _receptionist.DropPickRequests.GetRequestListAsync();
-
-        var model = requests.Select(r => new DropPickRequestViewListModel
-        {
-            RequestId = r.RequestId,
-            RequestedAt = r.RequestedAt,
-            RequestType = r.RequestType.ToString(),
-            Notes = r.Notes,
-
-            StayId = r.StayId,
-            DriverId = r.DriverId,
-
-            RoomNo = r.RoomNo,
-
-            DriverName = r.DriverName,
-
-            CustomerName = r.CustomerName,
-            CustomerMobileNo = r.CustomerPhone,
-
-            CanEdit = r.CanEdit
-
-        }).ToList();
-
-        return View(model);
+        return View("Home");   // ✅ NO MODEL
     }
 
+
+    [HttpGet("list")]
+    public async Task<IActionResult> Index()
+{
+    var requests = await _receptionist
+        .DropPickRequests
+        .GetRequestListAsync();
+
+    var model = requests.Select(r => new DropPickRequestViewListModel
+    {
+        RequestId = r.RequestId,
+        RoomNo = r.RoomNo,
+        CustomerName = r.CustomerName,
+        CustomerMobileNo = r.CustomerPhone,
+        DriverName = r.DriverName,
+
+        // ✅ CORRECT PROPERTY
+        Status = r.RequestStatus,
+
+        CanEdit = r.CanEdit
+    }).ToList();
+
+    return View("Index", model);
+}
     [HttpGet("create")]
     public async Task<IActionResult> Create(int? stayId, int? identityId)
     {

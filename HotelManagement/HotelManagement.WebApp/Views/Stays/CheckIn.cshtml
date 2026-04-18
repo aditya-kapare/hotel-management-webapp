@@ -1,61 +1,109 @@
 ﻿@model HotelManagement.WebApp.ViewModels.Stays.CheckInStayViewModel
 
-<div class="container mt-4">
-    <h3>Customer Check‑In</h3>
+<h3>Check In Guest</h3>
 
-    <form method="post" class="row g-3">
+<form method="post">
 
-        <!-- CUSTOMER INFO (READ‑ONLY) -->
-        <div class="col-md-6">
-            <label class="form-label">Customer Identity ID</label>
-            <input asp-for="CustomerIdentityId"
-                   class="form-control"
-                   readonly />
-        </div>
+    <input type="hidden" asp-for="CustomerIdentityId" />
 
-        @* Optional display *@
-        @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
-        {
-            <div class="col-md-6">
-                <label class="form-label">Customer Name</label>
-                <input value="@Model.CustomerName"
-                       class="form-control"
-                       readonly />
-            </div>
-        }
+    <div class="mb-3">
+        <label>Customer Name</label>
+        <input class="form-control" value="@Model.CustomerName" readonly />
+    </div>
 
-        <!-- STAY DETAILS -->
-        <div class="col-md-6">
-            <label asp-for="RoomNo" class="form-label"></label>
-            <input asp-for="RoomNo" class="form-control" />
-            <span asp-validation-for="RoomNo" class="text-danger"></span>
-        </div>
+    <div class="mb-3">
+        <label>Mobile No</label>
+        <input class="form-control" value="@Model.MobileNo" readonly />
+    </div>
 
-        <div class="col-md-6">
-            <label asp-for="CheckInAt" class="form-label"></label>
-            <input asp-for="CheckInAt"
-                   type="datetime-local"
-                   class="form-control" />
-            <span asp-validation-for="CheckInAt" class="text-danger"></span>
-        </div>
+    <!-- Room Type -->
+    <div class="mb-3">
+        <label>Room Type</label>
+        <select id="RoomType" name="RoomType" class="form-control">
+            <option value="">-- Select Room Type --</option>
+            @foreach (var rt in Model.RoomTypes)
+            {
+                <option value="@rt.Value">@rt.Text</option>
+            }
+        </select>
+    </div>
 
-        <div class="col-md-6">
-            <label asp-for="DepositPaid" class="form-label"></label>
-            <input asp-for="DepositPaid" class="form-control" />
-            <span asp-validation-for="DepositPaid" class="text-danger"></span>
-        </div>
+    <!-- AC Option -->
+    <div class="mb-3">
+        <label>AC Option</label>
+        <select id="AcOption" name="AcOption" class="form-control">
+            <option value="">-- Select AC Option --</option>
+            @foreach (var ac in Model.AcOptions)
+            {
+                <option value="@ac.Value">@ac.Text</option>
+            }
+        </select>
+    </div>
 
-        <div class="col-12">
-            <button type="submit"
-                    class="btn btn-success">
-                Check In
-            </button>
+    <!-- Room Number -->
+    <div class="mb-3">
+        <label>Room Number</label>
+        <select id="RoomNo" name="RoomNo" class="form-control">
+            <option value="">-- Select Room --</option>
+        </select>
+    </div>
 
-            <a asp-action="Index"
-               class="btn btn-secondary ms-2">
-                Cancel
-            </a>
-        </div>
+    <!-- Price -->
+    <div class="mb-3">
+        <label>Price</label>
+        <input id="Price" class="form-control" readonly />
+    </div>
 
-    </form>
-</div>
+    <!-- Deposit -->
+    <div class="mb-3">
+        <label>Deposit Paid</label>
+        <input asp-for="DepositPaid" class="form-control" />
+        @Html.ValidationMessageFor(m => m.DepositPaid, "", new { style = "color:red" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Confirm Check-In
+    </button>
+    <a href="/customers" class="btn btn-secondary ms-2">
+        Cancel
+    </a>
+</form>
+
+<script>
+    const roomType = document.getElementById("RoomType");
+    const acOption = document.getElementById("AcOption");
+    const roomNo = document.getElementById("RoomNo");
+    const priceBox = document.getElementById("Price");
+
+    function loadRooms() {
+        if (!roomType.value || !acOption.value) return;
+
+        fetch(`/Stays/GetAvailableRooms?roomType=${roomType.value}&acOption=${acOption.value}`)
+            .then(res => res.json())
+            .then(data => {
+                roomNo.innerHTML = '<option value="">-- Select Room --</option>';
+                priceBox.value = "";
+
+                data.forEach(r => {
+                    const opt = document.createElement("option");
+                    opt.value = r.roomNo;
+                    opt.text = r.roomNo;
+                    roomNo.appendChild(opt);
+                });
+            });
+    }
+
+    function loadPrice() {
+        if (!roomNo.value) return;
+
+        fetch(`/Stays/GetRoomPrice?roomNo=${roomNo.value}`)
+            .then(res => res.json())
+            .then(data => {
+                priceBox.value = data.price;
+            });
+    }
+
+    roomType.addEventListener("change", loadRooms);
+    acOption.addEventListener("change", loadRooms);
+    roomNo.addEventListener("change", loadPrice);
+</script>

@@ -1,8 +1,10 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Stays;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
+using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.ViewModels.Stays;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HotelManagement.WebApp.Controllers
 {
@@ -161,15 +163,19 @@ namespace HotelManagement.WebApp.Controllers
             var customer = await _stayService.Customers
                 .GetByIdentityIdAsync(identityId);
 
-            if (customer is null)
+            if (customer == null)
                 return NotFound();
 
             var model = new CheckInStayViewModel
             {
                 CustomerIdentityId = customer.IdentityId,
-                CustomerName = customer.Name,     
+                CustomerName = customer.Name,
                 MobileNo = customer.MobileNo,
-                CheckInAt = DateTime.Now
+                RoomTypes = Enum.GetNames(typeof(RoomType))
+                    .Select(x => new SelectListItem(x, x)),
+                AcOptions = Enum.GetNames(typeof(AcOption))
+                    .Select(x => new SelectListItem(x, x)),
+                AvailableRooms = Enumerable.Empty<SelectListItem>()
             };
 
             return View(model);
@@ -180,23 +186,99 @@ namespace HotelManagement.WebApp.Controllers
         // CHECK-IN CUSTOMER (POST)
         // --------------------------------------------------
         [HttpPost("checkin/{identityId}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CheckIn( string identityId, CheckInStayViewModel model)
+        public async Task<IActionResult> CheckIn(
+      string identityId,
+      CheckInStayViewModel model)
         {
+            // ✅ Always rebind dropdowns
+            model.RoomTypes = Enum.GetNames(typeof(RoomType))
+                .Select(x => new SelectListItem(x, x));
+
+            model.AcOptions = Enum.GetNames(typeof(AcOption))
+                .Select(x => new SelectListItem(x, x));
+
+            // ✅ Load available rooms when RoomType & AC chosen
+            if (!string.IsNullOrEmpty(model.RoomType) &&
+                !string.IsNullOrEmpty(model.AcOption))
+            {
+                var rooms = await _stayService.Rooms.GetAllAsync();
+
+                var availableRooms = rooms
+                    .Where(r =>
+                        r.AvailabilityStatus == AvailabilityStatus.Available &&
+                        r.RoomType.ToString() == model.RoomType &&
+                        r.AcOption.ToString() == model.AcOption)
+                    .ToList();
+
+                model.AvailableRooms = availableRooms
+                    .Select(r => new SelectListItem(
+                        r.RoomNo.ToString(),
+                        r.RoomNo.ToString()));
+
+                // ✅ Set price after room selection
+                if (model.RoomNo.HasValue)
+                {
+                    var room = availableRooms
+                        .FirstOrDefault(r => r.RoomNo == model.RoomNo.Value);
+
+                    if (room != null)
+                        model.Price = room.Price;
+                }
+            }
+
+            // 🔁 FILTER MODE → stay on same page
+            if (model.ActionType == "Filter")
+                return View(model);
+
+            // ✅ FINAL SUBMIT
             if (!ModelState.IsValid)
                 return View(model);
 
-            var request = new CheckInRequest
+            await _stayService.Stays.CheckInAsync(new CheckInRequest
             {
                 CustomerIdentityId = identityId,
-                RoomNo = model.RoomNo,
+                RoomNo = model.RoomNo!.Value,
                 CheckInAt = model.CheckInAt,
                 DepositPaid = model.DepositPaid
-            };
+            });
 
-            await _stayService.Stays.CheckInAsync(request);
+            TempData["Success"] = "Customer checked in successfully";
 
-            return RedirectToAction("Index");
+            // ✅ Redirect only after submit
+            return RedirectToAction("Index", "Customers");
+        }
+        [HttpGet("GetAvailableRooms")]
+        public async Task<IActionResult> GetAvailableRooms(
+    string roomType,
+    string acOption)
+        {
+            var rooms = await _stayService.Rooms.GetAllAsync();
+
+            var result = rooms
+                .Where(r =>
+                    r.AvailabilityStatus == AvailabilityStatus.Available &&
+                    r.RoomType.ToString() == roomType &&
+                    r.AcOption.ToString() == acOption)
+                .Select(r => new
+                {
+                    roomNo = r.RoomNo
+                })
+                .ToList();
+
+            return Json(result);
+        }
+
+        [HttpGet("GetRoomPrice")]
+        public async Task<IActionResult> GetRoomPrice(int roomNo)
+        {
+            var rooms = await _stayService.Rooms.GetAllAsync();
+
+            var room = rooms.FirstOrDefault(r => r.RoomNo == roomNo);
+
+            if (room == null)
+                return Json(new { price = 0 });
+
+            return Json(new { price = room.Price });
         }
         // --------------------------------------------------
         // VIEW STAY DETAILS (GET)

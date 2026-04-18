@@ -8,15 +8,25 @@
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold">Drop / Pick Requests</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold">Drop / Pick Requests</h4>
 
-        <a asp-controller="DropPickRequests"
-           asp-action="Create"
-           class="btn btn-primary btn-sm">
-            + Create New Request
-        </a>
-    </div>
+                <!-- CREATE -->
+        <div class="d-flex gap-2">
+                <a asp-controller="DropPickRequests"
+                   asp-action="Create"
+                   class="btn btn-danger btn-sm">
+                    + Create New Request
+                </a>
+
+           
+                <!-- BACK -->
+                <a href="/cabservice"
+                   class="btn btn-dark btn-sm">
+                    ← Back
+                </a>
+            </div>
+        </div>
 
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
@@ -115,7 +125,5 @@
         </div>
     }
 
-    <a href="/reception/home" class="btn btn-secondary mt-3">
-        ← Back
     </a>
 </div>

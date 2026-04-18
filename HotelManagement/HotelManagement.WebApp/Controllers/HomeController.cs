@@ -6,7 +6,7 @@ namespace HotelManagement.WebApp.Presentation.Controllers
     {
         public IActionResult Index()
         {
-            return Content("✅ Hotel Management App is running");
+            return View();
         }
     }
 }
