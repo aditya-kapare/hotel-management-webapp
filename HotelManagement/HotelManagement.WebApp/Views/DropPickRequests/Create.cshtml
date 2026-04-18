@@ -28,7 +28,7 @@
     </form>
 
     <!-- LOAD BY CUSTOMER -->
-    <form asp-action="LoadCustomer" method="post" class="mb-4">
+    @* <form asp-action="LoadCustomer" method="post" class="mb-4">
         @Html.AntiForgeryToken()
 
         <div class="row">
@@ -46,9 +46,9 @@
                 </button>
             </div>
         </div>
-    </form>
+    </form> *@
 
-    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.StayId >= 0)
+    @if (Model.StayId >= 0)
     {
         <!-- CONTEXT SUMMARY -->
         <div class="alert alert-info">
@@ -65,8 +65,8 @@
             @Html.AntiForgeryToken()
 
             <input type="hidden" asp-for="StayId" />
-            <input type="hidden" asp-for="CustomerName" />
-            <input type="hidden" asp-for="CustomerMobileNo" />
+            @* <input type="hidden" asp-for="CustomerName" />
+            <input type="hidden" asp-for="CustomerMobileNo" /> *@
             <input type="hidden" asp-for="RoomNo" />
 
             <!-- DRIVER -->

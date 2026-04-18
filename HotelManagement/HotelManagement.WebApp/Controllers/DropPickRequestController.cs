@@ -76,16 +76,16 @@ public sealed class DropPickRequestsController : Controller
             }
         }
         // 2️⃣ Else if only customer identity is provided → load customer only
-        else if (identityId.HasValue && identityId.Value > 0)
-        {
-            var customer = await _receptionist.Customers.GetByIdentityIdAsync(identityId.Value.ToString());
+        //else if (identityId.HasValue && identityId.Value > 0)
+        //{
+        //    var customer = await _receptionist.Customers.GetByIdentityIdAsync(identityId.Value.ToString());
 
-            if (customer != null)
-            {
-                model.CustomerName = customer.Name;
-                model.CustomerMobileNo = customer.MobileNo;
-            }
-        }
+        //    if (customer != null)
+        //    {
+        //        model.CustomerName = customer.Name;
+        //        model.CustomerMobileNo = customer.MobileNo;
+        //    }
+        //}
 
         ViewBag.Drivers = (await _receptionist.DropPickRequests.GetAvailableDriversAsync())
             .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
@@ -305,32 +305,32 @@ public sealed class DropPickRequestsController : Controller
     }
 
 
-    [HttpPost("create/load-customer")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoadCustomer(CreateDropPickRequestCompositeViewModel model)
-    {
-        if (string.IsNullOrWhiteSpace(model.CustomerMobileNo))
-        {
-            ModelState.AddModelError(
-                nameof(model.CustomerMobileNo),
-                "Enter a valid customer mobile number");
-            return await ReloadCreateView(model);
-        }
+    //[HttpPost("create/load-customer")]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> LoadCustomer(CreateDropPickRequestCompositeViewModel model)
+    //{
+    //    if (string.IsNullOrWhiteSpace(model.CustomerMobileNo))
+    //    {
+    //        ModelState.AddModelError(
+    //            nameof(model.CustomerMobileNo),
+    //            "Enter a valid customer mobile number");
+    //        return await ReloadCreateView(model);
+    //    }
 
-        var customer = (await _receptionist.Customers.GetAllAsync())
-            .FirstOrDefault(c => c.MobileNo == model.CustomerMobileNo);
+    //    var customer = (await _receptionist.Customers.GetAllAsync())
+    //        .FirstOrDefault(c => c.MobileNo == model.CustomerMobileNo);
 
-        if (customer == null)
-        {
-            ModelState.AddModelError(
-                nameof(model.CustomerMobileNo),
-                "Customer not found");
-            return await ReloadCreateView(model);
-        }
+    //    if (customer == null)
+    //    {
+    //        ModelState.AddModelError(
+    //            nameof(model.CustomerMobileNo),
+    //            "Customer not found");
+    //        return await ReloadCreateView(model);
+    //    }
 
-        model.CustomerName = customer.Name;
-        model.CustomerMobileNo = customer.MobileNo;
+    //    model.CustomerName = customer.Name;
+    //    model.CustomerMobileNo = customer.MobileNo;
 
-        return await ReloadCreateView(model);
-    }
+    //    return await ReloadCreateView(model);
+    //}
 }
