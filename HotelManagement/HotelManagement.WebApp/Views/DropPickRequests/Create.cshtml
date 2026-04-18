@@ -48,7 +48,7 @@
         </div>
     </form>
 
-    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.StayId > 0)
+    @if (!string.IsNullOrWhiteSpace(Model.CustomerName) || Model.StayId >= 0)
     {
         <!-- CONTEXT SUMMARY -->
         <div class="alert alert-info">

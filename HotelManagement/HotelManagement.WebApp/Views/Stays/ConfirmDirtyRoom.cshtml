@@ -1,0 +1,12 @@
+﻿<h4>Room @ViewBag.RoomNo is dirty</h4>
+
+<p>
+    No clean rooms are available.
+    Do you want to assign this room anyway?
+</p>
+
+<form method="post" asp-action="ForceCheckIn">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Yes, Assign Room</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

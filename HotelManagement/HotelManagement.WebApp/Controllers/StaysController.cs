@@ -5,6 +5,7 @@ using HotelManagement.WebApp.ViewModels.Stays;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
 
 namespace HotelManagement.WebApp.Controllers
 {
@@ -230,16 +231,26 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            await _stayService.Stays.CheckInAsync(new CheckInRequest
+            try
             {
-                CustomerIdentityId = identityId,
-                RoomNo = model.RoomNo!.Value,
-                CheckInAt = model.CheckInAt,
-                DepositPaid = model.DepositPaid
-            });
+                await _stayService.Stays.CheckInAsync(new CheckInRequest
+                {
+                    CustomerIdentityId = identityId,
+                    RoomNo = model.RoomNo!.Value,
+                    CheckInAt = model.CheckInAt,
+                    DepositPaid = model.DepositPaid
+                });
 
-            TempData["Success"] = "Customer checked in successfully";
-            return RedirectToAction("Index", "Stays");
+                TempData["Success"] = "Customer checked in successfully";
+                return RedirectToAction("Index", "Stays");
+            }
+            catch (InvalidOperationException ex)
+                when (ex.Message.Contains("not clean"))
+            {
+                TempData["PendingCheckIn"] = JsonSerializer.Serialize(model);
+                TempData["DirtyRoomNo"] = model.RoomNo;
+                return RedirectToAction("ConfirmDirtyRoom");
+            }
         }
 
 
@@ -323,5 +334,34 @@ namespace HotelManagement.WebApp.Controllers
 
             return View(stays);
         }
+
+        [HttpGet("confirm-dirty-room")]
+        public IActionResult ConfirmDirtyRoom()
+        {
+            if (TempData["DirtyRoomNo"] == null)
+                return RedirectToAction("Index", "Stays");
+
+            ViewBag.RoomNo = TempData["DirtyRoomNo"];
+            return View();
+        }
+
+        [HttpPost("force-checkin")]
+        public async Task<IActionResult> ForceCheckIn()
+        {
+            var model = JsonSerializer.Deserialize<CheckInStayViewModel>(
+                TempData["PendingCheckIn"]!.ToString()!);
+
+            await _stayService.Stays.ForceCheckInAsync(new CheckInRequest
+            {
+                CustomerIdentityId = model.CustomerIdentityId,
+                RoomNo = model.RoomNo!.Value,
+                CheckInAt = model.CheckInAt,
+                DepositPaid = model.DepositPaid
+            });
+
+            TempData["Success"] = "Customer checked in (room auto-cleaned)";
+            return RedirectToAction("Index", "Stays");
+        }
+
     }
 }   

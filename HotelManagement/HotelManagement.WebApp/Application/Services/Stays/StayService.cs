@@ -112,6 +112,22 @@ namespace HotelManagement.WebApp.Application.Services
             return StayMapping.ToDto(stay);
         }
 
+        public async Task<StayDto> ForceCheckInAsync(CheckInRequest request)
+        {
+            var normalized = NormalizeCheckIn(request);
+
+            var room = await _roomDal.GetRoomByRoomNoAsync(normalized.RoomNo)
+                ?? throw new KeyNotFoundException();
+
+            // ✅ implicit clean
+            room.CleanStatus = CleanStatus.Clean;
+            room.AvailabilityStatus = AvailabilityStatus.Available;
+            await _roomDal.UpdateRoomAsync(room);
+
+            // ✅ reuse existing logic
+            return await CheckInAsync(normalized);
+        }
+
         public async Task<StayDto> UpdateAsync(int stayId, UpdateStayRequest request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));

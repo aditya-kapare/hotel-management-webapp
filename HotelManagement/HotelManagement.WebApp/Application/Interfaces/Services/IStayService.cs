@@ -19,6 +19,8 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<StayDto> CheckOutAsync(int stayId, CheckOutRequest request);
         Task<BillingSummaryDto> GetBillingSummaryAsync(int stayId);
 
+        Task<StayDto> ForceCheckInAsync(CheckInRequest request);
+
         Task<bool> DeleteAsync(int stayId);
     }
 }
