@@ -1,17 +1,23 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Employee;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Employees;
+using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace HotelManagement.WebApp.Application.Services
 {
     public sealed class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeDAL _employeeDal;
+        private readonly UserManager<ApplicationEmployee> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public EmployeeService(IEmployeeDAL employeeDal)
+        public EmployeeService(IEmployeeDAL employeeDal, UserManager<ApplicationEmployee> userManager, RoleManager<IdentityRole> roleManager)
         {
             _employeeDal = employeeDal;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<IReadOnlyList<EmployeeSummaryDto>> GetAllAsync()
@@ -35,6 +41,7 @@ namespace HotelManagement.WebApp.Application.Services
 
             var normalized = NormalizeCreate(request);
             ValidateCreate(normalized);
+
             bool needsLogin =
                 (normalized.EmployeePosition?.Contains("Admin", StringComparison.OrdinalIgnoreCase) == true) ||
                 (normalized.EmployeePosition?.Contains("Reception", StringComparison.OrdinalIgnoreCase) == true);
@@ -49,14 +56,28 @@ namespace HotelManagement.WebApp.Application.Services
                     throw new ArgumentException("Password is required for Admin/Receptionist.");
 
                 created = await _employeeDal.AddEmployeeAsync(entity, normalized.Password);
+
+                if (!created)
+                    throw new InvalidOperationException("User creation failed.");
+
+                // ✅ ADD ROLE HERE (AFTER user creation)
+                var roleName = normalized.EmployeePosition!.Contains("Admin", StringComparison.OrdinalIgnoreCase)
+                    ? "Admin"
+                    : "Receptionist";
+
+                if (!await _roleManager.RoleExistsAsync(roleName))
+                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+                var user = await _userManager.FindByEmailAsync(entity.EmailId);
+                await _userManager.AddToRoleAsync(user!, roleName);
             }
             else
             {
                 created = await _employeeDal.AddEmployeeAsync(entity, password: null);
-            }
 
-            if (!created)
-                throw new InvalidOperationException($"Employee with Aadhar '{normalized.AadharNo}' could not be created.");
+                if (!created)
+                    throw new InvalidOperationException("Employee creation failed.");
+            }
 
             return EmployeeMapping.ToDetailsDto(entity);
         }
