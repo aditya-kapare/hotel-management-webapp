@@ -78,5 +78,11 @@ namespace HotelManagement.WebApp.Presentation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet("denied")]
+        public IActionResult Denied()
+        {
+            return View();
+        }
+
     }
 }

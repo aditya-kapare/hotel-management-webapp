@@ -54,9 +54,27 @@
 
             <div class="col-md-3">
                 <label class="form-label">Gender</label>
-                <input name="Gender"
-                       class="form-control"
-                       value="@(m?.Gender ?? "")" />
+
+                <select name="Gender" class="form-select">
+                    <option value="">-- Select Gender --</option>
+
+                    <option value="Male"
+                            selected="@(m?.Gender?.ToString() == "Male")">
+                        Male
+                    </option>
+
+                    <option value="Female"
+                            selected="@(m?.Gender?.ToString() == "Female")">
+                        Female
+                    </option>
+
+                    <option value="Other"
+                            selected="@(m?.Gender?.ToString() == "Other")">
+                        Other
+                    </option>
+                </select>
+            </div>
+
             </div>
 
             <div class="col-md-6">

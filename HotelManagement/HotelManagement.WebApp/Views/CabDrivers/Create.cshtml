@@ -34,21 +34,32 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Car Vendor</label>
-                        <input type="text" name="carVendor" class="form-control" required />
+                        <label class="form-label">Vendor</label>
+                        <select name="carVendor" class="form-select">
+                            <option value="">-- Select Vendor --</option>
+                            <option value="Ola">Ola</option>
+                            <option value="Uber">Uber</option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Car Type</label>
-                        <input type="text" name="carType" class="form-control" required />
+                        <select name="carType" class="form-select">
+                            <option value="">-- Select Car Type --</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                        </select>
                     </div>
+                    
 
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Add Driver
-                    </button>
-                    <button type="button" class="btn btn-secondary ms-2" onclick="history.back()">
-                        Cancel
-                    </button>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-success">
+                            Add Driver
+                        </button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="history.back()">
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

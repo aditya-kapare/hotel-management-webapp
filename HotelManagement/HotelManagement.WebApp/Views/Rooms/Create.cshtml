@@ -13,11 +13,12 @@
 
         <div class="mb-3">
             <label class="form-label">Room Number</label>
-            <input type="number"
-                   name="RoomNo"
+            <input asp-for="RoomNo"
+                   type="number"
                    class="form-control"
-                   min="1"
-                   required />
+                   min="1" />
+            <span asp-validation-for="RoomNo"
+                  class="text-danger"></span>
 
             <div class="form-text text-muted">
                 Room number must be unique (e.g., 101, 102, 201).

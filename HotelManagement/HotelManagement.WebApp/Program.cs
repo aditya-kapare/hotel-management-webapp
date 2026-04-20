@@ -44,9 +44,11 @@ builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
 builder.Services.AddScoped<IReceptionistServiceFacade, ReceptionistServiceFacade>();
 builder.Services.ConfigureApplicationCookie(options =>
-{   
-    options.LoginPath = "/auth/login";
-    options.AccessDeniedPath = "/auth/denied";
+{
+
+    options.LoginPath = "/account/login";
+    options.AccessDeniedPath = "/account/denied";
+
 });
 
 

@@ -116,7 +116,6 @@ namespace HotelManagement.WebApp.Controllers
             if (stay is null)
                 return NotFound();
 
-            // Domain → ViewModel
             var model = new CheckOutStayViewModel
             {
                 StayId = stay.StayId,
@@ -130,21 +129,53 @@ namespace HotelManagement.WebApp.Controllers
                 DepositPaid = stay.DepositPaid
             };
 
+            // ✅ ADD THIS
+            var rooms = await _stayService.Rooms.GetAllAsync();
+            var room = rooms.FirstOrDefault(r => r.RoomNo == stay.RoomNo);
+            ViewBag.RoomPrice = room?.Price ?? 0;
+
             return View(model);
         }
+
 
         // --------------------------------------------------
         // d. CHECK-OUT CUSTOMER (POST)
         // --------------------------------------------------
+
+
         [HttpPost("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(
-            int stayId,
-            CheckOutStayViewModel model)
+          int stayId,
+          CheckOutStayViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ViewModel → DTO
+            var rooms = await _stayService.Rooms.GetAllAsync();
+            var room = rooms.FirstOrDefault(r => r.RoomNo == model.RoomNo);
+
+            if (room == null)
+            {
+                ModelState.AddModelError("", "Room not found");
+                return View(model);
+            }
+
+            var totalAmount = room.Price;
+
+            // ✅ ISSUE 14
+            if (model.AmountPaid > totalAmount)
+            {
+                TempData["Error"] = "Amount paid cannot exceed room price";
+                return RedirectToAction(nameof(CheckOut), new { stayId });
+            }
+
+            // ✅ ISSUE 15
+            if (model.AmountPaid < totalAmount)
+            {
+                TempData["Error"] = "Amount paid is less than required";
+                return RedirectToAction(nameof(CheckOut), new { stayId });
+            }
+
             var request = new CheckOutRequest
             {
                 CheckOutAt = model.CheckOutAt,

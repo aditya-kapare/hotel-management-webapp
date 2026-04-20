@@ -46,8 +46,11 @@ namespace HotelManagement.WebApp.Controllers
             };
 
             await _receptionistService.Customers.CreateAsync(request);
+            
+            TempData["Success"] = "Customer added successfully";
+            return RedirectToAction(nameof(Index));
 
-            return RedirectToAction("Create");
+            //return RedirectToAction("Create");
         }
 
         // --------------------------------------------------

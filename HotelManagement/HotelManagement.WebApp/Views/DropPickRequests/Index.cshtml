@@ -81,7 +81,6 @@
                         }
                     </td>
 
-                    <!-- ACTIONS -->
                     <td class="text-center">
                         <!-- VIEW -->
                         <a asp-action="Details"
@@ -99,7 +98,7 @@
                                 Edit
                             </a>
 
-                            <!-- CANCEL (SOFT DELETE) -->
+                            <!-- CANCEL -->
                             <form asp-action="Delete"
                                   asp-route-id="@r.RequestId"
                                   method="post"
@@ -107,7 +106,7 @@
                                   onsubmit="return confirm('Cancel this request?');">
                                 @Html.AntiForgeryToken()
                                 <button type="submit"
-                                        class="btn btn-sm btn-warning">
+                                        class="btn btn-sm btn-danger">
                                     Cancel
                                 </button>
                             </form>
@@ -118,12 +117,22 @@
         </tbody>
     </table>
 
+
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success mt-3">
+        <div id="successMsg"
+             class="alert alert-success alert-dismissible fade show mb-3"
+             role="alert">
             @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
         </div>
     }
+
 
     </a>
 </div>

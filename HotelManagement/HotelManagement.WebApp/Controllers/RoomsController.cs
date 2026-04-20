@@ -1,4 +1,5 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Room;
+using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -96,12 +97,22 @@ namespace HotelManagement.WebApp.Controllers
         [HttpPost("/admin/rooms/create")]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoomRequest request)
+        public async Task<IActionResult> Create(CreateRoomRequest model)
         {
             if (!ModelState.IsValid)
-                return View(request);
+                return View(model);
 
-            await _admin.Rooms.CreateAsync(request);
+            try
+            {
+                await _admin.Rooms.CreateAsync(model);
+            }
+            catch (InvalidOperationException)
+            {
+                ModelState.AddModelError("RoomNo", "Room number already exists.");
+                return View(model);
+            }
+
+            TempData["Success"] = "Room added successfully";
             return RedirectToAction(nameof(AdminIndex));
         }
 

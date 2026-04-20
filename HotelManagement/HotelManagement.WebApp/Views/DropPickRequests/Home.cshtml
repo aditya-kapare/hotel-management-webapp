@@ -7,9 +7,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">Drop & Pick Service</h3>
 
-        <a href="/reception/home" class="btn btn-dark btn-sm">
-            ← Back
-        </a>
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/reception/home" class="btn btn-dark">
+                ← Back
+            </a>
+        </div>
     </div>
 
     <div class="row g-4">
@@ -48,6 +50,21 @@
             </div>
         </div>
 
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5>Past Requests</h5>
+                    <p class="text-muted">
+                        View cancelled drop & pick requests
+                    </p>
+                    <a asp-controller="DropPickRequests"
+                       asp-action="History"
+                       class="btn btn-secondary">
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>

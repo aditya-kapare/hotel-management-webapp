@@ -66,10 +66,10 @@
 
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <form method="get" class="row g-2 mb-3 align-items-end">
 
-        <!-- Room Type -->
-        <div class="col-md-3">
+        <!-- Room Type (SMALLER NOW) -->
+        <div class="col-md-2">
             <select name="type" class="form-select">
                 <option value="">All Room Types</option>
                 @foreach (var rt in ViewBag.RoomTypes)
@@ -84,7 +84,7 @@
         <!-- AC Option -->
         <div class="col-md-2">
             <select name="acOption" class="form-select">
-                <option value="">All AC Options</option>
+                <option value="">All AC</option>
                 @foreach (var ac in ViewBag.AcOptions)
                 {
                     <option value="@ac" selected="@(ViewBag.SelectedAc == ac)">
@@ -97,7 +97,7 @@
         <!-- Clean Status -->
         <div class="col-md-2">
             <select name="cleanStatus" class="form-select">
-                <option value="">All Cleanliness</option>
+                <option value="">Cleanliness</option>
                 @foreach (var cs in ViewBag.CleanStatuses)
                 {
                     <option value="@cs" selected="@(ViewBag.SelectedClean == cs)">
@@ -107,10 +107,10 @@
             </select>
         </div>
 
-        <!-- Availability Status -->
-        <div class="col-md-3">
+        <!-- Availability -->
+        <div class="col-md-2">
             <select name="availabilityStatus" class="form-select">
-                <option value="">All Availability</option>
+                <option value="">Availability</option>
                 @foreach (var av in ViewBag.AvailabilityStatuses)
                 {
                     <option value="@av" selected="@(ViewBag.SelectedAvailability == av)">
@@ -127,7 +127,24 @@
             </button>
         </div>
 
+        <!-- Reset Button -->
+        <div class="col-md-2">
+            @if (ViewBag.IsReadOnly)
+            {
+                <a href="/rooms" class="btn btn-outline-danger w-100">
+                    Reset
+                </a>
+            }
+            else
+            {
+                <a href="/admin/rooms" class="btn btn-outline-danger w-100">
+                    Reset
+                </a>
+            }
+        </div>
+
     </form>
+   
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-light">
             <tr>
@@ -137,7 +154,11 @@
                 <th>Availability Status</th>
                 <th>Cleanliness status</th>
                 <th class="text-end">Price</th>
-                <th class="text-center">Actions</th>
+                @if (!ViewBag.IsReadOnly)
+                {
+                    <th class="text-center">Actions</th>
+                }
+                `
             </tr>
         </thead>
         <tbody>
@@ -155,13 +176,23 @@
                 </td>
                 <td>@r.CleanStatus</td>
                 <td class="text-end">₹ @r.Price</td>
-                <td class="text-center">
+
                 @if (!ViewBag.IsReadOnly)
                     {
-                        <a asp-action="Edit" asp-route-id="@r.RoomNo">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@r.RoomNo">Delete</a>
+                        <td class="text-center">
+                            <a asp-action="Edit"
+                               asp-route-id="@r.RoomNo"
+                               class="btn btn-sm btn-info me-1">
+                                Edit
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@r.RoomNo"
+                               class="btn btn-sm btn-danger">
+                                Delete
+                            </a>
+                        </td>
                     }
-                </td>
             </tr>
                         }
         </tbody>

@@ -31,27 +31,28 @@ public sealed class DropPickRequestsController : Controller
 
     [HttpGet("list")]
     public async Task<IActionResult> Index()
-{
-    var requests = await _receptionist
-        .DropPickRequests
-        .GetRequestListAsync();
-
-    var model = requests.Select(r => new DropPickRequestViewListModel
     {
-        RequestId = r.RequestId,
-        RoomNo = r.RoomNo,
-        CustomerName = r.CustomerName,
-        CustomerMobileNo = r.CustomerPhone,
-        DriverName = r.DriverName,
+        var requests = await _receptionist
+            .DropPickRequests
+            .GetRequestListAsync();
 
-        // ✅ CORRECT PROPERTY
-        Status = r.RequestStatus,
+        var model = requests
+            .Where(r => r.RequestStatus != DropPickStatus.Cancelled)
+            .Select(r => new DropPickRequestViewListModel
+            {
+                RequestId = r.RequestId,
+                RoomNo = r.RoomNo,
+                CustomerName = r.CustomerName,
+                CustomerMobileNo = r.CustomerPhone,
+                DriverName = r.DriverName,
+                Status = r.RequestStatus,
+                CanEdit = r.CanEdit
+            })
+            .ToList();
 
-        CanEdit = r.CanEdit
-    }).ToList();
+        return View("Index", model);
+    }
 
-    return View("Index", model);
-}
     [HttpGet("create")]
     public async Task<IActionResult> Create(int? stayId, int? identityId)
     {
@@ -63,6 +64,11 @@ public sealed class DropPickRequestsController : Controller
             var stay = await _receptionist.Stays.GetByIdAsync(stayId.Value);
             if (stay != null)
             {
+                if (stay.CheckOutAt != null)
+                {
+                    TempData["Error"] = "Cab cannot be booked after customer check-out";
+                    return RedirectToAction("Index", "Customers");
+                }
                 model.StayId = stay.StayId;
                 model.RoomNo = stay.RoomNo;
 
@@ -140,15 +146,23 @@ public sealed class DropPickRequestsController : Controller
         if (!ModelState.IsValid)
             return await ReloadCreateView(model);
 
-        await _receptionist.DropPickRequests.CreateAsync(
-            new DropPickRequest
-            {
-                StayId = model.StayId,
-                DriverId = model.DriverId,
-                RequestType = model.RequestType,
-                RequestedAt = model.RequestedAt,
-                Notes = model.Notes
-            });
+        try
+        {
+            await _receptionist.DropPickRequests.CreateAsync(
+                new DropPickRequest
+                {
+                    StayId = model.StayId,
+                    DriverId = model.DriverId,
+                    RequestType = model.RequestType,
+                    RequestedAt = model.RequestedAt,
+                    Notes = model.Notes
+                });
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+            return await ReloadCreateView(model);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -224,11 +238,18 @@ public sealed class DropPickRequestsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Drivers = (await _receptionist
-                .DropPickRequests
-                .GetAvailableDriversAsync())
-                .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
-                .ToList();
+            var drivers = (await _receptionist
+    .DropPickRequests
+    .GetAvailableDriversAsync())
+    .Select(d => new SelectListItem
+    {
+        Text = d.Name,
+        Value = d.DriverId.ToString(),
+        Selected = d.DriverId == model.DriverId
+    })
+    .ToList();
+
+ViewBag.Drivers = drivers;
 
             return View(model);
         }
@@ -332,6 +353,29 @@ public sealed class DropPickRequestsController : Controller
             .ToList();
 
         return View("Create", model);
+    }
+    [HttpGet("history")]
+    public async Task<IActionResult> History()
+    {
+        var requests = await _receptionist
+            .DropPickRequests
+            .GetRequestListAsync();
+
+        var model = requests
+            .Where(r => r.RequestStatus == DropPickStatus.Cancelled)
+            .Select(r => new DropPickRequestViewListModel
+            {
+                RequestId = r.RequestId,
+                RoomNo = r.RoomNo,
+                CustomerName = r.CustomerName,
+                CustomerMobileNo = r.CustomerPhone,
+                DriverName = r.DriverName,
+                Status = r.RequestStatus,
+                CanEdit = false // 🔒 IMPORTANT
+            })
+            .ToList();
+
+        return View("History", model);
     }
 
 
