@@ -16,8 +16,6 @@ namespace HotelManagement.WebApp.Controllers
             _admin = admin;
         }
 
-        // ✅ INDEX : View All | View By Aadhaar | Search
-        // GET: /admin/employees
         [HttpGet("")]
         public async Task<IActionResult> Index(
         string filterType,
@@ -28,7 +26,7 @@ namespace HotelManagement.WebApp.Controllers
 
           
 
-            // ✅ SEARCH
+            
             if (!string.IsNullOrEmpty(search))
             {
                 employees = employees
@@ -40,7 +38,7 @@ namespace HotelManagement.WebApp.Controllers
 
             return View(employees);
         }
-        // ✅ CREATE
+        
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -59,7 +57,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ✅ DETAILS
+        
         [HttpGet("details")]
         public async Task<IActionResult> Details(string aadharNo)
         {
@@ -70,7 +68,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(employee);
         }
 
-        // ✅ EDIT
+        
         [HttpGet("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(string aadharNo)
         {
@@ -108,7 +106,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Details), new { aadharNo });
         }
 
-        // ✅ DELETE
+     
         [HttpGet("delete/{aadharNo}")]
        
         public async Task<IActionResult> Delete(string aadharNo)
@@ -117,7 +115,7 @@ namespace HotelManagement.WebApp.Controllers
             if (employee is null)
                 return NotFound();
 
-            // ✅ Capture where the user came from
+            
             var referer = Request.Headers["Referer"].ToString();
 
             TempData["ReturnUrl"] = referer;
@@ -132,7 +130,7 @@ namespace HotelManagement.WebApp.Controllers
 
             TempData["SuccessMessage"] = "Employee deleted successfully.";
 
-            // ✅ Redirect back to where delete was initiated
+            
             if (TempData["ReturnUrl"] != null)
             {
                 return Redirect(TempData["ReturnUrl"].ToString());

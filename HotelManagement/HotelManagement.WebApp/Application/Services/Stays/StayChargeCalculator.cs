@@ -2,10 +2,17 @@
 
 namespace HotelManagement.WebApp.Application.Services.Stays
 {
+    /// <summary>
+    /// Calculates stay duration and billing amounts.
+    /// </summary>
     public sealed class StayChargeCalculator : IStayChargeCalculator
     {
+        /// <summary>
+        /// Calculates the number of chargeable nights for a stay.
+        /// </summary>
         public int CalculateNights(DateTime checkInAt, DateTime checkOutAt)
         {
+            // Ensure minimum one-night charge
             if (checkOutAt <= checkInAt) return 1;
 
             var totalDays = (checkOutAt - checkInAt).TotalDays;
@@ -13,8 +20,15 @@ namespace HotelManagement.WebApp.Application.Services.Stays
             return Math.Max(1, nights);
         }
 
-        public decimal CalculateTotalCharge(decimal roomPricePerNight, int nights) => roomPricePerNight * nights;
+        /// <summary>
+        /// Calculates total room charge based on nights stayed.
+        /// </summary>
+        public decimal CalculateTotalCharge(decimal roomPricePerNight, int nights)
+            => roomPricePerNight * nights;
 
+        /// <summary>
+        /// Calculates total bill, paid amount, and pending balance.
+        /// </summary>
         public (decimal TotalCharge, decimal TotalPaid, decimal Pending) CalculateBill(
             decimal roomPricePerNight,
             DateTime checkInAt,
@@ -22,6 +36,7 @@ namespace HotelManagement.WebApp.Application.Services.Stays
             decimal depositPaid,
             decimal additionalAmountPaid)
         {
+            // Compute nights and total charge
             var nights = CalculateNights(checkInAt, checkOutAt);
             var total = CalculateTotalCharge(roomPricePerNight, nights);
 

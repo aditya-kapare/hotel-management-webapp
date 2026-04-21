@@ -7,23 +7,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.WebApp.Application.Services
 {
+    /// <summary>
+    /// Service handling customer-related business operations.
+    /// </summary>
     public sealed class CustomerService : ICustomerService
     {
         private readonly ICustomerDAL _customerDal;
 
+        
         public CustomerService(ICustomerDAL customerDal)
         {
+            
             _customerDal = customerDal;
         }
-
         public async Task<IReadOnlyList<CustomerDto>> GetAllAsync()
         {
+    
             var customers = await _customerDal.GetAllCustomersAsync();
             return customers.Select(CustomerMapping.ToDto).ToList();
         }
 
+      
         public async Task<CustomerDto?> GetByIdentityIdAsync(string identityId)
         {
+            // Normalize and validate identity ID
             identityId = NormalizeId(identityId);
             if (string.IsNullOrWhiteSpace(identityId)) return null;
 
@@ -33,12 +40,15 @@ namespace HotelManagement.WebApp.Application.Services
 
         public async Task<IReadOnlyList<CustomerDto>> GetByIdentityIdTypeAsync(IdentityIdType identityIdType)
         {
+            // Fetch customers filtered by identity type
             var customers = await _customerDal.GetCustomersByIdentityIdTypeAsync((int)identityIdType);
             return customers.Select(CustomerMapping.ToDto).ToList();
         }
 
+   
         public async Task<CustomerDto> CreateAsync(CreateCustomerRequest request)
         {
+            // Validate incoming create request
             if (request is null) throw new ArgumentNullException(nameof(request));
 
             var normalized = NormalizeCreate(request);
@@ -51,6 +61,7 @@ namespace HotelManagement.WebApp.Application.Services
             }
             catch (DbUpdateException ex)
             {
+                // Handle duplicate or failed insert
                 throw new InvalidOperationException(
                     $"Customer with IdentityId '{normalized.IdentityId}' already exists or insert failed.", ex);
             }
@@ -80,20 +91,28 @@ namespace HotelManagement.WebApp.Application.Services
 
         public async Task<bool> DeleteAsync(string identityId)
         {
+            // Normalize identity ID before deletion
             identityId = NormalizeId(identityId);
             if (string.IsNullOrWhiteSpace(identityId)) return false;
 
-            return await _customerDal.DeleteCustomerAsync(identityId);            
+            return await _customerDal.DeleteCustomerAsync(identityId);
         }
 
         // -------------------------
         // Minimal normalization/validation
         // -------------------------
 
+        /// <summary>
+        /// Trims and normalizes identity ID.
+        /// </summary>
         private static string NormalizeId(string id) => (id ?? string.Empty).Trim();
 
+        /// <summary>
+        /// Normalizes create request values.
+        /// </summary>
         private static CreateCustomerRequest NormalizeCreate(CreateCustomerRequest r) => new()
         {
+            // Trim all input fields
             IdentityId = (r.IdentityId ?? string.Empty).Trim(),
             IdentityIdType = r.IdentityIdType,
             MobileNo = (r.MobileNo ?? string.Empty).Trim(),
@@ -103,8 +122,12 @@ namespace HotelManagement.WebApp.Application.Services
             Country = (r.Country ?? string.Empty).Trim()
         };
 
+        /// <summary>
+        /// Normalizes update request values.
+        /// </summary>
         private static UpdateCustomerRequest NormalizeUpdate(UpdateCustomerRequest r) => new()
         {
+            // Trim all updatable fields
             MobileNo = (r.MobileNo ?? string.Empty).Trim(),
             Name = (r.Name ?? string.Empty).Trim(),
             Gender = r.Gender,
@@ -112,8 +135,12 @@ namespace HotelManagement.WebApp.Application.Services
             Country = (r.Country ?? string.Empty).Trim()
         };
 
+        /// <summary>
+        /// Validates create customer request.
+        /// </summary>
         private static void ValidateCreate(CreateCustomerRequest r)
         {
+           
             if (string.IsNullOrWhiteSpace(r.IdentityId))
                 throw new ArgumentException("IdentityId is required.", nameof(r.IdentityId));
 
@@ -124,8 +151,12 @@ namespace HotelManagement.WebApp.Application.Services
                 throw new ArgumentException("Name is required.", nameof(r.Name));
         }
 
+        /// <summary>
+        /// Validates update customer request.
+        /// </summary>
         private static void ValidateUpdate(UpdateCustomerRequest r)
         {
+           
             if (string.IsNullOrWhiteSpace(r.MobileNo))
                 throw new ArgumentException("MobileNo is required.", nameof(r.MobileNo));
 

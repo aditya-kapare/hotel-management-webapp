@@ -26,7 +26,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
         {
             var drivers = await _admin.Drivers.GetAllAsync();
 
-            // ✅ FILTER BY GENDER
+            
             if (gender.HasValue)
             {
                 drivers = drivers
@@ -34,7 +34,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-            // ✅ FILTER BY CAR VENDOR
+            
             if (!string.IsNullOrWhiteSpace(carVendor))
             {
                 drivers = drivers
@@ -42,7 +42,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-            // ✅ FILTER BY CAR TYPE
+          
             if (!string.IsNullOrWhiteSpace(carType))
             {
                 drivers = drivers
@@ -50,12 +50,12 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-            // ✅ Pass dropdown values
+            
             ViewBag.Genders = Enum.GetValues(typeof(Gender));
             ViewBag.CarVendors = drivers.Select(d => d.CarVendor).Distinct().ToList();
             ViewBag.CarTypes = drivers.Select(d => d.CarType).Distinct().ToList();
 
-            // ✅ Preserve selected values
+         
             ViewBag.SelectedGender = gender;
             ViewBag.SelectedCarVendor = carVendor;
             ViewBag.SelectedCarType = carType;
@@ -69,7 +69,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View();
         }
 
-        // ✅ CREATE POST (NO antiforgery)
+       
         [HttpPost("create")]
         public async Task<IActionResult> Create(
             string name,
@@ -89,10 +89,10 @@ namespace HotelManagement.WebApp.Controllers.Admin
 
             await _admin.Drivers.CreateAsync(request);
 
-            // ✅ Success message
+       
             TempData["SuccessMessage"] = "Cab driver added successfully";
 
-            // ✅ Go back to list page
+          
             return RedirectToAction(nameof(Index));
         }
 

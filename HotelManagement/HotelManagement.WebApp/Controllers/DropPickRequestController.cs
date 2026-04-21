@@ -18,14 +18,12 @@ public sealed class DropPickRequestsController : Controller
         _receptionist = receptionist;
     }
 
-    // =====================================================
-    // INDEX
-    // =====================================================
+ 
 
     [HttpGet("")]
     public IActionResult Home()
     {
-        return View("Home");   // ✅ NO MODEL
+        return View("Home");   
     }
 
 
@@ -58,7 +56,7 @@ public sealed class DropPickRequestsController : Controller
     {
         var model = new CreateDropPickRequestCompositeViewModel();
 
-        // 1️⃣ If stayId is provided → load stay + customer
+      
         if (stayId.HasValue && stayId.Value > 0)
         {
             var stay = await _receptionist.Stays.GetByIdAsync(stayId.Value);
@@ -81,17 +79,7 @@ public sealed class DropPickRequestsController : Controller
                 }
             }
         }
-        // 2️⃣ Else if only customer identity is provided → load customer only
-        //else if (identityId.HasValue && identityId.Value > 0)
-        //{
-        //    var customer = await _receptionist.Customers.GetByIdentityIdAsync(identityId.Value.ToString());
 
-        //    if (customer != null)
-        //    {
-        //        model.CustomerName = customer.Name;
-        //        model.CustomerMobileNo = customer.MobileNo;
-        //    }
-        //}
 
         ViewBag.Drivers = (await _receptionist.DropPickRequests.GetAvailableDriversAsync())
             .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
@@ -100,44 +88,6 @@ public sealed class DropPickRequestsController : Controller
         return View(model);
     }
 
-    //[HttpPost("create")]
-    //[ValidateAntiForgeryToken]
-    //public async Task<IActionResult> Create(CreateDropPickRequestViewModel model)
-    //{
-    //    if (!ModelState.IsValid)
-    //    {
-    //        // 🔁 Map Create VM → List VM (required for Create view)
-    //        var viewModel = new DropPickRequestViewListModel
-    //        {
-    //            StayId = model.StayId,
-    //            RoomNo = model.RoomNo,
-    //            CustomerName = model.CustomerName,
-    //            DriverId = model.DriverId,
-    //            Notes = model.Notes,
-    //            RequestType = model.RequestType.ToString()
-    //        };
-
-    //        ViewBag.Drivers = (await _receptionist
-    //            .DropPickRequests
-    //            .GetAvailableDriversAsync())
-    //            .Select(d => new SelectListItem(d.Name, d.DriverId.ToString()))
-    //            .ToList();
-
-    //        return View("Create", viewModel);
-    //    }
-
-    //    await _receptionist.DropPickRequests.CreateAsync(
-    //        new CreateDropPickRequest
-    //        {
-    //            StayId = model.StayId,
-    //            DriverId = model.DriverId,
-    //            RequestType = model.RequestType,
-    //            RequestedAt = DateTime.Today.Add(model.SelectedTime),
-    //            Notes = model.Notes
-    //        });
-
-    //    return RedirectToAction(nameof(Index));
-    //}
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
@@ -175,13 +125,11 @@ public sealed class DropPickRequestsController : Controller
         if (req == null)
             return RedirectToAction(nameof(Index));
 
-        //var customer = await _receptionist.Customers.GetByIdentityIdAsync(req.CustomerPhone);
-        //var driver = await _receptionist.Drivers.GetByIdAsync(req.DriverId);
+    
 
         if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
             return RedirectToAction(nameof(Index));
 
-        // 1. Get available drivers
         var availableDrivers = (await _receptionist
             .DropPickRequests
             .GetAvailableDriversAsync())
@@ -192,11 +140,10 @@ public sealed class DropPickRequestsController : Controller
             })
             .ToList();
 
-        // 2. Check if current driver is already in available list
+ 
         bool currentDriverExists = availableDrivers
             .Any(d => d.Value == req.DriverId.ToString());
 
-        // 3. If not, add current driver at top
         if (!currentDriverExists && req.DriverId != null)
         {
             availableDrivers.Insert(0, new SelectListItem
@@ -208,7 +155,7 @@ public sealed class DropPickRequestsController : Controller
         }
         else
         {
-            // 4. If exists, just mark it selected
+           
             availableDrivers
                 .First(d => d.Value == req.DriverId.ToString())
                 .Selected = true;
@@ -278,9 +225,6 @@ ViewBag.Drivers = drivers;
         return RedirectToAction(nameof(Index));
     }
 
-    // =====================================================
-    // DETAILS
-    // =====================================================
     [HttpGet("details/{id:int}")]
     public async Task<IActionResult> Details(int id)
     {
@@ -371,7 +315,7 @@ ViewBag.Drivers = drivers;
                 CustomerMobileNo = r.CustomerPhone,
                 DriverName = r.DriverName,
                 Status = r.RequestStatus,
-                CanEdit = false // 🔒 IMPORTANT
+                CanEdit = false 
             })
             .ToList();
 
@@ -379,32 +323,4 @@ ViewBag.Drivers = drivers;
     }
 
 
-    //[HttpPost("create/load-customer")]
-    //[ValidateAntiForgeryToken]
-    //public async Task<IActionResult> LoadCustomer(CreateDropPickRequestCompositeViewModel model)
-    //{
-    //    if (string.IsNullOrWhiteSpace(model.CustomerMobileNo))
-    //    {
-    //        ModelState.AddModelError(
-    //            nameof(model.CustomerMobileNo),
-    //            "Enter a valid customer mobile number");
-    //        return await ReloadCreateView(model);
-    //    }
-
-    //    var customer = (await _receptionist.Customers.GetAllAsync())
-    //        .FirstOrDefault(c => c.MobileNo == model.CustomerMobileNo);
-
-    //    if (customer == null)
-    //    {
-    //        ModelState.AddModelError(
-    //            nameof(model.CustomerMobileNo),
-    //            "Customer not found");
-    //        return await ReloadCreateView(model);
-    //    }
-
-    //    model.CustomerName = customer.Name;
-    //    model.CustomerMobileNo = customer.MobileNo;
-
-    //    return await ReloadCreateView(model);
-    //}
 }

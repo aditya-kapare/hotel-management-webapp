@@ -51,9 +51,7 @@ namespace HotelManagement.WebApp.Controllers
             );
         }
 
-        /* =========================================================
-           SHARED LOGIC (NO DUPLICATION)
-           ========================================================= */
+  
 
         private async Task<IActionResult> IndexInternal(
             string? type,
@@ -83,10 +81,7 @@ namespace HotelManagement.WebApp.Controllers
             return View("Index", rooms);
         }
 
-        /* =========================================================
-           ADMIN‑ONLY ACTIONS
-           ========================================================= */
-
+       
         [HttpGet("/admin/rooms/create")]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
