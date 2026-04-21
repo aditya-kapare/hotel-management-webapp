@@ -46,8 +46,8 @@ builder.Services.AddScoped<IReceptionistServiceFacade, ReceptionistServiceFacade
 builder.Services.ConfigureApplicationCookie(options =>
 {
 
-    options.LoginPath = "/account/login";
-    options.AccessDeniedPath = "/account/denied";
+    options.LoginPath = "/auth/login";
+    options.AccessDeniedPath = "/auth/denied";
 
 });
 
