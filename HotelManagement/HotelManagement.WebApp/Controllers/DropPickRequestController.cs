@@ -362,7 +362,7 @@ ViewBag.Drivers = drivers;
             .GetRequestListAsync();
 
         var model = requests
-            .Where(r => r.RequestStatus == DropPickStatus.Cancelled)
+            .Where(r => (r.RequestStatus == DropPickStatus.Cancelled) || (r.RequestStatus == DropPickStatus.Completed))
             .Select(r => new DropPickRequestViewListModel
             {
                 RequestId = r.RequestId,

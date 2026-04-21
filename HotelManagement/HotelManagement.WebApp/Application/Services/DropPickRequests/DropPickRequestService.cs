@@ -65,7 +65,8 @@ namespace HotelManagement.WebApp.Application.Services
                     RequestedAt = r.RequestedAt,
                     Notes = r.Notes,
                     RequestType = r.RequestType,
-                    
+                    RequestStatus = r.Status,
+
                     StayId = r.StayId,
                     DriverId = r.DriverId,
 
