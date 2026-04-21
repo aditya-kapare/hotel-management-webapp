@@ -200,11 +200,7 @@ namespace HotelManagement.WebApp.Application.Services
             if (existing is null)
                 throw new KeyNotFoundException($"Request '{requestId}' was not found.");
 
-            //var stay = await _stayDal.GetStayByIdAsync(existing.StayId);
-            //if (stay is null)
-            //    throw new KeyNotFoundException($"Stay '{existing.StayId}' was not found.");
-            //if (stay.CheckOutAt is not null)
-            //    throw new InvalidOperationException($"Stay '{existing.StayId}' is already checked out.");
+           
 
             if (normalized.DriverId != existing.DriverId)
             {

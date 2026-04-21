@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace HotelManagement.WebApp.Controllers
 {
-    //[Authorize(Roles = "Receptionist")]
+   
     [Route("stays")]
     public sealed class StaysController : Controller
     {
@@ -56,9 +56,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(stays);
         }
 
-        // --------------------------------------------------
-        // e. UPDATE CHECKED-IN CUSTOMER (GET)
-        // --------------------------------------------------
+
         [HttpGet("edit/{stayId:int}")]
         public async Task<IActionResult> Edit(int stayId)
         {
@@ -81,9 +79,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(model);
         }
 
-        // --------------------------------------------------
-        // e. UPDATE CHECKED-IN CUSTOMER (POST)
-        // --------------------------------------------------
+   
         [HttpPost("edit/{stayId:int}")]
         public async Task<IActionResult> Edit(
             int stayId,
@@ -92,7 +88,6 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ViewModel → DTO
             var request = new UpdateStayRequest
             {
                 CustomerIdentityId = model.CustomerIdentityId,
@@ -106,9 +101,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // --------------------------------------------------
-        // d. CHECK-OUT CUSTOMER (GET)
-        // --------------------------------------------------
+      
         [HttpGet("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(int stayId)
         {
@@ -129,7 +122,7 @@ namespace HotelManagement.WebApp.Controllers
                 DepositPaid = stay.DepositPaid
             };
 
-            // ✅ ADD THIS
+    
             var rooms = await _stayService.Rooms.GetAllAsync();
             var room = rooms.FirstOrDefault(r => r.RoomNo == stay.RoomNo);
             ViewBag.RoomPrice = room?.Price ?? 0;
@@ -138,9 +131,6 @@ namespace HotelManagement.WebApp.Controllers
         }
 
 
-        // --------------------------------------------------
-        // d. CHECK-OUT CUSTOMER (POST)
-        // --------------------------------------------------
 
 
         [HttpPost("checkout/{stayId:int}")]
@@ -162,14 +152,14 @@ namespace HotelManagement.WebApp.Controllers
 
             var totalAmount = room.Price;
 
-            // ✅ ISSUE 14
+     
             if (model.AmountPaid > totalAmount)
             {
                 TempData["Error"] = "Amount paid cannot exceed room price";
                 return RedirectToAction(nameof(CheckOut), new { stayId });
             }
 
-            // ✅ ISSUE 15
+     
             if (model.AmountPaid < totalAmount)
             {
                 TempData["Error"] = "Amount paid is less than required";
@@ -186,9 +176,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // --------------------------------------------------
-        // CHECK-IN CUSTOMER (GET)
-        // --------------------------------------------------
+       
         [HttpGet("checkin/{identityId}")]
         public async Task<IActionResult> CheckIn(string identityId)
         {
@@ -214,15 +202,12 @@ namespace HotelManagement.WebApp.Controllers
         }
 
 
-        // --------------------------------------------------
-        // CHECK-IN CUSTOMER (POST)
-        // --------------------------------------------------
+
 
         [HttpPost("checkin/{identityId}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string identityId, CheckInStayViewModel model)
         {
-            // Always rebind dropdowns
             model.RoomTypes = Enum.GetNames(typeof(RoomType))
                 .Select(x => new SelectListItem(x, x));
 
@@ -251,14 +236,13 @@ namespace HotelManagement.WebApp.Controllers
                 }
             }
 
-            // FILTER
+           
             if (model.ActionType == "Filter")
             {
                 ModelState.Clear();
                 return View(model);
             }
 
-            // FINAL SUBMIT
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -318,9 +302,7 @@ namespace HotelManagement.WebApp.Controllers
 
             return Json(new { price = room.Price });
         }
-        // --------------------------------------------------
-        // VIEW STAY DETAILS (GET)
-        // --------------------------------------------------
+        
         [HttpGet("details/{stayId:int}")]
         public async Task<IActionResult> ViewDetails(int stayId)
         {
@@ -335,15 +317,13 @@ namespace HotelManagement.WebApp.Controllers
             return View(stay);
         }
 
-        // --------------------------------------------------
-        // List page - Past / Historical stays
-        // --------------------------------------------------
+        
         [HttpGet("history")]
         public async Task<IActionResult> History(
             string? customer,
             int? roomNo)
         {
-            // Fetch NON-ACTIVE (checked-out) stays
+            
             var stays = await _stayService.Stays.GetPastAsync();
 
             if (!string.IsNullOrWhiteSpace(customer))

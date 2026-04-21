@@ -10,7 +10,7 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
     {
         public async Task SeedAsync(HotelDbContext db, CancellationToken cancellationToken = default)
         {
-            // Idempotent seeding
+            
             if (await db.Customers.AnyAsync(cancellationToken))
                 return;
 

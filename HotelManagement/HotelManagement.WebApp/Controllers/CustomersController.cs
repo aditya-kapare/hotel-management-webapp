@@ -15,25 +15,20 @@ namespace HotelManagement.WebApp.Controllers
             _receptionistService = receptionistService;
         }
 
-        // --------------------------------------------------
-        // a. ADD NEW CUSTOMER (GET)
-        // --------------------------------------------------
+      
         [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // --------------------------------------------------
-        // a. ADD NEW CUSTOMER (POST)
-        // --------------------------------------------------
         [HttpPost("create")]
         public async Task<IActionResult> Create(CreateCustomerViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ViewModel → DTO (same style as StaysController)
+          
             var request = new CreateCustomerRequest
             {
                 IdentityId = model.IdentityId,
@@ -50,12 +45,8 @@ namespace HotelManagement.WebApp.Controllers
             TempData["Success"] = "Customer added successfully";
             return RedirectToAction(nameof(Index));
 
-            //return RedirectToAction("Create");
         }
 
-        // --------------------------------------------------
-        // c. VIEW CUSTOMERS (LIST + FILTER)
-        // --------------------------------------------------
         [HttpGet("")]
         public async Task<IActionResult> Index(
             string? identityType,
@@ -93,9 +84,7 @@ namespace HotelManagement.WebApp.Controllers
 
 
 
-        // --------------------------------------------------
-        // SHARED FILTER PREP
-        // --------------------------------------------------
+       
         private void PrepareFilters(
             IEnumerable<CustomerDto> customers,
             string? identityType,

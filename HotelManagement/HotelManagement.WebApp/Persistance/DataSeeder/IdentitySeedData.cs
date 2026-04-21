@@ -112,14 +112,14 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
 
             foreach (var emp in employees)
             {
-                // idempotent: match by Aadhaar (unique index in AuthDbContext)
+                
                 var existing = await context.Users.SingleOrDefaultAsync(u => u.AadharNo == emp.AadharNo);
                 if (existing != null) continue;
 
                 var pos = (emp.EmployeePosition ?? string.Empty).ToLowerInvariant();
 
-                var isAdmin = pos.Contains("manager");                 // "Hotel Manager"
-                var isReceptionist = pos.Contains("receptionist");     // "Receptionist"
+                var isAdmin = pos.Contains("manager");                 
+                var isReceptionist = pos.Contains("receptionist");     
 
                 IdentityResult result;
 
@@ -137,7 +137,7 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
                 }
                 else
                 {
-                    // Non-login employees: create account but disable login (lockout forever)
+                   
                     var randomPwd = "Tmp@" + Guid.NewGuid().ToString("N") + "aA1!";
                     result = await userManager.CreateAsync(emp, randomPwd);
                     if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
