@@ -6,6 +6,7 @@ namespace HotelManagement.WebApp.Presentation.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["HideSidebar"] = true;
             return View();
         }
     }

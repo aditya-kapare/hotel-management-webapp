@@ -22,6 +22,7 @@ public class AuthController : Controller
     [HttpGet("login")]
     public IActionResult Login(string? returnUrl = null)
     {
+        ViewData["HideSidebar"] = true;
         ViewBag.ReturnUrl = returnUrl;
         return View(new LoginViewModel());
     }
@@ -81,6 +82,7 @@ public class AuthController : Controller
     [HttpGet("denied")]
     public IActionResult Denied()
     {
+        ViewData["HideSidebar"] = true;
         return View();
     }
 }
