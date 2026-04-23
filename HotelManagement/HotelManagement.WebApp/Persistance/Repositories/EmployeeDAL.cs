@@ -26,14 +26,14 @@ namespace HotelManagementSystem.DAL
             _userManager = userManager;
         }
 
-        
+        //URL [HttpGet]- /api/employees/
         public async Task<IEnumerable<ApplicationEmployee>> GetAllEmployeesAsync()
         {
             // Fetch all employees from identity store
             return await _userManager.Users.ToListAsync();
         }
 
-  
+        //URL [HttpGet]- /api/employees/{aadharNo}
         public async Task<ApplicationEmployee?> GetEmployeeByAadharAsync(string aadharNo)
         {
             // Find employee matching Aadhaar number
@@ -44,6 +44,8 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Adds a new employee with optional password.
         /// </summary>
+        
+        //URL [HttpPost] - /api/emplyees/
         public async Task<bool> AddEmployeeAsync(
             ApplicationEmployee employee,
             string? password)

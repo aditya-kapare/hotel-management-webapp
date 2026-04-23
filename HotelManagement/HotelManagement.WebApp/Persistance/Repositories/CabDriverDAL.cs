@@ -19,7 +19,7 @@ namespace HotelManagementSystem.DAL
             _context = context;
         }
 
-       
+        //URL [HttpGet] - /api/cabdrivers/
         public async Task<IEnumerable<CabDriver>> GetAllDriversAsync()
         {
             // Fetch all drivers from database
@@ -29,6 +29,8 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Retrieves a cab driver by ID.
         /// </summary>
+
+        //URL [HttpGet] - /api/cabdrivers/{driverId:int}
         public async Task<CabDriver?> GetDriverByIdAsync(int driverId)
         {
             // Find driver matching the given ID
@@ -36,6 +38,7 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(d => d.DriverId == driverId);
         }
 
+        //URL [HttpPost] - /api/cabdrivers
         public async Task<bool> AddDriverAsync(CabDriver driver)
         {
             // Add driver to context and persist
@@ -44,6 +47,7 @@ namespace HotelManagementSystem.DAL
             return true;
         }
 
+        //URL [HttpPut] - /api/cabdrivers
         public async Task<bool> UpdateDriverAsync(CabDriver driver)
         {
             // Mark driver entity as updated
@@ -61,6 +65,7 @@ namespace HotelManagementSystem.DAL
             }
         }
 
+        //URL [HttpDelete] - /api/cabdrivers/{driverId:int}
         public async Task<bool> DeleteDriverAsync(int driverId)
         {
             // Delete driver directly from database

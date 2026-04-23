@@ -2,6 +2,7 @@
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Drivers;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
+using System.Text.Json;
 
 namespace HotelManagement.WebApp.Application.Services
 {
@@ -39,6 +40,9 @@ namespace HotelManagement.WebApp.Application.Services
             await _driverDal.AddDriverAsync(entity);
 
             return CabDriverMapping.ToDto(entity);
+
+            //var jsonCabDriver = JsonSerializer.Serialize(request);
+
         }
 
         public async Task<CabDriverDto> UpdateAsync(int driverId, CabDriverRequest request)
