@@ -13,7 +13,7 @@ namespace HotelManagement.WebApp.Application.Services.Customers
         /// </summary>
         internal static CustomerDto ToDto(Customer c) => new()
         {
-         
+
             IdentityId = c.IdentityId,
             IdentityIdType = c.IdentityIdType,
             MobileNo = c.MobileNo,

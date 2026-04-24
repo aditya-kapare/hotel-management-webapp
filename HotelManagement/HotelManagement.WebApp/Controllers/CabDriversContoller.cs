@@ -26,7 +26,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
         {
             var drivers = await _admin.Drivers.GetAllAsync();
 
-            
+
             if (gender.HasValue)
             {
                 drivers = drivers
@@ -34,7 +34,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-            
+
             if (!string.IsNullOrWhiteSpace(carVendor))
             {
                 drivers = drivers
@@ -42,7 +42,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-          
+
             if (!string.IsNullOrWhiteSpace(carType))
             {
                 drivers = drivers
@@ -50,12 +50,12 @@ namespace HotelManagement.WebApp.Controllers.Admin
                     .ToList();
             }
 
-            
+
             ViewBag.Genders = Enum.GetValues(typeof(Gender));
             ViewBag.CarVendors = drivers.Select(d => d.CarVendor).Distinct().ToList();
             ViewBag.CarTypes = drivers.Select(d => d.CarType).Distinct().ToList();
 
-         
+
             ViewBag.SelectedGender = gender;
             ViewBag.SelectedCarVendor = carVendor;
             ViewBag.SelectedCarType = carType;
@@ -69,7 +69,7 @@ namespace HotelManagement.WebApp.Controllers.Admin
             return View();
         }
 
-       
+
         [HttpPost("create")]
         public async Task<IActionResult> Create(
             string name,
@@ -89,10 +89,10 @@ namespace HotelManagement.WebApp.Controllers.Admin
 
             await _admin.Drivers.CreateAsync(request);
 
-       
+
             TempData["SuccessMessage"] = "Cab driver added successfully";
 
-          
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -12,7 +12,7 @@ namespace HotelManagementSystem.DAL
     {
         private readonly HotelDbContext _context;
 
-  
+
         public CabDriverDAL(HotelDbContext context)
         {
             // Assign database context

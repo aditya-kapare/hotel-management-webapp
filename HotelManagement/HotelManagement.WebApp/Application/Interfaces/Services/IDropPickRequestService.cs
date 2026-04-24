@@ -1,6 +1,5 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Domain.Models;
-using HotelManagement.WebApp.ViewModels.DropPickRequests;
 
 namespace HotelManagement.WebApp.Application.Interfaces.Services
 {

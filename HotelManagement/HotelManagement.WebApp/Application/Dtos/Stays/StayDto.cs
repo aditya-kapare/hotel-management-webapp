@@ -3,7 +3,7 @@
     public sealed class StayDto
     {
         public int StayId { get; init; }
-       
+
         public int RoomNo { get; init; }
         public DateTime CheckInAt { get; init; }
         public DateTime? CheckOutAt { get; init; }

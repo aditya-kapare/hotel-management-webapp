@@ -1,5 +1,4 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Room;
-using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +50,7 @@ namespace HotelManagement.WebApp.Controllers
             );
         }
 
-  
+
 
         private async Task<IActionResult> IndexInternal(
             string? type,
@@ -81,7 +80,7 @@ namespace HotelManagement.WebApp.Controllers
             return View("Index", rooms);
         }
 
-       
+
         [HttpGet("/admin/rooms/create")]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()

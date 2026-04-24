@@ -14,8 +14,8 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<IReadOnlyList<StayDto>> GetByCustomerIdentityIdAsync(string customerIdentityId);
         Task<IReadOnlyList<StayDto>> GetByCheckInDateAsync(DateTime date);
 
-        Task<StayDto> CheckInAsync(CheckInRequest request);                
-        Task<StayDto> UpdateAsync(int stayId, UpdateStayRequest request);   
+        Task<StayDto> CheckInAsync(CheckInRequest request);
+        Task<StayDto> UpdateAsync(int stayId, UpdateStayRequest request);
         Task<StayDto> CheckOutAsync(int stayId, CheckOutRequest request);
         Task<BillingSummaryDto> GetBillingSummaryAsync(int stayId);
 

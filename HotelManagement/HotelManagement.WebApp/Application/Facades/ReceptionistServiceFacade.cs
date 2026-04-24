@@ -13,14 +13,14 @@ namespace HotelManagement.WebApp.Application.Facades
         public IStayService Stays { get; }
         public IDropPickRequestService DropPickRequests { get; }
 
-       
+
         public ReceptionistServiceFacade(
             ICustomerService customerService,
             IRoomService roomService,
             IStayService stayService,
             IDropPickRequestService dropPickService)
         {
-         
+
             Customers = customerService;
             Rooms = roomService;
             Stays = stayService;

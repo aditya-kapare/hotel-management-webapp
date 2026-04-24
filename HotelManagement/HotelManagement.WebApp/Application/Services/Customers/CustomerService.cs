@@ -14,20 +14,20 @@ namespace HotelManagement.WebApp.Application.Services
     {
         private readonly ICustomerDAL _customerDal;
 
-        
+
         public CustomerService(ICustomerDAL customerDal)
         {
-            
+
             _customerDal = customerDal;
         }
         public async Task<IReadOnlyList<CustomerDto>> GetAllAsync()
         {
-    
+
             var customers = await _customerDal.GetAllCustomersAsync();
             return customers.Select(CustomerMapping.ToDto).ToList();
         }
 
-      
+
         public async Task<CustomerDto?> GetByIdentityIdAsync(string identityId)
         {
             // Normalize and validate identity ID
@@ -45,7 +45,7 @@ namespace HotelManagement.WebApp.Application.Services
             return customers.Select(CustomerMapping.ToDto).ToList();
         }
 
-   
+
         public async Task<CustomerDto> CreateAsync(CreateCustomerRequest request)
         {
             // Validate incoming create request
@@ -140,7 +140,7 @@ namespace HotelManagement.WebApp.Application.Services
         /// </summary>
         private static void ValidateCreate(CreateCustomerRequest r)
         {
-           
+
             if (string.IsNullOrWhiteSpace(r.IdentityId))
                 throw new ArgumentException("IdentityId is required.", nameof(r.IdentityId));
 
@@ -156,7 +156,7 @@ namespace HotelManagement.WebApp.Application.Services
         /// </summary>
         private static void ValidateUpdate(UpdateCustomerRequest r)
         {
-           
+
             if (string.IsNullOrWhiteSpace(r.MobileNo))
                 throw new ArgumentException("MobileNo is required.", nameof(r.MobileNo));
 

@@ -2,7 +2,6 @@
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services.Drivers;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
-using System.Text.Json;
 
 namespace HotelManagement.WebApp.Application.Services
 {

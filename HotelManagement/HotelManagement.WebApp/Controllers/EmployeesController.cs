@@ -24,21 +24,21 @@ namespace HotelManagement.WebApp.Controllers
         {
             var employees = await _admin.Employees.GetAllAsync();
 
-          
 
-            
+
+
             if (!string.IsNullOrEmpty(search))
             {
                 employees = employees
                     .Where(e =>
                         e.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        e.MobileNo.Contains(search)||e.AadharNo.Contains(search))
+                        e.MobileNo.Contains(search) || e.AadharNo.Contains(search))
                     .ToList();
             }
 
             return View(employees);
         }
-        
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -57,7 +57,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        
+
         [HttpGet("details")]
         public async Task<IActionResult> Details(string aadharNo)
         {
@@ -68,7 +68,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(employee);
         }
 
-        
+
         [HttpGet("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(string aadharNo)
         {
@@ -106,16 +106,16 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(Details), new { aadharNo });
         }
 
-     
+
         [HttpGet("delete/{aadharNo}")]
-       
+
         public async Task<IActionResult> Delete(string aadharNo)
         {
             var employee = await _admin.Employees.GetByAadharAsync(aadharNo);
             if (employee is null)
                 return NotFound();
 
-            
+
             var referer = Request.Headers["Referer"].ToString();
 
             TempData["ReturnUrl"] = referer;
@@ -130,7 +130,7 @@ namespace HotelManagement.WebApp.Controllers
 
             TempData["SuccessMessage"] = "Employee deleted successfully.";
 
-            
+
             if (TempData["ReturnUrl"] != null)
             {
                 return Redirect(TempData["ReturnUrl"].ToString());

@@ -2,14 +2,13 @@
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.ViewModels.Stays;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 
 namespace HotelManagement.WebApp.Controllers
 {
-   
+
     [Route("stays")]
     public sealed class StaysController : Controller
     {
@@ -79,7 +78,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(model);
         }
 
-   
+
         [HttpPost("edit/{stayId:int}")]
         public async Task<IActionResult> Edit(
             int stayId,
@@ -101,7 +100,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-      
+
         [HttpGet("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(int stayId)
         {
@@ -122,7 +121,7 @@ namespace HotelManagement.WebApp.Controllers
                 DepositPaid = stay.DepositPaid
             };
 
-    
+
             var rooms = await _stayService.Rooms.GetAllAsync();
             var room = rooms.FirstOrDefault(r => r.RoomNo == stay.RoomNo);
             ViewBag.RoomPrice = room?.Price ?? 0;
@@ -152,14 +151,14 @@ namespace HotelManagement.WebApp.Controllers
 
             var totalAmount = room.Price;
 
-     
+
             if (model.AmountPaid > totalAmount)
             {
                 TempData["Error"] = "Amount paid cannot exceed room price";
                 return RedirectToAction(nameof(CheckOut), new { stayId });
             }
 
-     
+
             if (model.AmountPaid < totalAmount)
             {
                 TempData["Error"] = "Amount paid is less than required";
@@ -176,7 +175,7 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-       
+
         [HttpGet("checkin/{identityId}")]
         public async Task<IActionResult> CheckIn(string identityId)
         {
@@ -236,7 +235,7 @@ namespace HotelManagement.WebApp.Controllers
                 }
             }
 
-           
+
             if (model.ActionType == "Filter")
             {
                 ModelState.Clear();
@@ -302,7 +301,7 @@ namespace HotelManagement.WebApp.Controllers
 
             return Json(new { price = room.Price });
         }
-        
+
         [HttpGet("details/{stayId:int}")]
         public async Task<IActionResult> ViewDetails(int stayId)
         {
@@ -317,13 +316,13 @@ namespace HotelManagement.WebApp.Controllers
             return View(stay);
         }
 
-        
+
         [HttpGet("history")]
         public async Task<IActionResult> History(
             string? customer,
             int? roomNo)
         {
-            
+
             var stays = await _stayService.Stays.GetPastAsync();
 
             if (!string.IsNullOrWhiteSpace(customer))
@@ -375,4 +374,4 @@ namespace HotelManagement.WebApp.Controllers
         }
 
     }
-}   
+}

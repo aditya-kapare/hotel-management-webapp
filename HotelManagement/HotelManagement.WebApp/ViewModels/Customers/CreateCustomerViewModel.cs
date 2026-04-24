@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HotelManagement.WebApp.Domain.Enums;
+﻿using HotelManagement.WebApp.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagement.WebApp.ViewModels.Customers
 {

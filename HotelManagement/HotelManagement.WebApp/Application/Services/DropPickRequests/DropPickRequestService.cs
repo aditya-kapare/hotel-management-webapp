@@ -11,7 +11,7 @@ namespace HotelManagement.WebApp.Application.Services
     {
         private readonly IDropPickRequestDAL _requestDal;
         private readonly IStayDAL _stayDal;
-        
+
         private readonly ICustomerDAL _customerDal;
         private readonly ICabDriverDAL _driverDal;
 
@@ -50,8 +50,8 @@ namespace HotelManagement.WebApp.Application.Services
                 stayMap.TryGetValue(r.StayId, out var stay);
 
                 Customer? customer = null;
-                if (stay != null) 
-                
+                if (stay != null)
+
                 {
                     customerMap.TryGetValue(stay.CustomerIdentityId, out customer);
                 }
@@ -61,7 +61,7 @@ namespace HotelManagement.WebApp.Application.Services
                 return new DropPickRequestDto
                 {
                     RequestId = r.RequestId,
-                    
+
                     RequestedAt = r.RequestedAt,
                     Notes = r.Notes,
                     RequestType = r.RequestType,
@@ -71,7 +71,7 @@ namespace HotelManagement.WebApp.Application.Services
                     DriverId = r.DriverId,
 
                     RoomNo = stay?.RoomNo ?? 0,
-                    
+
                     DriverName = driver?.Name ?? "Unassigned",
 
                     CustomerName = customer?.Name ?? "Unknown",
@@ -165,7 +165,7 @@ namespace HotelManagement.WebApp.Application.Services
                 throw new ArgumentNullException(nameof(request));
 
             // Normalize
-            if(request.RequestedAt == default)
+            if (request.RequestedAt == default)
                 request.RequestedAt = DateTime.Now;
 
             var stay = await _stayDal.GetStayByIdAsync(request.StayId);
@@ -200,7 +200,7 @@ namespace HotelManagement.WebApp.Application.Services
             if (existing is null)
                 throw new KeyNotFoundException($"Request '{requestId}' was not found.");
 
-           
+
 
             if (normalized.DriverId != existing.DriverId)
             {
@@ -260,7 +260,7 @@ namespace HotelManagement.WebApp.Application.Services
             Status = r.Status
         };
 
-        private static void ValidateCreate(CreateDropPickRequest r) 
+        private static void ValidateCreate(CreateDropPickRequest r)
         {
             if (r.StayId <= 0) throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
             if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));

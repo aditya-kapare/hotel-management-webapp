@@ -62,29 +62,29 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
             Dictionary<int, Stay> stayMap,
             Dictionary<string, Customer> customerMap,
             Dictionary<int, CabDriver> driverMap)
+        {
+            stayMap.TryGetValue(r.StayId, out var stay);
+
+            Customer? customer = null;
+            if (stay != null)
+                customerMap.TryGetValue(stay.CustomerIdentityId, out customer);
+
+            driverMap.TryGetValue(r.DriverId, out var driver);
+
+            return new DropPickRequestDto
             {
-                stayMap.TryGetValue(r.StayId, out var stay);
-
-                Customer? customer = null;
-                if (stay != null)
-                    customerMap.TryGetValue(stay.CustomerIdentityId, out customer);
-
-                driverMap.TryGetValue(r.DriverId, out var driver);
-
-                return new DropPickRequestDto
-                {
-                    RequestId = r.RequestId,
-                    RequestedAt = r.RequestedAt,
-                    Notes = r.Notes,
-                    RequestType = r.RequestType,
-                    StayId = r.StayId,
-                    DriverId = r.DriverId,
-                    RoomNo = stay?.RoomNo ?? 0,
-                    DriverName = driver?.Name ?? "Unassigned",
-                    CustomerName = customer?.Name ?? "Unknown",
-                    CustomerPhone = customer?.MobileNo ?? string.Empty,
-                    CanEdit = (r.Status == DropPickStatus.Assigned)
-                };
-            }
+                RequestId = r.RequestId,
+                RequestedAt = r.RequestedAt,
+                Notes = r.Notes,
+                RequestType = r.RequestType,
+                StayId = r.StayId,
+                DriverId = r.DriverId,
+                RoomNo = stay?.RoomNo ?? 0,
+                DriverName = driver?.Name ?? "Unassigned",
+                CustomerName = customer?.Name ?? "Unknown",
+                CustomerPhone = customer?.MobileNo ?? string.Empty,
+                CanEdit = (r.Status == DropPickStatus.Assigned)
+            };
+        }
     }
 }

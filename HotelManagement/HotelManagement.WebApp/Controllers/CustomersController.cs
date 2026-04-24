@@ -15,7 +15,7 @@ namespace HotelManagement.WebApp.Controllers
             _receptionistService = receptionistService;
         }
 
-      
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -28,7 +28,7 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-          
+
             var request = new CreateCustomerRequest
             {
                 IdentityId = model.IdentityId,
@@ -41,7 +41,7 @@ namespace HotelManagement.WebApp.Controllers
             };
 
             await _receptionistService.Customers.CreateAsync(request);
-            
+
             TempData["Success"] = "Customer added successfully";
             return RedirectToAction(nameof(Index));
 
@@ -84,7 +84,7 @@ namespace HotelManagement.WebApp.Controllers
 
 
 
-       
+
         private void PrepareFilters(
             IEnumerable<CustomerDto> customers,
             string? identityType,

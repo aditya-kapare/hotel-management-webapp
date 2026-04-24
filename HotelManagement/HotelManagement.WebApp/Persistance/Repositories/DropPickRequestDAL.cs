@@ -16,7 +16,7 @@ namespace HotelManagementSystem.DAL
 
         public DropPickRequestDAL(HotelDbContext context)
         {
-            
+
             _context = context;
         }
 
@@ -36,7 +36,7 @@ namespace HotelManagementSystem.DAL
 
         public async Task<DropPickRequest?> GetRequestByIdAsync(int requestId)
         {
-       
+
             return await _context.DropPickRequests
                 .Include(r => r.Stay)
                     .ThenInclude(s => s.Customer)
@@ -44,7 +44,7 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
         }
 
-    
+
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId)
         {
             // Filter requests by stay ID
@@ -56,7 +56,7 @@ namespace HotelManagementSystem.DAL
                                 .ToListAsync();
         }
 
-     
+
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId)
         {
             // Filter requests by driver ID
@@ -108,7 +108,7 @@ namespace HotelManagementSystem.DAL
             return true;
         }
 
-   
+
         public async Task<bool> UpdateRequestAsync(DropPickRequest request)
         {
             _context.DropPickRequests.Update(request);
@@ -124,10 +124,10 @@ namespace HotelManagementSystem.DAL
             }
         }
 
-     
+
         public async Task<bool> DeleteRequestAsync(int requestId)
         {
-     
+
             var request = await _context.DropPickRequests
                 .Where(r => r.RequestId == requestId)
                 .ExecuteDeleteAsync();

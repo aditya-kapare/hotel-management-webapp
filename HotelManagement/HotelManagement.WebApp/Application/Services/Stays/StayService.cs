@@ -119,12 +119,12 @@ namespace HotelManagement.WebApp.Application.Services
             var room = await _roomDal.GetRoomByRoomNoAsync(normalized.RoomNo)
                 ?? throw new KeyNotFoundException();
 
-          
+
             room.CleanStatus = CleanStatus.Clean;
             room.AvailabilityStatus = AvailabilityStatus.Available;
             await _roomDal.UpdateRoomAsync(room);
 
-          
+
             return await CheckInAsync(normalized);
         }
 
@@ -136,7 +136,7 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-          
+
             var stay = await _stayDal.GetStayByIdAsync(stayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
@@ -211,7 +211,7 @@ namespace HotelManagement.WebApp.Application.Services
 
             stay.CheckOutAt = checkOutAt;
 
-          
+
             stay.AmountPaid = normalized.AmountPaid;
 
             stay.PendingAmount = bill.Pending;
@@ -231,11 +231,11 @@ namespace HotelManagement.WebApp.Application.Services
         {
             if (stayId <= 0) return false;
 
-            
+
             return await _stayDal.DeleteStayAsync(stayId);
         }
 
-      
+
         private static string NormalizeId(string id) => (id ?? string.Empty).Trim();
 
         private static CheckInRequest NormalizeCheckIn(CheckInRequest r) => new()

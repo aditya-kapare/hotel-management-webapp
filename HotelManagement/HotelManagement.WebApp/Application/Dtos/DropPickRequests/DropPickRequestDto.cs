@@ -1,5 +1,4 @@
 ﻿using HotelManagement.WebApp.Domain.Enums;
-using HotelManagement.WebApp.Migrations;
 
 namespace HotelManagement.WebApp.Application.Dtos.DropPickRequests
 {

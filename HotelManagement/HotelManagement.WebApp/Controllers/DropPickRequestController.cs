@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
+﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Domain.Models;
@@ -18,12 +17,12 @@ public sealed class DropPickRequestsController : Controller
         _receptionist = receptionist;
     }
 
- 
+
 
     [HttpGet("")]
     public IActionResult Home()
     {
-        return View("Home");   
+        return View("Home");
     }
 
 
@@ -56,7 +55,7 @@ public sealed class DropPickRequestsController : Controller
     {
         var model = new CreateDropPickRequestCompositeViewModel();
 
-      
+
         if (stayId.HasValue && stayId.Value > 0)
         {
             var stay = await _receptionist.Stays.GetByIdAsync(stayId.Value);
@@ -125,7 +124,7 @@ public sealed class DropPickRequestsController : Controller
         if (req == null)
             return RedirectToAction(nameof(Index));
 
-    
+
 
         if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
             return RedirectToAction(nameof(Index));
@@ -140,7 +139,7 @@ public sealed class DropPickRequestsController : Controller
             })
             .ToList();
 
- 
+
         bool currentDriverExists = availableDrivers
             .Any(d => d.Value == req.DriverId.ToString());
 
@@ -155,7 +154,7 @@ public sealed class DropPickRequestsController : Controller
         }
         else
         {
-           
+
             availableDrivers
                 .First(d => d.Value == req.DriverId.ToString())
                 .Selected = true;
@@ -196,7 +195,7 @@ public sealed class DropPickRequestsController : Controller
     })
     .ToList();
 
-ViewBag.Drivers = drivers;
+            ViewBag.Drivers = drivers;
 
             return View(model);
         }
@@ -315,7 +314,7 @@ ViewBag.Drivers = drivers;
                 CustomerMobileNo = r.CustomerPhone,
                 DriverName = r.DriverName,
                 Status = r.RequestStatus,
-                CanEdit = false 
+                CanEdit = false
             })
             .ToList();
 
