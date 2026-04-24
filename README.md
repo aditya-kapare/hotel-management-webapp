@@ -51,7 +51,7 @@ System.Configuration.ConfigurationManager: 10.0.5
 
 | Add Employee | Receptionist Dashboard |
 |-----------|-----------|
-| ![](./HotelManagement/Website%20Demo/Admin_employee.png)| ![](./HotelManagement/Website%20Demo/Admin_employee.png)|
+| ![](./HotelManagement/Website%20Demo/Admin_employee.png)| ![](./HotelManagement/Website%20Demo/Receptionist.png)|
 
 | Check in Customer | Cab Service |
 |-----------|-----------|
