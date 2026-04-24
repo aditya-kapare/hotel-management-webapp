@@ -14,7 +14,7 @@
 
 ## 📝 Description
 
-HotelManagement is a comprehensive administrative solution built with the .NET framework, designed to streamline hospitality operations and enhance guest service efficiency. This robust platform provides a centralized system for managing essential tasks such as room reservations, guest check-ins and check-outs, billing, and inventory tracking. By leveraging the scalability and security of .NET, the application ensures high-performance handling of daily hotel activities, offering staff an intuitive interface to optimize occupancy and improve overall operational workflow.
+HotelManagement is a simple hotel management system built using .NET. It helps manage rooms, guests, employees, and daily hotel operations through a single application.
 
 ## 🛠️ Tech Stack
 
