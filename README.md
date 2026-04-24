@@ -40,6 +40,8 @@ Update-Database -Context DatabaseContext
 Microsoft.AspNetCore.Identity.EntityFrameworkCore: 8.0.25
 Microsoft.EntityFrameworkCore: 8.0.25
 Microsoft.EntityFrameworkCore.SqlServer: 8.0.25
+Microsoft.EntityFrameworkCore.Design: 8.0.25
+Microsoft.EntityFrameworkCore.Tools: 8.0.25
 System.Configuration.ConfigurationManager: 10.0.5
 ```
 
