@@ -1,7 +1,8 @@
-using HotelManagement.WebApp.Application.Facades;
+﻿using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services;
+using HotelManagement.WebApp.Application.Services.Customers;
 using HotelManagement.WebApp.Application.Services.Stays;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.DataSeeder;
@@ -38,7 +39,22 @@ builder.Services.AddScoped<IStayChargeCalculator, StayChargeCalculator>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICabDriverService, CabDriverService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+builder.Services
+    .AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
+// HttpClient for CustomerService (API calling)
+builder.Services.AddHttpClient<ICustomerService, CustomerService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:8001/"); // 🔁 WebAPI port
+});
+
+
+//builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
