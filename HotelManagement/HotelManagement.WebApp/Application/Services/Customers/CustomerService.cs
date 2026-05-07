@@ -94,8 +94,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
         // -------------------------
 
         public async Task<CustomerDto> UpdateAsync(
-            string identityId,
-            UpdateCustomerRequest request)
+    string identityId,
+    UpdateCustomerRequest request)
         {
             if (request is null)
                 throw new ArgumentNullException(nameof(request));
@@ -117,9 +117,11 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             if (!response.IsSuccessStatusCode)
                 throw new InvalidOperationException("Customer update failed.");
 
-            return (await response.Content
-                .ReadFromJsonAsync<CustomerDto>())!;
+            // ✅ DO NOT read JSON — API returns no content
+            return await GetByIdentityIdAsync(identityId)
+                   ?? throw new InvalidOperationException("Updated customer not found.");
         }
+
 
         // -------------------------
         // DELETE
