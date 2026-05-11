@@ -28,23 +28,40 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-
-            var request = new CreateCustomerRequest
+            try
             {
-                IdentityId = model.IdentityId,
-                IdentityIdType = model.IdentityIdType,
-                MobileNo = model.MobileNo,
-                Name = model.Name,
-                Gender = model.Gender,
-                Address = model.Address,
-                Country = model.Country
-            };
+                var request = new CreateCustomerRequest
+                {
+                    IdentityId = model.IdentityId,
+                    IdentityIdType = model.IdentityIdType,
+                    MobileNo = model.MobileNo,
+                    Name = model.Name,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Country = model.Country
+                };
 
-            await _receptionistService.Customers.CreateAsync(request);
+                await _receptionistService.Customers.CreateAsync(request);
 
-            TempData["Success"] = "Customer added successfully";
-            return RedirectToAction(nameof(Index));
-
+                TempData["Success"] = "Customer added successfully";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Unexpected error occurred. Please try again.");
+                return View(model);
+            }
         }
 
         [HttpGet("")]

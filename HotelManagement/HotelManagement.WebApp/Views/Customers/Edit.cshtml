@@ -1,73 +1,82 @@
 ﻿@model HotelManagement.WebApp.ViewModels.Customers.EditCustomerViewModel
 
-@{
-    ViewData["Title"] = "Edit Customer";
-}
-
 <h3>Edit Customer</h3>
 
 <form method="post">
 
-    <!-- IdentityId (hidden + readonly display) -->
-    <input type="hidden" name="IdentityId" value="@Model.IdentityId" />
+    <!-- IdentityId -->
+    <input type="hidden" asp-for="IdentityId" />
+
+    <div class="mb-3">
+        <label class="form-label">Identity Type</label>
+        <input class="form-control"
+               value="@Model.IdentityIdType"
+               readonly />
+        <input type="hidden" asp-for="IdentityIdType" />
+    </div>
 
     <div class="mb-3">
         <label class="form-label">Identity ID</label>
-        <input type="text"
-               class="form-control"
+        <input class="form-control"
                value="@Model.IdentityId"
                readonly />
     </div>
+   
 
     <!-- Name -->
     <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input type="text"
-               name="Name"
-               value="@Model.Name"
-               class="form-control" />
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name"
+               class="form-control"
+               required
+               pattern="[A-Za-z\s]+" />
     </div>
 
     <!-- Mobile -->
     <div class="mb-3">
-        <label class="form-label">Mobile No</label>
-        <input type="text"
-               name="MobileNo"
-               value="@Model.MobileNo"
-               class="form-control" />
+        <label asp-for="MobileNo" class="form-label"></label>
+        <input asp-for="MobileNo"
+               class="form-control"
+               type="tel"
+               inputmode="numeric"
+               pattern="[0-9]{10}"
+               maxlength="10"
+               required />
     </div>
 
-    <!-- Gender (plain text, no enum binding) -->
+    <!-- Gender -->
     <div class="mb-3">
-        <label class="form-label">Gender</label>
-        <input type="text"
-               name="Gender"
-               value="@Model.Gender"
-               class="form-control" />
+        <label asp-for="Gender" class="form-label"></label>
+        <select asp-for="Gender"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<HotelManagement.WebApp.Domain.Enums.Gender>()"
+                required>
+            <option value="">-- Select --</option>
+        </select>
     </div>
 
     <!-- Country -->
     <div class="mb-3">
-        <label class="form-label">Country</label>
-        <input type="text"
-               name="Country"
-               value="@Model.Country"
-               class="form-control" />
+        <label asp-for="Country" class="form-label"></label>
+        <input asp-for="Country"
+               class="form-control"
+               required
+               pattern="[A-Za-z\s]+" />
     </div>
 
     <!-- Address -->
     <div class="mb-3">
-        <label class="form-label">Address</label>
-        <textarea name="Address"
+        <label asp-for="Address" class="form-label"></label>
+        <textarea asp-for="Address"
                   class="form-control"
-                  rows="3">@Model.Address</textarea>
+                  rows="3"
+                  required></textarea>
     </div>
 
     <!-- Buttons -->
     <button type="submit" class="btn btn-primary">
         Update
     </button>
-
     <a href="/customers" class="btn btn-secondary ms-2">
         Cancel
     </a>

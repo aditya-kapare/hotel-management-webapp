@@ -1,51 +1,104 @@
-﻿<div class="container mt-5">
+﻿@{
+    ViewData["Title"] = "Stay Management";
+}
 
+<div class="container mt-5">
+
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">Stay Management</h3>
+        <h3 class="fw-bold mb-0">Stay Management</h3>
 
-        <div class="d-flex justify-content-end mb-3">
-            <a href="/reception/home" class="btn btn-dark">
-                ← Back
-            </a>
-        </div>
+        <a href="/reception/home" class="btn btn-dark">
+            ← Back
+        </a>
+
+
     </div>
 
     <div class="row g-4">
 
+        <!-- ACTIVE STAYS -->
         <div class="col-md-4">
-            <div class="card shadow h-100">
-                <div class="card-body">
-                    <h5>Active Stays</h5>
-                    <p class="text-muted">View all checked‑in customers</p>
-                    <a href="/stays/list" class="btn btn-primary">
-                        View Stays
-                    </a>
+            <a href="/stays/list"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:18px;">
+                                🚪
+                            </div>
+                            <h5 class="ms-3 mb-0">Active Stays</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            View all checked‑in customers
+                        </p>
+                    </div>
                 </div>
-            </div>
+
+            </a>
         </div>
 
+        <!-- CHECK-IN CUSTOMER -->
         <div class="col-md-4">
-            <div class="card shadow h-100">
-                <div class="card-body">
-                    <h5>Check‑In Customer</h5>
-                    <p class="text-muted">Register a new stay</p>
-                    <a href="/customers" class="btn btn-primary">
-                        Click
-                    </a>
+            <a href="/customers"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:18px;">
+                                👤
+                            </div>
+                            <h5 class="ms-3 mb-0">Check‑In Customer</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            Register a new stay
+                        </p>
+                    </div>
                 </div>
-            </div>
+
+            </a>
         </div>
 
+        <!-- PAST STAYS -->
         <div class="col-md-4">
-            <div class="card shadow h-100">
-                <div class="card-body">
-                    <h5>View past stays</h5>
-                    <p class="text-muted">Register a new stay</p>
-                    <a href="/stays/history" class="btn btn-primary">
-                        View past stays
-                    </a>
+            <a href="/stays/history"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:18px;">
+                                🏨
+                            </div>
+                            <h5 class="ms-3 mb-0">Past Stays</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            View completed stays
+                        </p>
+                    </div>
                 </div>
-            </div>
+
+            </a>
         </div>
 
     </div>
