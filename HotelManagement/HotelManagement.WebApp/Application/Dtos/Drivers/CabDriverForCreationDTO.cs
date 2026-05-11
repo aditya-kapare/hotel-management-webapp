@@ -1,14 +1,13 @@
-﻿// CabDriverDTO (read)
+﻿// CabDriverForCreationDTO
 using HotelManagement.WebApp.Domain.Enums;
 
 namespace HotelManagement.WebApp.Application.Dtos.Drivers
 {
-    public record CabDriverDTO(
-        int DriverId,
+    public record CabDriverForCreationDTO(
         string GovernmentId,
         string Name,
         int Age,
-        int Gender,
+        Gender Gender,
         string CarVendor,
         string CarType
     );

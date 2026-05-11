@@ -11,21 +11,38 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
           rel="stylesheet" />
-
-    <link href="~/css/site.css" rel="stylesheet" />
 </head>
 
 <body class="bg-light">
 
-
-    <!--TOP BAR -->
+    <!-- TOP BAR -->
     @if (!(ViewData["HideSidebar"] as bool? ?? false))
     {
-        <nav class="navbar navbar-light bg-white shadow-sm px-4">
-            <span class="navbar-brand fw-bold">
-                Hotel Management
-            </span>
+        <nav class="navbar navbar-light bg-white shadow-sm px-4 d-flex justify-content-between">
 
+            <!-- LEFT: App name + user -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="navbar-brand fw-bold mb-0">
+                    Hotel Management
+                </span>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <span class="text-muted small">
+                        |
+                        @User.Identity.Name
+                        (
+                        @(User.IsInRole("Admin")
+                                        ? "Admin"
+                                        : User.IsInRole("Receptionist")
+                                        ? "Receptionist"
+                                        : "User")
+                )
+            </span>
+                        }
+            </div>
+
+            <!-- RIGHT: Logout -->
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 <form asp-controller="Auth"
@@ -38,6 +55,7 @@
                     </button>
                 </form>
             }
+
         </nav>
     }
 
@@ -61,8 +79,7 @@
 
     </div>
 
-
-    <!-- Bootstrap JS (ONLY ONE) -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/js/site.js"></script>

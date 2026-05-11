@@ -1,42 +1,107 @@
-﻿@model HotelManagement.WebApp.Application.Dtos.Room.CreateRoomRequest
+﻿@model HotelManagement.WebApp.Application.Dtos.Room.RoomForCreationDTO
 
-@{
-    ViewData["Title"] = "Add Room";
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Room</title>
 
-<div class="container mt-4">
-    <h3 class="mb-3">Add New Room</h3>
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+</head>
 
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
+<body class="bg-light">
 
+    <div class="container mt-5">
 
-        <div class="mb-3">
-            <label class="form-label">Room Number</label>
-            <input asp-for="RoomNo"
-                   type="number"
-                   class="form-control"
-                   min="1" />
-            <span asp-validation-for="RoomNo"
-                  class="text-danger"></span>
+        <div class="col-md-2 ms-auto text-end">
+            <a href="/admin/rooms" class="btn btn-secondary">
+                ← Back
+            </a>
+        </div>
 
-            <div class="form-text text-muted">
-                Room number must be unique (e.g., 101, 102, 201).
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Add Room</h4>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <!-- ✅ Room Number -->
+                    <div class="mb-3">
+                        <label class="form-label">Room Number</label>
+                        <input asp-for="RoomNo"
+                               type="number"
+                               class="form-control"
+                               min="1"
+                               required />
+                        <span asp-validation-for="RoomNo" class="text-danger"></span>
+                        <div class="form-text text-muted">
+                            Room number must be greater than or equal to 1.
+                        </div>
+                    </div>
+
+                    <!-- ✅ Room Type -->
+                    <div class="mb-3">
+                        <label class="form-label">Room Type</label>
+                        <select asp-for="RoomType" class="form-select" required>
+                            <option value="">-- Select Room Type --</option>
+                            @foreach (RoomType rt in Enum.GetValues(typeof(RoomType)))
+                            {
+                                <option value="@((int)rt)">
+                                    @rt.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ AC Option -->
+                    <div class="mb-3">
+                        <label class="form-label">AC Option</label>
+                        <select asp-for="AcOption" class="form-select" required>
+                            <option value="">-- Select AC Option --</option>
+                            @foreach (AcOption ac in Enum.GetValues(typeof(AcOption)))
+                            {
+                                <option value="@((int)ac)">
+                                    @ac.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ Price -->
+                    <div class="mb-3">
+                        <label class="form-label">Price</label>
+                        <input asp-for="Price"
+                               type="number"
+                               step="0.01"
+                               min="1"
+                               class="form-control"
+                               required />
+                        <div class="form-text text-muted">
+                            Price must be greater than or equal to 1.
+                        </div>
+                    </div>
+
+                    <!-- ✅ Actions -->
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success">
+                            Save
+                        </button>
+
+                        <a asp-action="AdminIndex"
+                           asp-controller="Rooms"
+                           class="btn btn-secondary ms-2">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-
-        <partial name="RoomUIForm" model="Model" />
-
-        <div class="mt-4">
-            <button class="btn btn-success">Save</button>
-
-            <a asp-action="AdminIndex"
-               asp-controller="Rooms"
-               class="btn btn-secondary">
-                Cancel
-            </a>
-
-        </div>
-    </form>
-</div>
+</body>
+</html>

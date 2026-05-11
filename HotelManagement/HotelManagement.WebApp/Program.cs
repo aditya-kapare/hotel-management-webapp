@@ -48,10 +48,14 @@ builder.Services
     });
 
 // HttpClient for CustomerService (API calling)
-builder.Services.AddHttpClient<ICustomerService, CustomerService>(client =>
-{
-    client.BaseAddress = new Uri("https://localhost:8001/"); // 🔁 WebAPI port
+builder.Services.AddHttpClient("client", option => { 
+    option.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
 });
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+//builder.Services.AddHttpClient<ICustomerService, CustomerService>(client =>
+//{
+//    client.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
+//});
 
 
 //builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -75,8 +79,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-    await SeedRunner.RunAsync(db);
-    await IdentitySeedData.PopulateAsync(app);
+    //await SeedRunner.RunAsync(db);
+    //await IdentitySeedData.PopulateAsync(app);
 }
 
 

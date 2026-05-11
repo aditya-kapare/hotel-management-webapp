@@ -219,7 +219,7 @@ namespace HotelManagement.WebApp.Controllers
                 var rooms = await _stayService.Rooms.GetAllAsync();
                 var availableRooms = rooms
                     .Where(r =>
-                        r.AvailabilityStatus == AvailabilityStatus.Available &&
+                        r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
                         r.RoomType.ToString() == model.RoomType &&
                         r.AcOption.ToString() == model.AcOption)
                     .ToList();
@@ -277,7 +277,7 @@ namespace HotelManagement.WebApp.Controllers
 
             var result = rooms
                 .Where(r =>
-                    r.AvailabilityStatus == AvailabilityStatus.Available &&
+                    r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
                     r.RoomType.ToString() == roomType &&
                     r.AcOption.ToString() == acOption)
                 .Select(r => new

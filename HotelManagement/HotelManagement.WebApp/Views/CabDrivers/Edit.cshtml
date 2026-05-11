@@ -1,13 +1,15 @@
-﻿@model HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverRequest
+﻿@model HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverForUpdateDTO
 
 <div class="container mt-4">
 
     <h4 class="fw-bold">Edit Cab Driver</h4>
+
     <div class="col-md-2 ms-auto text-end">
-    <a href="/admin/cabdrivers" class="btn btn-secondary">
-        ← Back
-    </a>
+        <a href="/admin/cabdrivers" class="btn btn-secondary">
+            ← Back
+        </a>
     </div>
+
     <hr />
 
     <div class="card shadow">
@@ -15,52 +17,82 @@
 
             <form method="post">
 
-                <!-- ✅ DRIVER ID PASSED VIA ROUTE, NO NEED IN MODEL -->
+                <!-- ✅ DRIVER ID COMES FROM ROUTE -->
 
                 <div class="row g-3">
 
+                    <!-- ✅ Government ID -->
+                    <div class="col-md-6">
+                        <label class="form-label">Government ID</label>
+                        <input type="text"
+                               name="GovernmentId"
+                               class="form-control"
+                               value="@Model.GovernmentId"
+                               required
+                               minlength="5"
+                               maxlength="30" />
+                    </div>
+
+                    <!-- ✅ Name -->
                     <div class="col-md-6">
                         <label class="form-label">Name</label>
                         <input type="text"
                                name="Name"
                                class="form-control"
-                               value="@Model.Name" />
+                               value="@Model.Name"
+                               required
+                               minlength="3"
+                               maxlength="50" />
                     </div>
 
+                    <!-- ✅ Age -->
                     <div class="col-md-3">
                         <label class="form-label">Age</label>
                         <input type="number"
                                name="Age"
                                class="form-control"
-                               value="@Model.Age" />
+                               value="@Model.Age"
+                               required
+                               min="18"
+                               max="65" />
                     </div>
 
+                    <!-- ✅ Gender -->
                     <div class="col-md-3">
                         <label class="form-label">Gender</label>
-                        <select name="Gender" class="form-select">
+                        <select name="Gender" class="form-select" required>
                             @foreach (var g in Enum.GetValues(typeof(HotelManagement.WebApp.Domain.Enums.Gender)))
                             {
-                                <option value="@g" selected="@(Model.Gender == (HotelManagement.WebApp.Domain.Enums.Gender)g)">
+                                <option value="@g"
+                                        selected="@((HotelManagement.WebApp.Domain.Enums.Gender)Model.Gender == (HotelManagement.WebApp.Domain.Enums.Gender)g)">
                                     @g
                                 </option>
                             }
                         </select>
                     </div>
 
+                    <!-- ✅ Car Vendor -->
                     <div class="col-md-6">
                         <label class="form-label">Car Vendor</label>
                         <input type="text"
                                name="CarVendor"
                                class="form-control"
-                               value="@Model.CarVendor" />
+                               value="@Model.CarVendor"
+                               required
+                               minlength="2"
+                               maxlength="30" />
                     </div>
 
+                    <!-- ✅ Car Type -->
                     <div class="col-md-6">
                         <label class="form-label">Car Type</label>
                         <input type="text"
                                name="CarType"
                                class="form-control"
-                               value="@Model.CarType" />
+                               value="@Model.CarType"
+                               required
+                               minlength="2"
+                               maxlength="30" />
                     </div>
 
                 </div>
@@ -70,7 +102,9 @@
                         Update
                     </button>
 
-                   
+                    <a href="/admin/cabdrivers" class="btn btn-secondary">
+                        Cancel
+                    </a>
                 </div>
 
             </form>

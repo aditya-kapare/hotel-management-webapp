@@ -1,7 +1,6 @@
 ﻿namespace HotelManagement.WebApp.Application.Dtos.Room
 {
-    public record RoomDTO(
-        int RoomNo,
+    public record RoomForUpdateDTO(
         int RoomType,
         int AcOption,
         int AvailabilityStatus,
@@ -9,4 +8,3 @@
         decimal Price
     );
 }
-    
