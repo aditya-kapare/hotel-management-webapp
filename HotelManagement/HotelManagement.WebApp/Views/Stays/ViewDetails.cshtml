@@ -12,8 +12,9 @@
 
             <h5 class="card-title">Customer Information</h5>
             <p><strong>Customer ID:</strong> @Model.CustomerIdentityId</p>
-            <p><strong>Name:</strong> @Model.CustomerName</p>
-            <p><strong>Mobile No:</strong> @Model.MobileNo</p>
+            <p><strong>Name:</strong> @Model.Customer?.Name</p>
+            <p><strong>Mobile No:</strong> @Model.Customer?.MobileNo</p>
+
 
             <hr />
 

@@ -9,18 +9,16 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
         internal static DropPickRequestDto ToDto(DropPickRequest r) => new()
         {
             RequestId = r.RequestId,
-            RequestedAt = r.RequestedAt,
             Notes = r.Notes,
             RequestType = r.RequestType,
             StayId = r.StayId,
             DriverId = r.DriverId,
-            RequestStatus = r.Status,
+            Status = r.Status,
         };
 
         internal static DropPickRequestDto ToDto(DropPickRequest r, string driver, string customer) => new()
         {
             RequestId = r.RequestId,
-            RequestedAt = r.RequestedAt,
             Notes = r.Notes,
             RequestType = r.RequestType,
             StayId = r.StayId,
@@ -33,7 +31,7 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
         {
             RequestedAt = requestedAt,
             Notes = r.Notes,
-            RequestType = r.RequestType,
+            //RequestType = r.RequestType,
             StayId = r.StayId,
             DriverId = r.DriverId
         };
@@ -74,7 +72,6 @@ namespace HotelManagement.WebApp.Application.Services.DropPickRequests
                 return new DropPickRequestDto
                 {
                     RequestId = r.RequestId,
-                    RequestedAt = r.RequestedAt,
                     Notes = r.Notes,
                     RequestType = r.RequestType,
                     StayId = r.StayId,

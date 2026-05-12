@@ -23,6 +23,7 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Retrieves all drop-pick requests with related data.
         /// </summary>
+        //URL [HttpGet] - /api/droppickrequests
         public async Task<IEnumerable<DropPickRequest>> GetAllRequestsAsync()
         {
             // Load requests with driver and customer details
@@ -33,7 +34,7 @@ namespace HotelManagementSystem.DAL
                                     .AsNoTracking()
                                     .ToListAsync();
         }
-
+        //URL [HttpGet] - /api/droppickrequests//{requestId:int}/droppickrequest
         public async Task<DropPickRequest?> GetRequestByIdAsync(int requestId)
         {
        
@@ -44,7 +45,8 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
         }
 
-    
+
+         //URL [HttpGet] - /api/droppickrequests/{stayId:int}/droppickrequest
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByStayIdAsync(int stayId)
         {
             // Filter requests by stay ID
@@ -56,7 +58,7 @@ namespace HotelManagementSystem.DAL
                                 .ToListAsync();
         }
 
-     
+        //URL [HttpGet] - /api/droppickrequests/{driverId:int}/droppickrequest
         public async Task<IEnumerable<DropPickRequest>> GetRequestsByDriverIdAsync(int driverId)
         {
             // Filter requests by driver ID
@@ -71,6 +73,8 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Retrieves all available cab drivers.
         /// </summary>
+        //URL [HttpGet] - /api/cabdrivers?availability=available
+        //URL [HttpGet] - /api/cabdrivers/available
         public async Task<IEnumerable<CabDriver>> GetAvailableDriversAsync()
         {
             // Identify drivers currently assigned to active requests
@@ -89,6 +93,8 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Adds a new drop-pick request.
         /// </summary>
+        //URL [HttpPost] - /api/droppickrequests
+
         public async Task<bool> AddRequestAsync(DropPickRequest request)
         {
             // Assign default status if not set
@@ -108,7 +114,7 @@ namespace HotelManagementSystem.DAL
             return true;
         }
 
-   
+        //URL [HttpPut] - /api/droppickrequests
         public async Task<bool> UpdateRequestAsync(DropPickRequest request)
         {
             _context.DropPickRequests.Update(request);
@@ -124,7 +130,8 @@ namespace HotelManagementSystem.DAL
             }
         }
 
-     
+
+        //URL [HttpDelete] - /api/droppickrequests/{requestId:int}
         public async Task<bool> DeleteRequestAsync(int requestId)
         {
      

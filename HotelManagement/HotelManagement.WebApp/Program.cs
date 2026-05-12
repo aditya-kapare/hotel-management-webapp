@@ -15,8 +15,19 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //***********************Service Registration area****************************
-builder.Services.AddControllersWithViews();
 
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
+
+builder.Services.AddHttpClient("client", options =>
+{
+    options.BaseAddress = new Uri("http://localhost:8000/");
+});
 builder.Services.AddDbContext<HotelDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:HotelManagementSystemDb"])
 );
@@ -56,12 +67,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 var app = builder.Build();
 
 //later to comment this out.
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-    await SeedRunner.RunAsync(db);
-    await IdentitySeedData.PopulateAsync(app);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
+//    await SeedRunner.RunAsync(db);
+//    await IdentitySeedData.PopulateAsync(app);
+//}
 
 
 

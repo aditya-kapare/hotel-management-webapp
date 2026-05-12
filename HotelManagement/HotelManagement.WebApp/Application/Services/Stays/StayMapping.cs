@@ -15,8 +15,14 @@ namespace HotelManagement.WebApp.Application.Services.Stays
             PendingAmount = s.PendingAmount,
             RoomNo = s.RoomNo,
             CustomerIdentityId = s.CustomerIdentityId,
-            CustomerName = s.Customer.Name,
-            MobileNo = s.Customer.MobileNo
+
+            Customer = s.Customer == null ? null : new CustomerBriefDto
+            {
+                IdentityId = s.CustomerIdentityId,
+                Name = s.Customer.Name,
+                MobileNo = s.Customer.MobileNo
+            }
+
         };
 
         internal static Stay ToEntity(CheckInRequest r, DateTime checkInAt) => new()

@@ -1,4 +1,5 @@
-﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
+﻿using HotelManagement.WebApp.Application.Dtos.Drivers;
+using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.ViewModels.DropPickRequests;
 
@@ -15,7 +16,7 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<IReadOnlyList<DropPickRequestDto>> GetByStayIdAsync(int stayId);
         Task<IReadOnlyList<DropPickRequestDto>> GetByDriverIdAsync(int driverId);
 
-        Task<IReadOnlyList<CabDriver>> GetAvailableDriversAsync();
+        Task<IReadOnlyList<CabDriverBriefDto>> GetAvailableDriversAsync();
 
         Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request);
         Task<DropPickRequest> CreateAsync(DropPickRequest request);

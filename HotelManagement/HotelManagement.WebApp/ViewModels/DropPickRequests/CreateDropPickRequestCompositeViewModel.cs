@@ -1,4 +1,5 @@
-﻿using HotelManagement.WebApp.Domain.Enums;
+﻿using HotelManagement.WebApp.Application.Dtos.Drivers;
+using HotelManagement.WebApp.Domain.Enums;
 
 namespace HotelManagement.WebApp.ViewModels.DropPickRequests
 {
@@ -23,5 +24,7 @@ namespace HotelManagement.WebApp.ViewModels.DropPickRequests
         public DateTime RequestedAt { get; set; }
 
         public string Notes { get; set; } = string.Empty;
+
+        public List<CabDriverBriefDto> Drivers { get; set; } = new();
     }
 }

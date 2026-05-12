@@ -35,7 +35,7 @@ public sealed class DropPickRequestsController : Controller
             .GetRequestListAsync();
 
         var model = requests
-            .Where(r => r.RequestStatus != DropPickStatus.Cancelled)
+            .Where(r => r.Status != DropPickStatus.Cancelled)
             .Select(r => new DropPickRequestViewListModel
             {
                 RequestId = r.RequestId,
@@ -43,7 +43,7 @@ public sealed class DropPickRequestsController : Controller
                 CustomerName = r.CustomerName,
                 CustomerMobileNo = r.CustomerPhone,
                 DriverName = r.DriverName,
-                Status = r.RequestStatus,
+                Status = r.Status,
                 CanEdit = r.CanEdit
             })
             .ToList();
@@ -127,7 +127,7 @@ public sealed class DropPickRequestsController : Controller
 
     
 
-        if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
+        if (req.Status is DropPickStatus.Completed or DropPickStatus.Cancelled)
             return RedirectToAction(nameof(Index));
 
         var availableDrivers = (await _receptionist
@@ -168,8 +168,7 @@ public sealed class DropPickRequestsController : Controller
             RequestId = req.RequestId,
             DriverId = req.DriverId,
             RequestType = req.RequestType,
-            Status = req.RequestStatus,
-            RequestedAt = req.RequestedAt,
+            Status = req.Status,
 
             CustomerName = req.CustomerName,
             CustomerPhone = req.CustomerPhone,
@@ -250,7 +249,6 @@ ViewBag.Drivers = drivers;
             DriverName = dto.DriverName,
 
             RequestType = dto.RequestType.ToString(),
-            RequestedAt = dto.RequestedAt,
             Notes = dto.Notes,
 
             CanEdit = dto.CanEdit
@@ -306,7 +304,7 @@ ViewBag.Drivers = drivers;
             .GetRequestListAsync();
 
         var model = requests
-            .Where(r => (r.RequestStatus == DropPickStatus.Cancelled) || (r.RequestStatus == DropPickStatus.Completed))
+            .Where(r => (r.Status == DropPickStatus.Cancelled) || (r.Status == DropPickStatus.Completed))
             .Select(r => new DropPickRequestViewListModel
             {
                 RequestId = r.RequestId,
@@ -314,7 +312,7 @@ ViewBag.Drivers = drivers;
                 CustomerName = r.CustomerName,
                 CustomerMobileNo = r.CustomerPhone,
                 DriverName = r.DriverName,
-                Status = r.RequestStatus,
+                Status = r.Status,
                 CanEdit = false 
             })
             .ToList();

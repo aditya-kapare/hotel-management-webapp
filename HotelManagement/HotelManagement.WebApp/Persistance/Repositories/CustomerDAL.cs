@@ -43,7 +43,7 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-       
+        
         public async Task<bool> AddCustomerAsync(Customer customer)
         {
            
