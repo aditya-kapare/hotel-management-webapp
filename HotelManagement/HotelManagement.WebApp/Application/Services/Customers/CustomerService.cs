@@ -9,20 +9,20 @@ namespace HotelManagement.WebApp.Application.Services.Customers
 {
     public sealed class CustomerService : ICustomerService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public CustomerService(HttpClient httpClient)
+        public CustomerService(IHttpClientFactory clientFactory)
         {
-            _httpClient = httpClient;
+            _clientFactory = clientFactory;
         }
-
         // -------------------------
         // READ
         // -------------------------
 
         public async Task<IReadOnlyList<CustomerDto>> GetAllAsync()
         {
-            var response = await _httpClient.GetAsync("api/customers");
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient.GetAsync("api/customers");
 
             if (!response.IsSuccessStatusCode)
                 return new List<CustomerDto>();
@@ -39,7 +39,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             if (string.IsNullOrWhiteSpace(identityId))
                 return null;
 
-            var response = await _httpClient
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient
                 .GetAsync($"api/customers/{identityId}");
 
             if (!response.IsSuccessStatusCode)
@@ -52,7 +53,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
         public async Task<IReadOnlyList<CustomerDto>> GetByIdentityIdTypeAsync(
             IdentityIdType identityIdType)
         {
-            var response = await _httpClient
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient
                 .GetAsync($"api/customers/type/{(int)identityIdType}");
 
             if (!response.IsSuccessStatusCode)
@@ -76,7 +78,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             var normalized = NormalizeCreate(request);
             ValidateCreate(normalized);
 
-            var response = await _httpClient
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient 
                 .PostAsJsonAsync("api/customers", normalized);
 
             if (!response.IsSuccessStatusCode)
@@ -107,7 +110,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            var response = await _httpClient
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient
                 .PutAsJsonAsync($"api/customers/{identityId}", normalized);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
@@ -133,7 +137,8 @@ namespace HotelManagement.WebApp.Application.Services.Customers
             if (string.IsNullOrWhiteSpace(identityId))
                 return false;
 
-            var response = await _httpClient
+            var httpClient = _clientFactory.CreateClient("client");
+            var response = await httpClient
                 .DeleteAsync($"api/customers/{identityId}");
 
             return response.IsSuccessStatusCode;

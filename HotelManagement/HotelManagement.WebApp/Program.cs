@@ -2,6 +2,7 @@ using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services;
+using HotelManagement.WebApp.Application.Services.Customers;
 using HotelManagement.WebApp.Application.Services.Stays;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.DataSeeder;
@@ -19,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         options.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
@@ -49,7 +51,9 @@ builder.Services.AddScoped<IStayChargeCalculator, StayChargeCalculator>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICabDriverService, CabDriverService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>(
+    
+    );
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();

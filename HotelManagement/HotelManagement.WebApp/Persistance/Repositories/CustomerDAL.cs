@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace HotelManagementSystem.DAL
 {
     /// <summary>
