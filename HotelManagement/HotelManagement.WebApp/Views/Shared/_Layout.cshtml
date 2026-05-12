@@ -11,6 +11,13 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
           rel="stylesheet" />
+
+    <!-- ✅ Bootstrap Icons (CRITICAL – fixes disappearing icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <link href="~/css/site.css" rel="stylesheet" />
+
 </head>
 
 <body class="bg-light">
@@ -18,7 +25,17 @@
     <!-- TOP BAR -->
     @if (!(ViewData["HideSidebar"] as bool? ?? false))
     {
-        <nav class="navbar navbar-light bg-white shadow-sm px-4 d-flex justify-content-between">
+        <nav class="navbar navbar-light bg-white shadow-sm px-4">
+
+            <!-- ✅ Sidebar Toggle Button -->
+            <button id="sidebarToggle"
+                    class="btn btn-outline-secondary btn-sm me-3">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <span class="navbar-brand fw-bold">
+                Hotel Management
+            </span>
 
             <!-- LEFT: App name + user -->
             <div class="d-flex align-items-center gap-2">
@@ -66,6 +83,7 @@
         @if (
                 User.Identity != null &&
                 User.Identity.IsAuthenticated &&
+                (User.IsInRole("Admin") || User.IsInRole("Receptionist")) &&
                 !(ViewData["HideSidebar"] as bool? ?? false)
                 )
         {
@@ -76,13 +94,50 @@
         <main class="flex-grow-1 container my-4">
             @RenderBody()
         </main>
-
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/js/site.js"></script>
+
+    <!-- ✅ MVC Validation Scripts -->
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- ✅ Sidebar Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const toggleBtn = document.getElementById("sidebarToggle");
+            const sidebar = document.getElementById("sidebar");
+
+            // If sidebar or button doesn't exist (login page), stop here
+            if (!toggleBtn || !sidebar) return;
+
+            // ✅ default CLOSED
+            if (localStorage.getItem("sidebarOpen") === null) {
+                localStorage.setItem("sidebarOpen", "false");
+            }
+
+            function applyState() {
+                const isOpen = localStorage.getItem("sidebarOpen") === "true";
+                sidebar.style.marginLeft = isOpen ? "0px" : "-250px";
+            }
+
+            // Apply sidebar state on every page load
+            applyState();
+
+            // Toggle on button click
+            toggleBtn.addEventListener("click", function () {
+                const isOpen = localStorage.getItem("sidebarOpen") === "true";
+                localStorage.setItem("sidebarOpen", (!isOpen).toString());
+                applyState();
+            });
+        });
+    </script>
+    
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

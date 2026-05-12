@@ -1,4 +1,4 @@
-﻿@model HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverForUpdateDTO
+@model HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverForUpdateDTO
 
 <div class="container mt-4">
 
@@ -17,11 +17,9 @@
 
             <form method="post">
 
-                <!-- ✅ DRIVER ID COMES FROM ROUTE -->
-
                 <div class="row g-3">
 
-                    <!-- ✅ Government ID -->
+                    <!-- Government ID -->
                     <div class="col-md-6">
                         <label class="form-label">Government ID</label>
                         <input type="text"
@@ -33,7 +31,7 @@
                                maxlength="30" />
                     </div>
 
-                    <!-- ✅ Name -->
+                    <!-- Name -->
                     <div class="col-md-6">
                         <label class="form-label">Name</label>
                         <input type="text"
@@ -45,7 +43,7 @@
                                maxlength="50" />
                     </div>
 
-                    <!-- ✅ Age -->
+                    <!-- Age -->
                     <div class="col-md-3">
                         <label class="form-label">Age</label>
                         <input type="number"
@@ -57,42 +55,38 @@
                                max="65" />
                     </div>
 
-                    <!-- ✅ Gender -->
+                    <!-- Gender (KEEP YOUR ENUM LOGIC ✅) -->
                     <div class="col-md-3">
                         <label class="form-label">Gender</label>
                         <select name="Gender" class="form-select" required>
-                            @foreach (var g in Enum.GetValues(typeof(HotelManagement.WebApp.Domain.Enums.Gender)))
+                            @foreach (var g in Enum.GetValues(typeof(Gender)))
                             {
                                 <option value="@g"
-                                        selected="@((HotelManagement.WebApp.Domain.Enums.Gender)Model.Gender == (HotelManagement.WebApp.Domain.Enums.Gender)g)">
+                                        selected="@((Gender)Model.Gender == (Gender)g)">
                                     @g
                                 </option>
                             }
                         </select>
                     </div>
 
-                    <!-- ✅ Car Vendor -->
+                    <!-- Car Vendor (DROPDOWN ✅) -->
                     <div class="col-md-6">
                         <label class="form-label">Car Vendor</label>
-                        <input type="text"
-                               name="CarVendor"
-                               class="form-control"
-                               value="@Model.CarVendor"
-                               required
-                               minlength="2"
-                               maxlength="30" />
+                        <select name="CarVendor" class="form-select" required>
+                            <option value="">-- Select Vendor --</option>
+                            <option value="Ola" selected="@(Model.CarVendor == "Ola")">Ola</option>
+                            <option value="Uber" selected="@(Model.CarVendor == "Uber")">Uber</option>
+                        </select>
                     </div>
 
-                    <!-- ✅ Car Type -->
+                    <!-- Car Type (DROPDOWN ✅) -->
                     <div class="col-md-6">
                         <label class="form-label">Car Type</label>
-                        <input type="text"
-                               name="CarType"
-                               class="form-control"
-                               value="@Model.CarType"
-                               required
-                               minlength="2"
-                               maxlength="30" />
+                        <select name="CarType" class="form-select" required>
+                            <option value="">-- Select Car Type --</option>
+                            <option value="Sedan" selected="@(Model.CarType == "Sedan")">Sedan</option>
+                            <option value="SUV" selected="@(Model.CarType == "SUV")">SUV</option>
+                        </select>
                     </div>
 
                 </div>

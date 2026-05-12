@@ -53,9 +53,23 @@ namespace HotelManagement.WebApp.Controllers
                 return View(request);
             }
 
-            await _admin.Employees.CreateAsync(request);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _admin.Employees.CreateAsync(request);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                // ✅ Convert exception into validation error
+                ModelState.AddModelError(
+                    "Password",
+                    "Password format is invalid. Please follow password rules."
+                );
+
+                return View(request); // ✅ SAME VIEW, NO CRASH
+            }
         }
+
 
 
         [HttpGet("details")]
@@ -93,8 +107,8 @@ namespace HotelManagement.WebApp.Controllers
 
         [HttpPost("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(
-            string aadharNo,
-            UpdateEmployeeRequest request)
+    string aadharNo,
+    UpdateEmployeeRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -103,7 +117,11 @@ namespace HotelManagement.WebApp.Controllers
             }
 
             await _admin.Employees.UpdateAsync(aadharNo, request);
-            return RedirectToAction(nameof(Details), new { aadharNo });
+
+            TempData["SuccessMessage"] = "Employee updated successfully.";
+
+            // ✅ Go back to Employees list page
+            return RedirectToAction(nameof(Index));
         }
 
 

@@ -6,18 +6,17 @@ namespace HotelManagement.WebApp.ViewModels.Customers
     public sealed class CreateCustomerViewModel
     {
         [Required]
-        [Display(Name = "Identity ID")]
         public string IdentityId { get; set; } = string.Empty;
 
         [Required]
-        [Display(Name = "Identity Type")]
         public IdentityIdType IdentityIdType { get; set; }
 
         [Required]
-        [Display(Name = "Mobile Number")]
+        [RegularExpression(@"^[0-9]{10}$")]
         public string MobileNo { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z\s]+$")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
@@ -27,6 +26,7 @@ namespace HotelManagement.WebApp.ViewModels.Customers
         public string Address { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z\s]+$")]
         public string Country { get; set; } = string.Empty;
     }
 }

@@ -28,9 +28,29 @@
             <hr />
 
             <h5 class="card-title">Payment Details</h5>
-            <p><strong>Deposit Paid:</strong> @Model.DepositPaid</p>
-            <p><strong>Amount Paid:</strong> @Model.AmountPaid</p>
-            <p><strong>Pending Amount:</strong> @Model.PendingAmount</p>
+
+            @{
+                decimal roomPrice = ViewBag.RoomPrice ?? 0;
+                decimal depositPaid = Model.DepositPaid;
+                decimal checkoutPaid = Model.AmountPaid;
+
+                decimal totalPaid = depositPaid + checkoutPaid;
+                decimal pendingAmount = roomPrice - totalPaid;
+
+                if (pendingAmount < 0)
+                {
+                    pendingAmount = 0;
+                }
+            }
+
+            <p><strong>Deposit Paid:</strong> @depositPaid</p>
+            <p><strong>Checkout Paid:</strong> @checkoutPaid</p>
+            <p><strong>Total Paid:</strong> @totalPaid</p>
+            <p><strong>Room Price:</strong> @roomPrice</p>
+
+            <p class="text-danger">
+                <strong>Pending Amount:</strong> @pendingAmount
+            </p>
 
         </div>
     </div>

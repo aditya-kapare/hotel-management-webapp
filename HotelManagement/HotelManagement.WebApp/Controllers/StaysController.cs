@@ -134,35 +134,39 @@ namespace HotelManagement.WebApp.Controllers
 
         [HttpPost("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(
-          int stayId,
-          CheckOutStayViewModel model)
+    int stayId,
+    CheckOutStayViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
             var rooms = await _stayService.Rooms.GetAllAsync();
             var room = rooms.FirstOrDefault(r => r.RoomNo == model.RoomNo);
 
             if (room == null)
             {
                 ModelState.AddModelError("", "Room not found");
-                return View(model);
             }
 
-            var totalAmount = room.Price;
+            var totalAmount = room?.Price ?? 0;
 
+            // ✅ Restore ViewBag ALWAYS
+            ViewBag.RoomPrice = totalAmount;
 
             if (model.AmountPaid > totalAmount)
             {
-                TempData["Error"] = "Amount paid cannot exceed room price";
-                return RedirectToAction(nameof(CheckOut), new { stayId });
+                ModelState.AddModelError(
+                    nameof(model.AmountPaid),
+                    "Amount paid cannot exceed room price");
             }
-
 
             if (model.AmountPaid < totalAmount)
             {
-                TempData["Error"] = "Amount paid is less than required";
-                return RedirectToAction(nameof(CheckOut), new { stayId });
+                ModelState.AddModelError(
+                    nameof(model.AmountPaid),
+                    "Amount paid is less than required");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model); // ✅ NO REDIRECT
             }
 
             var request = new CheckOutRequest
@@ -174,6 +178,7 @@ namespace HotelManagement.WebApp.Controllers
             await _stayService.Stays.CheckOutAsync(stayId, request);
             return RedirectToAction("Index");
         }
+
 
 
         [HttpGet("checkin/{identityId}")]
@@ -309,9 +314,13 @@ namespace HotelManagement.WebApp.Controllers
                 return BadRequest();
 
             var stay = await _stayService.Stays.GetByIdAsync(stayId);
-
             if (stay is null)
                 return NotFound();
+
+            var rooms = await _stayService.Rooms.GetAllAsync();
+            var room = rooms.FirstOrDefault(r => r.RoomNo == stay.RoomNo);
+
+            ViewBag.RoomPrice = room?.Price ?? 0;
 
             return View(stay);
         }
