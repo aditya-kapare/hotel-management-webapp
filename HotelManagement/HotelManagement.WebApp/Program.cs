@@ -57,7 +57,6 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 //    client.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
 //});
 
-
 //builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
