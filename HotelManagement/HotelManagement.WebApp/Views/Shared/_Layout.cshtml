@@ -25,55 +25,60 @@
     <!-- TOP BAR -->
     @if (!(ViewData["HideSidebar"] as bool? ?? false))
     {
-        <nav class="navbar navbar-light bg-white shadow-sm px-4">
+        ///////
+        
+        <nav class="navbar navbar-light bg-white shadow-sm px-4 d-flex justify-content-between">
 
-            <!-- ✅ Sidebar Toggle Button -->
-            <button id="sidebarToggle"
-                    class="btn btn-outline-secondary btn-sm me-3">
-                <i class="bi bi-list"></i>
-            </button>
+            <!-- LEFT: Toggle + App name + username -->
+            <div class="d-flex align-items-center gap-3">
 
-            <span class="navbar-brand fw-bold">
-                Hotel Management
-            </span>
+                <!-- Sidebar Toggle -->
+                <button id="sidebarToggle"
+                        class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-list"></i>
+                </button>
 
-            <!-- LEFT: App name + user -->
-            <div class="d-flex align-items-center gap-2">
+                <!-- App Name -->
                 <span class="navbar-brand fw-bold mb-0">
                     Hotel Management
                 </span>
 
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                <!-- Username (START position ✅) -->
+                @* @if (User.Identity?.IsAuthenticated ?? false)
                 {
                     <span class="text-muted small">
-                        |
-                        @User.Identity.Name
+                        | @User.Identity.Name
                         (
                         @(User.IsInRole("Admin")
-                                        ? "Admin"
-                                        : User.IsInRole("Receptionist")
-                                        ? "Receptionist"
-                                        : "User")
-                )
-            </span>
-                        }
+                            ? "Admin"
+                            : User.IsInRole("Receptionist")
+                                ? "Receptionist"
+                                : "User")
+                        )
+                    </span>
+                } *@
             </div>
 
-            <!-- RIGHT: Logout -->
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                <form asp-controller="Auth"
-                      asp-action="Logout"
-                      method="post"
-                      class="d-inline">
-                    <button type="submit"
-                            class="btn btn-outline-danger btn-sm">
-                        Logout
-                    </button>
-                </form>
-            }
+            <!-- RIGHT: Username + Logout -->
+            <div class="d-flex align-items-center gap-3">
+
+                @if(User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <form method="post" action="/account/logout" class="d-flex align-items-center gap-2">
+                        <span class="text-muted small">
+                            @User.Identity.Name
+                        </span>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            Logout
+                        </button>
+                    </form>
+                }
+            </div>
 
         </nav>
+
+
+        ///////
     }
 
     <!-- PAGE CONTENT -->
