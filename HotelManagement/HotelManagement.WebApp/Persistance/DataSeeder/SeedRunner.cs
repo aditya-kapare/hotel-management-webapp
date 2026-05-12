@@ -15,7 +15,7 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
                 new RoomsSeeder(),
                 new CustomersSeeder(),
                 new CabDriversSeeder(),
-              
+
                 new StaysSeeder(),
                 new DropPickRequestsSeeder()
             };

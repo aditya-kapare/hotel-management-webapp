@@ -1,102 +1,188 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Drivers;
 using HotelManagement.WebApp.Application.Interfaces.Services;
-using HotelManagement.WebApp.Application.Services.Drivers;
-using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
-using System.Text.Json;
+using System.Net;
 
 namespace HotelManagement.WebApp.Application.Services
 {
     public sealed class CabDriverService : ICabDriverService
     {
-        private readonly ICabDriverDAL _driverDal;
+        private const string BaseRoute = "api/cabdrivers";
+        private readonly IHttpClientFactory _httpClientFactory;
+        //private readonly HttpClient _httpClient;
 
-        public CabDriverService(ICabDriverDAL driverDal)
+        public CabDriverService(IHttpClientFactory httpClientFactory)
         {
-            _driverDal = driverDal;
+            _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IReadOnlyList<CabDriverDto>> GetAllAsync()
+        // -------------------------
+        // READ
+        // -------------------------
+        public async Task<IReadOnlyList<CabDriverDTO>> GetAllAsync()
         {
-            var drivers = await _driverDal.GetAllDriversAsync();
-            return drivers.Select(CabDriverMapping.ToDto).ToList();
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            var response = await _httpClient.GetFromJsonAsync<IReadOnlyList<CabDriverDTO>>(BaseRoute);
+            if (response is null)
+                return new List<CabDriverDTO>();
+
+            return response;
         }
 
-        public async Task<CabDriverDto?> GetByIdAsync(int driverId)
+        public async Task<CabDriverDTO?> GetByIdAsync(int driverId)
         {
+            var _httpClient = _httpClientFactory.CreateClient("client");
             if (driverId <= 0) return null;
 
-            var driver = await _driverDal.GetDriverByIdAsync(driverId);
-            return driver is null ? null : CabDriverMapping.ToDto(driver);
+            var response = await _httpClient.GetAsync($"{BaseRoute}/{driverId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<CabDriverDTO>();
         }
 
-        public async Task<CabDriverDto> CreateAsync(CabDriverRequest request)
+        public async Task<CabDriverDTO?> GetByGovtIdAsync(string govtId)
         {
-            if (request is null) throw new ArgumentNullException(nameof(request));
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            govtId = NormalizeId(govtId);
+            if (string.IsNullOrWhiteSpace(govtId)) return null;
 
-            var normalized = NormalizeCreate(request);
-            ValidateCreate(normalized);
+            var response = await _httpClient.GetAsync($"{BaseRoute}/by-govt-id/{govtId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-            var entity = CabDriverMapping.ToEntity(normalized);
-            await _driverDal.AddDriverAsync(entity);
-
-            return CabDriverMapping.ToDto(entity);
-
-            //var jsonCabDriver = JsonSerializer.Serialize(request);
-
+            return await response.Content.ReadFromJsonAsync<CabDriverDTO>();
         }
 
-        public async Task<CabDriverDto> UpdateAsync(int driverId, CabDriverRequest request)
+        // -------------------------
+        // CREATE
+        // -------------------------
+        public async Task<CabDriverDTO> CreateAsync(CabDriverForCreationDTO request)
         {
-            if (request is null) throw new ArgumentNullException(nameof(request));
-            if (driverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(driverId));
+            var _httpClient = _httpClientFactory.CreateClient("client");
 
-            var normalized = NormalizeUpdate(request);
-            ValidateCreate(normalized);
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
 
-            var entity = CabDriverMapping.ToEntity(driverId, normalized);
+            ValidateCreate(request);
 
-            var updated = await _driverDal.UpdateDriverAsync(entity);
-            if (!updated)
-                throw new KeyNotFoundException($"Driver '{driverId}' was not found.");
+            var response = await _httpClient.PostAsJsonAsync(BaseRoute, request);
 
-            return CabDriverMapping.ToDto(entity);
+            // ✅ HANDLE DUPLICATE (409)
+            if (response.StatusCode == HttpStatusCode.Conflict)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException(apiMessage);
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return (await response.Content.ReadFromJsonAsync<CabDriverDTO>())!;
         }
 
-        public async Task<bool> DeleteAsync(int driverId)
+        // -------------------------
+        // UPDATE
+        // -------------------------
+        public async Task<CabDriverDTO> UpdateByIdAsync(
+            int driverId,
+            CabDriverForUpdateDTO request)
+        {
+            if (driverId <= 0)
+                throw new ArgumentException("DriverId must be positive.", nameof(driverId));
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            ValidateUpdate(request);
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            var response = await _httpClient
+                .PutAsJsonAsync($"{BaseRoute}/{driverId}", request);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new KeyNotFoundException($"Driver '{driverId}' not found.");
+
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException("Cab driver update failed.");
+
+            return await GetByIdAsync(driverId)
+                   ?? throw new InvalidOperationException("Updated driver not found.");
+        }
+
+        public async Task<CabDriverDTO> UpdateByGovtIdAsync(
+            string govtId,
+            CabDriverForUpdateDTO request)
+        {
+            govtId = NormalizeId(govtId);
+            if (string.IsNullOrWhiteSpace(govtId))
+                throw new ArgumentException("GovernmentId is required.", nameof(govtId));
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            ValidateUpdate(request);
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            var response = await _httpClient
+                .PutAsJsonAsync($"{BaseRoute}/by-govt-id/{govtId}", request);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new KeyNotFoundException($"Driver '{govtId}' not found.");
+
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException("Cab driver update failed.");
+
+            return await GetByGovtIdAsync(govtId)
+                   ?? throw new InvalidOperationException("Updated driver not found.");
+        }
+
+        // -------------------------
+        // DELETE
+        // -------------------------
+        public async Task<bool> DeleteByIdAsync(int driverId)
         {
             if (driverId <= 0) return false;
-
-            return await _driverDal.DeleteDriverAsync(driverId);
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            var response = await _httpClient.DeleteAsync($"{BaseRoute}/{driverId}");
+            return response.IsSuccessStatusCode;
         }
 
-        private static CabDriverRequest NormalizeCreate(CabDriverRequest r) => new()
+        public async Task<bool> DeleteByGovtIdAsync(string govtId)
         {
-            Name = (r.Name ?? string.Empty).Trim(),
-            Age = r.Age,
-            Gender = r.Gender,
-            CarVendor = (r.CarVendor ?? string.Empty).Trim(),
-            CarType = (r.CarType ?? string.Empty).Trim()
-        };
+            govtId = NormalizeId(govtId);
+            if (string.IsNullOrWhiteSpace(govtId)) return false;
+            var _httpClient = _httpClientFactory.CreateClient("client");
+            var response = await _httpClient
+                .DeleteAsync($"{BaseRoute}/by-govt-id/{govtId}");
 
-        private static CabDriverRequest NormalizeUpdate(CabDriverRequest r) => new()
+            return response.IsSuccessStatusCode;
+        }
+
+        // -------------------------
+        // Validation helpers
+        // -------------------------
+        private static string NormalizeId(string id)
+            => (id ?? string.Empty).Trim();
+
+        private static void ValidateCreate(CabDriverForCreationDTO r)
         {
-            Name = (r.Name ?? string.Empty).Trim(),
-            Age = r.Age,
-            Gender = r.Gender,
-            CarVendor = (r.CarVendor ?? string.Empty).Trim(),
-            CarType = (r.CarType ?? string.Empty).Trim()
-        };
+            if (string.IsNullOrWhiteSpace(r.GovernmentId))
+                throw new ArgumentException("GovernmentId is required.");
+            if (string.IsNullOrWhiteSpace(r.Name))
+                throw new ArgumentException("Name is required.");
+            if (r.Age <= 0)
+                throw new ArgumentException("Age must be positive.");
+            if (string.IsNullOrWhiteSpace(r.CarVendor))
+                throw new ArgumentException("CarVendor is required.");
+            if (string.IsNullOrWhiteSpace(r.CarType))
+                throw new ArgumentException("CarType is required.");
+        }
 
-        private static void ValidateCreate(CabDriverRequest r)
+        private static void ValidateUpdate(CabDriverForUpdateDTO r)
         {
             if (string.IsNullOrWhiteSpace(r.Name))
-                throw new ArgumentException("Name is required.", nameof(r.Name));
+                throw new ArgumentException("Name is required.");
+            if (r.Age <= 0)
+                throw new ArgumentException("Age must be positive.");
             if (string.IsNullOrWhiteSpace(r.CarVendor))
-                throw new ArgumentException("CarVendor is required.", nameof(r.CarVendor));
+                throw new ArgumentException("CarVendor is required.");
             if (string.IsNullOrWhiteSpace(r.CarType))
-                throw new ArgumentException("CarType is required.", nameof(r.CarType));
-            if (r.Age < 0)
-                throw new ArgumentException("Age cannot be negative.", nameof(r.Age));
+                throw new ArgumentException("CarType is required.");
         }
     }
 }

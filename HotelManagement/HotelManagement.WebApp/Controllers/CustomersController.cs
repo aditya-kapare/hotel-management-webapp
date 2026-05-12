@@ -15,7 +15,7 @@ namespace HotelManagement.WebApp.Controllers
             _receptionistService = receptionistService;
         }
 
-      
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -28,23 +28,40 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-          
-            var request = new CreateCustomerRequest
+            try
             {
-                IdentityId = model.IdentityId,
-                IdentityIdType = model.IdentityIdType,
-                MobileNo = model.MobileNo,
-                Name = model.Name,
-                Gender = model.Gender,
-                Address = model.Address,
-                Country = model.Country
-            };
+                var request = new CreateCustomerRequest
+                {
+                    IdentityId = model.IdentityId,
+                    IdentityIdType = model.IdentityIdType,
+                    MobileNo = model.MobileNo,
+                    Name = model.Name,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Country = model.Country
+                };
 
-            await _receptionistService.Customers.CreateAsync(request);
-            
-            TempData["Success"] = "Customer added successfully";
-            return RedirectToAction(nameof(Index));
+                await _receptionistService.Customers.CreateAsync(request);
 
+                TempData["Success"] = "Customer added successfully";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Unexpected error occurred. Please try again.");
+                return View(model);
+            }
         }
 
         [HttpGet("")]
@@ -84,7 +101,7 @@ namespace HotelManagement.WebApp.Controllers
 
 
 
-       
+
         private void PrepareFilters(
             IEnumerable<CustomerDto> customers,
             string? identityType,

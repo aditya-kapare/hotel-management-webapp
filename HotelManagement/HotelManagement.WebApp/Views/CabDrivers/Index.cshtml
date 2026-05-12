@@ -1,4 +1,4 @@
-﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverDto>
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Drivers.CabDriverDTO>
 
 <div class="container mt-4">
 
@@ -98,7 +98,7 @@
                 <tr>
                     <td>@d.Name</td>
                     <td>@d.Age</td>
-                    <td>@d.Gender</td>
+                    <td>@((Gender)d.Gender)</td>
                     <td>@d.CarVendor</td>
                     <td>@d.CarType</td>
                     <td class="text-center">

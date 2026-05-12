@@ -16,30 +16,30 @@ namespace HotelManagement.WebApp.Application.Services
         private readonly UserManager<ApplicationEmployee> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-     
+
         public EmployeeService(
             IEmployeeDAL employeeDal,
             UserManager<ApplicationEmployee> userManager,
             RoleManager<IdentityRole> roleManager)
         {
-       
+
             _employeeDal = employeeDal;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
-     
+
         public async Task<IReadOnlyList<EmployeeSummaryDto>> GetAllAsync()
         {
-           
+
             var employees = await _employeeDal.GetAllEmployeesAsync();
             return employees.Select(EmployeeMapping.ToSummaryDto).ToList();
         }
 
-      
+
         public async Task<EmployeeDetailsDto?> GetByAadharAsync(string aadharNo)
         {
-            
+
             aadharNo = NormalizeAadhar(aadharNo);
             if (string.IsNullOrWhiteSpace(aadharNo)) return null;
 
@@ -47,10 +47,10 @@ namespace HotelManagement.WebApp.Application.Services
             return employee is null ? null : EmployeeMapping.ToDetailsDto(employee);
         }
 
-   
+
         public async Task<EmployeeDetailsDto> CreateAsync(CreateEmployeeRequest request)
         {
-        
+
             if (request is null) throw new ArgumentNullException(nameof(request));
 
             var normalized = NormalizeCreate(request);
@@ -127,7 +127,7 @@ namespace HotelManagement.WebApp.Application.Services
             return EmployeeMapping.ToDetailsDto(existing);
         }
 
-   
+
         public async Task<bool> DeleteAsync(string aadharNo)
         {
             // Normalize Aadhaar number before deletion
@@ -137,11 +137,11 @@ namespace HotelManagement.WebApp.Application.Services
             return await _employeeDal.DeleteEmployeeByAadharAsync(aadharNo);
         }
 
-     
+
         private static string NormalizeAadhar(string aadharNo)
             => (aadharNo ?? string.Empty).Trim();
 
-     
+
         private static CreateEmployeeRequest NormalizeCreate(CreateEmployeeRequest r) => new()
         {
             // Trim all input fields
@@ -184,7 +184,7 @@ namespace HotelManagement.WebApp.Application.Services
         }
         private static void ValidateUpdate(UpdateEmployeeRequest r)
         {
-          
+
             if (string.IsNullOrWhiteSpace(r.Name)) throw new ArgumentException("Name is required");
             if (string.IsNullOrWhiteSpace(r.MobileNo)) throw new ArgumentException("MobileNo is required");
         }

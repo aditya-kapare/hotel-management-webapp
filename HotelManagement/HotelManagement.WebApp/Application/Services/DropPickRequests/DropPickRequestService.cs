@@ -7,21 +7,15 @@ using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using System.Text.Json;
 
-
-
-
-  
-
-    namespace HotelManagement.WebApp.Application.Services
+namespace HotelManagement.WebApp.Application.Services
+{
+    public sealed class DropPickRequestService : IDropPickRequestService
     {
-        public sealed class DropPickRequestService : IDropPickRequestService
-        {
-            private readonly IHttpClientFactory _clientFactory;
-
-            public DropPickRequestService(IHttpClientFactory clientFactory)
-            {
-                _clientFactory = clientFactory;
-            }
+        private readonly IDropPickRequestDAL _requestDal;
+        private readonly IStayDAL _stayDal;
+        
+        private readonly ICustomerDAL _customerDal;
+        private readonly ICabDriverDAL _driverDal;
 
             private HttpClient GetClient()
             {
@@ -62,38 +56,30 @@ using System.Text.Json;
                     ?? new List<DropPickRequestDto>();
             }
 
-        /// <summary>GET: available drivers (returns only IDs from API)</summary>
-        public async Task<IReadOnlyList<CabDriverBriefDto>> GetAvailableDriversAsync()
-        {
-            return await GetClient()
-                .GetFromJsonAsync<IReadOnlyList<CabDriverBriefDto>>("api/droppickrequests/drivers/available")
-                ?? new List<CabDriverBriefDto>();
-        }
+                Customer? customer = null;
+                if (stay != null) 
+                
+                {
+                    customerMap.TryGetValue(stay.CustomerIdentityId, out customer);
+                }
 
-        /// <summary>POST: api/droppickrequests</summary>
-        public async Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request)
-            {
-                var response = await GetClient()
-                    .PostAsJsonAsync("api/droppickrequests", request);
+                driverMap.TryGetValue(r.DriverId, out var driver);
 
-                response.EnsureSuccessStatusCode();
+                return new DropPickRequestDto
+                {
+                    RequestId = r.RequestId,
+                    
+                    RequestedAt = r.RequestedAt,
+                    Notes = r.Notes,
+                    RequestType = r.RequestType,
+                    RequestStatus = r.Status,
 
                 return await response.Content.ReadFromJsonAsync<DropPickRequestDto>();
             }
 
-            /// <summary>Interface-required overload</summary>
-            public async Task<DropPickRequest> CreateAsync(DropPickRequest request)
-            {
-                var dto = new CreateDropPickRequest
-                {
-                    RequestedAt = request.RequestedAt,
-                    Notes = request.Notes,
-                    RequestType = (int) request.RequestType,
-                    StayId = request.StayId,
-                    DriverId = request.DriverId
-                };
-
-                var result = await CreateAsync(dto);
+                    RoomNo = stay?.RoomNo ?? 0,
+                    
+                    DriverName = driver?.Name ?? "Unassigned",
 
                 return new DropPickRequest
                 {
@@ -298,15 +284,9 @@ using System.Text.Json;
 //            if (!availableDrivers.Any(d => d.DriverId == normalized.DriverId))
 //                throw new InvalidOperationException("Selected driver is not available.");
 
-//            var entity = new DropPickRequest
-//            {
-//                StayId = normalized.StayId,
-//                DriverId = normalized.DriverId,
-//                RequestType = normalized.RequestType,
-//                Notes = normalized.Notes,
-//                RequestedAt = normalized.RequestedAt ?? DateTime.Now,
-//                Status = DropPickStatus.Assigned
-//            };
+            // Normalize
+            if(request.RequestedAt == default)
+                request.RequestedAt = DateTime.Now;
 
 //            var created = await _requestDal.AddRequestAsync(entity);
 //            if (!created)
@@ -341,13 +321,7 @@ using System.Text.Json;
 //            if (!created)
 //                throw new InvalidOperationException("Failed to create drop/pick request.");
 
-//            return request;
-//        }
-
-//        public async Task<DropPickRequestDto> UpdateAsync(int requestId, UpdateDropPickRequest request)
-//        {
-//            if (request is null) throw new ArgumentNullException(nameof(request));
-//            if (requestId <= 0) throw new ArgumentException("RequestId must be positive.", nameof(requestId));
+           
 
 //            var normalized = NormalizeUpdate(request);
 //            ValidateUpdate(normalized);
@@ -416,11 +390,11 @@ using System.Text.Json;
 //            Status = r.Status
 //        };
 
-//        private static void ValidateCreate(CreateDropPickRequest r) 
-//        {
-//            if (r.StayId <= 0) throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
-//            if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
-//        }
+        private static void ValidateCreate(CreateDropPickRequest r) 
+        {
+            if (r.StayId <= 0) throw new ArgumentException("StayId must be positive.", nameof(r.StayId));
+            if (r.DriverId <= 0) throw new ArgumentException("DriverId must be positive.", nameof(r.DriverId));
+        }
 
 //        private static void ValidateUpdate(UpdateDropPickRequest r)
 //        {

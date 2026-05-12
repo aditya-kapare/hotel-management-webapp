@@ -24,21 +24,21 @@ namespace HotelManagement.WebApp.Controllers
         {
             var employees = await _admin.Employees.GetAllAsync();
 
-          
 
-            
+
+
             if (!string.IsNullOrEmpty(search))
             {
                 employees = employees
                     .Where(e =>
                         e.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        e.MobileNo.Contains(search)||e.AadharNo.Contains(search))
+                        e.MobileNo.Contains(search) || e.AadharNo.Contains(search))
                     .ToList();
             }
 
             return View(employees);
         }
-        
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -53,11 +53,25 @@ namespace HotelManagement.WebApp.Controllers
                 return View(request);
             }
 
-            await _admin.Employees.CreateAsync(request);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _admin.Employees.CreateAsync(request);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                // ✅ Convert exception into validation error
+                ModelState.AddModelError(
+                    "Password",
+                    "Password format is invalid. Please follow password rules."
+                );
+
+                return View(request); // ✅ SAME VIEW, NO CRASH
+            }
         }
 
-        
+
+
         [HttpGet("details")]
         public async Task<IActionResult> Details(string aadharNo)
         {
@@ -68,7 +82,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(employee);
         }
 
-        
+
         [HttpGet("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(string aadharNo)
         {
@@ -93,8 +107,8 @@ namespace HotelManagement.WebApp.Controllers
 
         [HttpPost("edit/{aadharNo}")]
         public async Task<IActionResult> Edit(
-            string aadharNo,
-            UpdateEmployeeRequest request)
+    string aadharNo,
+    UpdateEmployeeRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -103,19 +117,23 @@ namespace HotelManagement.WebApp.Controllers
             }
 
             await _admin.Employees.UpdateAsync(aadharNo, request);
-            return RedirectToAction(nameof(Details), new { aadharNo });
+
+            TempData["SuccessMessage"] = "Employee updated successfully.";
+
+            // ✅ Go back to Employees list page
+            return RedirectToAction(nameof(Index));
         }
 
-     
+
         [HttpGet("delete/{aadharNo}")]
-       
+
         public async Task<IActionResult> Delete(string aadharNo)
         {
             var employee = await _admin.Employees.GetByAadharAsync(aadharNo);
             if (employee is null)
                 return NotFound();
 
-            
+
             var referer = Request.Headers["Referer"].ToString();
 
             TempData["ReturnUrl"] = referer;
@@ -130,7 +148,7 @@ namespace HotelManagement.WebApp.Controllers
 
             TempData["SuccessMessage"] = "Employee deleted successfully.";
 
-            
+
             if (TempData["ReturnUrl"] != null)
             {
                 return Redirect(TempData["ReturnUrl"].ToString());

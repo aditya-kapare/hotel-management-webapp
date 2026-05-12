@@ -2,39 +2,40 @@
 
 <h3>Check In Guest</h3>
 
-
-<form method="post"
-      action="/stays/checkin/@Model.CustomerIdentityId">
+<form method="post" action="/stays/checkin/@Model.CustomerIdentityId">
     @Html.AntiForgeryToken()
 
     <input type="hidden" asp-for="ActionType" value="Submit" />
-
     <input type="hidden" asp-for="CustomerIdentityId" />
 
+    <!-- Customer Name -->
     <div class="mb-3">
         <label>Customer Name</label>
         <input class="form-control" value="@Model.CustomerName" readonly />
     </div>
 
+    <!-- Mobile -->
     <div class="mb-3">
         <label>Mobile No</label>
         <input class="form-control" value="@Model.MobileNo" readonly />
     </div>
 
-  
-
+    <!-- ✅ Check-In Date & Time -->
     <div class="mb-3">
         <label>Check-In Date & Time</label>
         <input asp-for="CheckInAt"
+               asp-format="{0:yyyy-MM-ddTHH:mm}"
                type="datetime-local"
-               class="form-control" />
-        @Html.ValidationMessageFor(m => m.CheckInAt, "", new { style = "color:red" })
+               class="form-control"
+               min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")"
+               step="60"
+               required />
     </div>
 
     <!-- Room Type -->
     <div class="mb-3">
         <label>Room Type</label>
-        <select id="RoomType" name="RoomType" class="form-control">
+        <select id="RoomType" name="RoomType" class="form-control" required>
             <option value="">-- Select Room Type --</option>
             @foreach (var rt in Model.RoomTypes)
             {
@@ -46,7 +47,7 @@
     <!-- AC Option -->
     <div class="mb-3">
         <label>AC Option</label>
-        <select id="AcOption" name="AcOption" class="form-control">
+        <select id="AcOption" name="AcOption" class="form-control" required>
             <option value="">-- Select AC Option --</option>
             @foreach (var ac in Model.AcOptions)
             {
@@ -58,37 +59,45 @@
     <!-- Room Number -->
     <div class="mb-3">
         <label>Room Number</label>
-        <select id="RoomNo" name="RoomNo" class="form-control">
+        <select id="RoomNo" name="RoomNo" class="form-control" required>
             <option value="">-- Select Room --</option>
         </select>
     </div>
 
-    <!-- Price -->
+    <!-- Room Price -->
     <div class="mb-3">
-        <label>Price</label>
+        <label>Room Price</label>
         <input id="Price" class="form-control" readonly />
     </div>
 
-    <!-- Deposit -->
+    <!-- Deposit Paid -->
     <div class="mb-3">
         <label>Deposit Paid</label>
-        <input asp-for="DepositPaid" class="form-control" />
-        @Html.ValidationMessageFor(m => m.DepositPaid, "", new { style = "color:red" })
+        <input asp-for="DepositPaid"
+               id="DepositPaid"
+               class="form-control"
+               type="number"
+               min="0"
+               step="0.01"
+               required />
     </div>
 
     <button type="submit" class="btn btn-primary">
         Confirm Check-In
     </button>
+
     <a href="/customers" class="btn btn-secondary ms-2">
         Cancel
     </a>
 </form>
 
+<!-- ✅ SCRIPT (UNCHANGED LOGIC) -->
 <script>
     const roomType = document.getElementById("RoomType");
     const acOption = document.getElementById("AcOption");
     const roomNo = document.getElementById("RoomNo");
     const priceBox = document.getElementById("Price");
+    const depositInput = document.getElementById("DepositPaid");
 
     function loadRooms() {
         if (!roomType.value || !acOption.value) return;
@@ -98,6 +107,8 @@
             .then(data => {
                 roomNo.innerHTML = '<option value="">-- Select Room --</option>';
                 priceBox.value = "";
+                depositInput.value = "";
+                depositInput.removeAttribute("max");
 
                 data.forEach(r => {
                     const opt = document.createElement("option");
@@ -115,6 +126,7 @@
             .then(res => res.json())
             .then(data => {
                 priceBox.value = data.price;
+                depositInput.max = data.price;
             });
     }
 

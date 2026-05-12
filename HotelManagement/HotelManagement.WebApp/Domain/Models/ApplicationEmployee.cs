@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using HotelManagement.WebApp.Domain.Enums;
+﻿using HotelManagement.WebApp.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagement.WebApp.Domain.Models
@@ -34,7 +34,7 @@ namespace HotelManagement.WebApp.Domain.Models
             set => PhoneNumber = value;
         }
 
-        
+
         [MaxLength(256)]
         public string? EmailId
         {

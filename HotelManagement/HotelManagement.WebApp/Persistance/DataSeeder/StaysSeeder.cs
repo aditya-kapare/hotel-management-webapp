@@ -25,7 +25,7 @@ namespace HotelManagement.WebApp.Persistance.DataSeeder
                 .ToListAsync(cancellationToken);
 
             if (rooms.Count < 10 || customers.Count < 4)
-                return; 
+                return;
 
             var now = DateTime.Now;
 

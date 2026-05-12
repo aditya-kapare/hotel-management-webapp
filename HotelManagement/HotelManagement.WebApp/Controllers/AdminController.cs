@@ -10,12 +10,12 @@ namespace HotelManagement.WebApp.Controllers.Admin
         [HttpGet("home")]
         [HttpGet("")]
         public IActionResult Home()
-            {
-                // Explicitly tell MVC the view name
-                return View("~/Views/AdminHome.cshtml");
-            }
+        {
+            // Explicitly tell MVC the view name
+            return View("~/Views/AdminHome.cshtml");
         }
+    }
 
 
-    
+
 }

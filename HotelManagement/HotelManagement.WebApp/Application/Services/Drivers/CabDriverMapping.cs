@@ -5,7 +5,7 @@ namespace HotelManagement.WebApp.Application.Services.Drivers
 {
     internal static class CabDriverMapping
     {
-        internal static CabDriverDto ToDto(CabDriver d) => new()
+        internal static CabDriverDtobak ToDto(CabDriver d) => new()
         {
             DriverId = d.DriverId,
             Name = d.Name,

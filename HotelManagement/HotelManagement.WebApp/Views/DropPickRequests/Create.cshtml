@@ -93,6 +93,21 @@
                 </select>
             </div>
 
+            <!-- ✅ REQUESTED DATE & TIME (SAME AS CHECK-IN) -->
+            <div class="mb-3">
+                <label asp-for="RequestedAt" class="form-label">
+                    Pick / Drop Date & Time
+                </label>
+
+                <input asp-for="RequestedAt"
+                       asp-format="{0:yyyy-MM-ddTHH:mm}"
+                       type="datetime-local"
+                       class="form-control"
+                       min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")"
+                       step="60"
+                       required />
+            </div>
+
             <!-- REQUESTED DATE & TIME -->
             @* <div class="mb-3">
                 <label asp-for="RequestedAt" class="form-label">

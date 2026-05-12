@@ -10,4 +10,4 @@
         public decimal AmountPaid { get; init; }
         public decimal PendingAmount { get; init; }
     }
-}   
+}

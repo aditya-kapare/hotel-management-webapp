@@ -12,7 +12,7 @@ namespace HotelManagement.WebApp.Application.Facades
         public IRoomService Rooms { get; }
         public ICabDriverService Drivers { get; }
 
-       
+
         public AdminServiceFacade(
             IEmployeeService employeeService,
             IRoomService roomService,
