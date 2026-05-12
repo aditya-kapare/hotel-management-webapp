@@ -109,15 +109,17 @@
         </thead>
 
         <tbody>
-            @foreach (var r in Model)
+            @if (Model != null && Model.Any())
             {
-                <tr>
-                    <td>@r.RoomNo</td>
-                    <td>@(((RoomType)r.RoomType).ToDisplayName())</td>
-                    <td>@(((AcOption)r.AcOption).ToDisplayName())</td>
-                    <td>
-                        <span class="badge @(((AvailabilityStatus)r.AvailabilityStatus == AvailabilityStatus.Available)
-                                                          ? "bg-success" : "bg-danger")">
+                foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.RoomNo</td>
+                        <td>@(((RoomType)r.RoomType).ToDisplayName())</td>
+                        <td>@(((AcOption)r.AcOption).ToDisplayName())</td>
+                        <td>
+                            <span class="badge @(((AvailabilityStatus)r.AvailabilityStatus == AvailabilityStatus.Available)
+                                                                        ? "bg-success" : "bg-danger")">
                         @(((AvailabilityStatus)r.AvailabilityStatus).ToDisplayName())
                     </span>
                 </td>
@@ -125,17 +127,27 @@
                 <td class="text-end">₹ @r.Price</td>
 
                 @if (!ViewBag.IsReadOnly)
-                    {
-                        <td class="text-center">
-                            <a asp-action="Edit"
-                               asp-route-id="@r.RoomNo"
-                               class="btn btn-sm btn-info">Edit</a>
+                        {
+                            <td class="text-center">
+                                <a asp-action="Edit"
+                                   asp-route-id="@r.RoomNo"
+                                   class="btn btn-sm btn-info">Edit</a>
 
-                            <a asp-action="Delete"
-                               asp-route-id="@r.RoomNo"
-                               class="btn btn-sm btn-danger ms-2">Delete</a>
-                        </td>
-                    }
+                                <a asp-action="Delete"
+                                   asp-route-id="@r.RoomNo"
+                                   class="btn btn-sm btn-danger ms-2">Delete</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="@(ViewBag.IsReadOnly ? 6 : 7)" class="text-center text-muted py-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No rooms with the specified conditions are available.
+                    </td>
                 </tr>
             }
         </tbody>
