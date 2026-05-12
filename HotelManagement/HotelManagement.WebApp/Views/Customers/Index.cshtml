@@ -4,7 +4,13 @@
 @{
     ViewData["Title"] = "Customers";
 }
-
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @functions {
     string FormatEnumText(string value)
     {
@@ -12,75 +18,93 @@
             .Replace(value, "(?<!^)([A-Z])", " $1");
     }
 }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Customers</h3>
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Customers</h3>
-        <a asp-action="Create" class="btn btn-primary">
+    <div class="d-flex gap-2">
+        <!-- Add Customer FIRST -->
+        <a asp-action="Create"
+           class="btn btn-danger">
             Add Customer
+        </a>
+
+        <!-- Back SECOND -->
+
+        <a href="/reception/home"
+           class="btn btn-dark">
+            Back
+        </a>
+
+    </div>
+</div>
+    <!-- FILTER FORM -->
+<form method="get" class="row g-2 mb-3 align-items-end">
+
+    <!-- Identity Type -->
+    <div class="col-md-3">
+        <select name="identityType" class="form-select">
+            <option value="">All ID Types</option>
+            @foreach (var it in ViewBag.IdentityTypes)
+            {
+                <option value="@it"
+                        selected="@(ViewBag.SelectedIdentityType == it)">
+                    @FormatEnumText(it)
+                </option>
+            }
+        </select>
+    </div>
+
+    <!-- Gender -->
+    <div class="col-md-2">
+        <select name="gender" class="form-select">
+            <option value="">All Genders</option>
+            @foreach (var g in ViewBag.Genders)
+            {
+                <option value="@g"
+                        selected="@(ViewBag.SelectedGender == g)">
+                    @g
+                </option>
+            }
+        </select>
+    </div>
+
+    <!-- Country -->
+    <div class="col-md-3">
+        <select name="country" class="form-select">
+            <option value="">All Countries</option>
+            @foreach (var c in ViewBag.Countries)
+            {
+                <option value="@c"
+                        selected="@(ViewBag.SelectedCountry == c)">
+                    @c
+                </option>
+            }
+        </select>
+    </div>
+
+    <!-- Identity ID -->
+    <div class="col-md-2">
+        <input name="identityId"
+               class="form-control"
+               placeholder="Search ID" />
+    </div>
+
+    <!-- Filter -->
+    <div class="col-md-1">
+        <button class="btn btn-outline-secondary w-100">
+            Filter
+        </button>
+    </div>
+
+    <!-- ✅ RESET (ONE LINE FIX) -->
+    <div class="col-md-1">
+        <a href="/customers" class="btn btn-outline-danger w-100">
+            Reset
         </a>
     </div>
 
-    <!-- FILTER FORM -->
-    <form method="get" class="row g-2 mb-3">
+</form>
 
-        <!-- Identity Type -->
-        <div class="col-md-3">
-            <select name="identityType" class="form-select">
-                <option value="">All ID Types</option>
-                @foreach (var it in ViewBag.IdentityTypes)
-                {
-                    <option value="@it"
-                            selected="@(ViewBag.SelectedIdentityType == it)">
-                        @FormatEnumText(it)
-                    </option>
-                }
-            </select>
-        </div>
-
-        <!-- Gender -->
-        <div class="col-md-2">
-            <select name="gender" class="form-select">
-                <option value="">All Genders</option>
-                @foreach (var g in ViewBag.Genders)
-                {
-                    <option value="@g"
-                            selected="@(ViewBag.SelectedGender == g)">
-                        @g
-                    </option>
-                }
-            </select>
-        </div>
-
-        <!-- Country -->
-        <div class="col-md-3">
-            <select name="country" class="form-select">
-                <option value="">All Countries</option>
-                @foreach (var c in ViewBag.Countries)
-                {
-                    <option value="@c"
-                            selected="@(ViewBag.SelectedCountry == c)">
-                        @c
-                    </option>
-                }
-            </select>
-        </div>
-
-        <!-- Identity ID -->
-        <div class="col-md-2">
-            <input name="identityId"
-                   class="form-control"
-                   placeholder="Search ID" />
-        </div>
-
-        <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100">
-                Filter
-            </button>
-        </div>
-
-    </form>
 
     <!-- TABLE -->
     <table class="table table-bordered table-hover align-middle">
@@ -106,24 +130,25 @@
                     <td>@c.Gender</td>
                     <td>@c.Country</td>
                     <td class="text-center">
-                        <a asp-action="Edit"
-                           asp-route-id="@c.IdentityId">Edit</a>
-                        |
-                        <a asp-controller="Stays"
-                           asp-action="CheckIn"
-                           asp-route-identityId="@c.IdentityId">
-                            Check‑In Guest
-                        </a>
-                        |
-                        <a asp-controller="CabService"
-                           asp-action="Create"
-                           asp-route-identityId="@c.IdentityId">
-                            Cab
-                        </a>
+                        <div class="d-inline-flex gap-1">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@c.IdentityId"
+                               class="btn btn-sm btn-primary">
+                                Edit
+                            </a>
+
+                            <a asp-controller="Stays"
+                               asp-action="CheckIn"
+                               asp-route-identityId="@c.IdentityId"
+                               class="btn btn-sm btn-secondary">
+                                Check‑In
+                            </a>
+
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
 </div>

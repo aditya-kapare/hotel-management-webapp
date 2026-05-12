@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Hotel Management System";
+}
+
+<style>
+    .hero {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        color: white;
+        padding: 70px 20px;
+        border-radius: 12px;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .login-card {
+        margin-top: -60px;
+        border-radius: 14px;
+    }
+</style>
+
+<div class="container mt-5">
+
+    <!-- ✅ HERO HEADER -->
+    <div class="hero text-center mb-5">
+        <h1 class="hero-title">HOTEL MANAGEMENT SYSTEM</h1>
+        <p class="hero-subtitle mt-2">
+            Streamline operations • Manage guests • Control services efficiently
+        </p>
+    </div>
+
+    <!-- ✅ LOGIN CARD -->
+    <div class="row justify-content-center">
+        <div class="col-md-4 text-center">
+
+            <div class="card shadow-lg border-0 login-card">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-semibold mb-3">
+                        Welcome Back
+                    </h5>
+
+                    <p class="text-muted">
+                        Please login to continue
+                    </p>
+
+                    <!-- ✅ AUTH CONTROLLER -->
+                    <a asp-controller="Auth"
+                       asp-action="Login"
+                       class="btn btn-primary w-100 btn-lg">
+                        Login
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

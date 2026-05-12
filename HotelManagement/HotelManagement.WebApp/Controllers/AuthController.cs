@@ -1,41 +1,86 @@
 ﻿using HotelManagement.WebApp.Domain.Models;
+using HotelManagement.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("auth")]
 public class AuthController : Controller
 {
+    private readonly UserManager<ApplicationEmployee> _userManager;
     private readonly SignInManager<ApplicationEmployee> _signInManager;
 
-    public AuthController(SignInManager<ApplicationEmployee> signInManager)
+    public AuthController(
+        UserManager<ApplicationEmployee> userManager,
+        SignInManager<ApplicationEmployee> signInManager)
     {
+        _userManager = userManager;
         _signInManager = signInManager;
     }
 
+    // GET: /auth/login
     [HttpGet("login")]
     public IActionResult Login(string? returnUrl = null)
     {
+        ViewData["HideSidebar"] = true;
         ViewBag.ReturnUrl = returnUrl;
-        return View();
+        return View(new LoginViewModel());
     }
 
+    // POST: /auth/login
     [HttpPost("login")]
-    public async Task<IActionResult> Login(string username, string password, string? returnUrl = null)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
+        ViewData["HideSidebar"] = true; // ✅ ADD THIS LINE (CRITICAL)
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.FindByNameAsync(model.Username);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid credentials");
+            return View(model);
+        }
+
         var result = await _signInManager.PasswordSignInAsync(
-            username, password, false, lockoutOnFailure: false);
+            user,
+            model.Password,
+            isPersistent: false,
+            lockoutOnFailure: false);
 
-        if (result.Succeeded)
-            return Redirect(returnUrl ?? "/");
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid credentials");
+            return View(model);
+        }
 
-        ModelState.AddModelError("", "Invalid login attempt");
-        return View();
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+            return Redirect("/admin");
+
+        if (await _userManager.IsInRoleAsync(user, "Receptionist"))
+            return Redirect("/reception");
+
+        await _signInManager.SignOutAsync();
+        ModelState.AddModelError(string.Empty, "Unauthorized role");
+        return View(model);
     }
 
+    // POST: /auth/logout
+    [Authorize]
     [HttpPost("logout")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return Redirect("/");
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet("denied")]
+    public IActionResult Denied()
+    {
+        ViewData["HideSidebar"] = true;
+        return View();
     }
 }

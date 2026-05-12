@@ -1,5 +1,6 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Room;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
+using HotelManagement.WebApp.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +15,6 @@ namespace HotelManagement.WebApp.Controllers
             _admin = admin;
         }
 
-
         [HttpGet("/rooms")]
         [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> PublicIndex(
@@ -28,10 +28,8 @@ namespace HotelManagement.WebApp.Controllers
                 acOption,
                 cleanStatus,
                 availabilityStatus,
-                isAdmin: false
-            );
+                isAdmin: false);
         }
-
 
         [HttpGet("/admin/rooms")]
         [Authorize(Roles = "Admin")]
@@ -46,13 +44,8 @@ namespace HotelManagement.WebApp.Controllers
                 acOption,
                 cleanStatus,
                 availabilityStatus,
-                isAdmin: true
-            );
+                isAdmin: true);
         }
-
-        /* =========================================================
-           SHARED LOGIC (NO DUPLICATION)
-           ========================================================= */
 
         private async Task<IActionResult> IndexInternal(
             string? type,
@@ -63,29 +56,36 @@ namespace HotelManagement.WebApp.Controllers
         {
             var rooms = await _admin.Rooms.GetAllAsync();
 
-            if (!string.IsNullOrEmpty(type))
-                rooms = rooms.Where(r => r.RoomType.ToString() == type).ToList();
+            int? selectedType = int.TryParse(type, out var t) ? t : null;
+            int? selectedAc = int.TryParse(acOption, out var ac) ? ac : null;
+            int? selectedClean = int.TryParse(cleanStatus, out var cs) ? cs : null;
+            int? selectedAvailability = int.TryParse(availabilityStatus, out var av) ? av : null;
 
-            if (!string.IsNullOrEmpty(acOption))
-                rooms = rooms.Where(r => r.AcOption.ToString() == acOption).ToList();
+            if (selectedType.HasValue)
+                rooms = rooms.Where(r => r.RoomType == selectedType.Value).ToList();
 
-            if (!string.IsNullOrEmpty(cleanStatus))
-                rooms = rooms.Where(r => r.CleanStatus.ToString() == cleanStatus).ToList();
+            if (selectedAc.HasValue)
+                rooms = rooms.Where(r => r.AcOption == selectedAc.Value).ToList();
 
-            if (!string.IsNullOrEmpty(availabilityStatus))
-                rooms = rooms.Where(r => r.AvailabilityStatus.ToString() == availabilityStatus).ToList();
+            if (selectedClean.HasValue)
+                rooms = rooms.Where(r => r.CleanStatus == selectedClean.Value).ToList();
 
-            PrepareFilters(rooms, type, acOption, cleanStatus, availabilityStatus);
+            if (selectedAvailability.HasValue)
+                rooms = rooms.Where(r => r.AvailabilityStatus == selectedAvailability.Value).ToList();
+
+            PrepareFilters(
+                selectedType,
+                selectedAc,
+                selectedClean,
+                selectedAvailability);
 
             ViewBag.IsReadOnly = !isAdmin;
-
             return View("Index", rooms);
         }
 
-        /* =========================================================
-           ADMIN‑ONLY ACTIONS
-           ========================================================= */
-
+        // -------------------------
+        // CREATE
+        // -------------------------
         [HttpGet("/admin/rooms/create")]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
@@ -96,15 +96,28 @@ namespace HotelManagement.WebApp.Controllers
         [HttpPost("/admin/rooms/create")]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoomRequest request)
+        public async Task<IActionResult> Create(RoomForCreationDTO model)
         {
             if (!ModelState.IsValid)
-                return View(request);
+                return View(model);
 
-            await _admin.Rooms.CreateAsync(request);
+            try
+            {
+                await _admin.Rooms.CreateAsync(model);
+            }
+            catch (InvalidOperationException)
+            {
+                ModelState.AddModelError("RoomNo", "Room number already exists.");
+                return View(model);
+            }
+
+            TempData["Success"] = "Room added successfully";
             return RedirectToAction(nameof(AdminIndex));
         }
 
+        // -------------------------
+        // EDIT
+        // -------------------------
         [HttpGet("/admin/rooms/edit/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
@@ -114,20 +127,18 @@ namespace HotelManagement.WebApp.Controllers
 
             ViewBag.RoomNo = id;
 
-            return View(new UpdateRoomRequest
-            {
-                RoomType = room.RoomType,
-                AcOption = room.AcOption,
-                AvailabilityStatus = room.AvailabilityStatus,
-                CleanStatus = room.CleanStatus,
-                Price = room.Price
-            });
+            return View(new RoomForUpdateDTO(
+                room.RoomType,
+                room.AcOption,
+                room.AvailabilityStatus,
+                room.CleanStatus,
+                room.Price));
         }
 
         [HttpPost("/admin/rooms/edit/{id:int}")]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateRoomRequest request)
+        public async Task<IActionResult> Edit(int id, RoomForUpdateDTO request)
         {
             if (!ModelState.IsValid)
             {
@@ -135,10 +146,31 @@ namespace HotelManagement.WebApp.Controllers
                 return View(request);
             }
 
-            await _admin.Rooms.UpdateAsync(id, request);
+            try
+            {
+                await _admin.Rooms.UpdateAsync(id, request);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(
+                    nameof(request.Price),
+                    "Room update failed due to a business rule violation."
+                );
+
+                ViewBag.RoomNo = id;
+                return View(request);
+            }
+
             return RedirectToAction(nameof(AdminIndex));
         }
 
+        // -------------------------
+        // DELETE
+        // -------------------------
         [HttpGet("/admin/rooms/delete/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -158,27 +190,24 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction(nameof(AdminIndex));
         }
 
+        // -------------------------
+        // FILTER PREP (CabDriver-style ✅)
+        // -------------------------
         private void PrepareFilters(
-            IEnumerable<RoomDto> rooms,
-            string? type,
-            string? acOption,
-            string? cleanStatus,
-            string? availabilityStatus)
+            int? selectedType,
+            int? selectedAc,
+            int? selectedClean,
+            int? selectedAvailability)
         {
-            ViewBag.RoomTypes = rooms
-                .Select(r => r.RoomType.ToString())
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
+            ViewBag.RoomTypes = Enum.GetValues(typeof(RoomType));
+            ViewBag.AcOptions = Enum.GetValues(typeof(AcOption));
+            ViewBag.CleanStatuses = Enum.GetValues(typeof(CleanStatus));
+            ViewBag.AvailabilityStatuses = Enum.GetValues(typeof(AvailabilityStatus));
 
-            ViewBag.AcOptions = new[] { "AC", "NonAC" };
-            ViewBag.CleanStatuses = new[] { "Clean", "Dirty" };
-            ViewBag.AvailabilityStatuses = new[] { "Available", "Occupied" };
-
-            ViewBag.SelectedType = type;
-            ViewBag.SelectedAc = acOption;
-            ViewBag.SelectedClean = cleanStatus;
-            ViewBag.SelectedAvailability = availabilityStatus;
+            ViewBag.SelectedType = selectedType;
+            ViewBag.SelectedAc = selectedAc;
+            ViewBag.SelectedClean = selectedClean;
+            ViewBag.SelectedAvailability = selectedAvailability;
         }
     }
 }

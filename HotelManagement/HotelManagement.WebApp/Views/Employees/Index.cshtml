@@ -1,34 +1,63 @@
 ﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Employee.EmployeeSummaryDto>
 
-<link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-
 <div class="container mt-4">
 
-    @* ✅ DELETE SUCCESS MESSAGE *@
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold">Employee Directory</h4>
+        <h4 class="fw-bold m-0">Employee Directory</h4>
 
-        <a href="/admin/employees/create" class="btn btn-primary btn-sm">
-            + Add Employee
-        </a>
+        <div class="d-flex gap-2">
+            <a asp-controller="Employees"
+               asp-action="Create"
+               class="btn btn-primary">
+                Add Employee
+            </a>
+
+            <a href="/admin/home"
+               class="btn btn-secondary">
+                ← Back
+            </a>
+        </div>
     </div>
 
-    <table class="table table-bordered table-hover align-middle">
+    <!-- SEARCH FORM -->
+    <form asp-action="Index"
+          asp-controller="Employees"
+          method="get"
+          class="row g-2 mb-3 align-items-end">
+
+        <div class="col-md-3">
+            <label class="form-label">Search</label>
+            <input name="search"
+                   class="form-control"
+                   placeholder="Name or Mobile or Aadhar" />
+        </div>
+
+        <div class="col-md-1">
+            <button type="submit"
+                    class="btn btn-secondary w-100">
+                Search
+            </button>
+        </div>
+
+        <div class="col-md-1">
+            <a asp-action="Index"
+               class="btn btn-danger w-100">
+                Reset
+            </a>
+        </div>
+
+    </form>
+
+    <!-- EMPLOYEE TABLE -->
+    <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
                 <th>Aadhaar</th>
                 <th>Name</th>
                 <th>Position</th>
                 <th>Mobile</th>
-                <th class="text-center">Action</th>
+                <th>Actions</th>
             </tr>
         </thead>
 
@@ -40,19 +69,22 @@
                     <td>@emp.Name</td>
                     <td>@emp.EmployeePosition</td>
                     <td>@emp.MobileNo</td>
-                    <td class="text-center">
-                        <a href="/admin/employees/details?aadharNo=@emp.AadharNo"
-                           class="btn btn-success btn-sm">
-                            View
-                        </a>
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-aadharNo="@emp.AadharNo"
+                           class="btn btn-sm btn-success">View</a>
+
+                        <a asp-action="Edit"
+                           asp-route-aadharNo="@emp.AadharNo"
+                           class="btn btn-sm btn-info ms-1">Edit</a>
+
+                        <a asp-action="Delete"
+                           asp-route-aadharNo="@emp.AadharNo"
+                           class="btn btn-sm btn-danger ms-1">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
-    <a href="/admin/home" class="btn btn-secondary mt-3">
-        ← Back
-    </a>
 
 </div>

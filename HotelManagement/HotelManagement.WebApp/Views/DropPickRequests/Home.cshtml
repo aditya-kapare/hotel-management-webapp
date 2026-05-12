@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Drop & Pick Service";
+}
+
+<div class="container mt-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Drop & Pick Service</h3>
+
+
+            <a href="/reception/home" class="btn btn-dark">
+                ← Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- CREATE REQUEST -->
+        <div class="col-md-4">
+            <a asp-controller="DropPickRequests"
+               asp-action="Create"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:22px;">
+                                +
+                            </div>
+                            <h5 class="ms-3 mb-0">Create New Request</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            Create a new cab drop or pick request
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- VIEW REQUESTS -->
+        <div class="col-md-4">
+            <a asp-controller="DropPickRequests"
+               asp-action="Index"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:20px;">
+                                ≡
+                            </div>
+                            <h5 class="ms-3 mb-0">View Requests</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            View and manage existing requests
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- PAST REQUESTS -->
+        <div class="col-md-4">
+            <a asp-controller="DropPickRequests"
+               asp-action="History"
+               class="text-decoration-none text-dark">
+
+                <div class="card h-100 shadow-sm border-0"
+                     style="border-radius:16px; transition:all .3s;"
+                     onmouseover="this.style.transform='translateY(-6px)'; this.classList.add('shadow-lg')"
+                     onmouseout="this.style.transform=''; this.classList.remove('shadow-lg')">
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                 style="width:48px;height:48px;font-size:18px;">
+                                ⏱
+                            </div>
+                            <h5 class="ms-3 mb-0">Past Requests</h5>
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            View cancelled drop & pick requests
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+    </div>
+</div>

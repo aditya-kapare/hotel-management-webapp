@@ -4,55 +4,132 @@
     ViewData["Title"] = "Check-Out Customer";
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <h2>Check-Out Customer</h2>
 
+<!-- ✅ HTML5 FORMS API ENABLED -->
 <form method="post">
     <input type="hidden" asp-for="StayId" />
 
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label asp-for="CustomerIdentityId"></label>
         <input asp-for="CustomerIdentityId" class="form-control" readonly />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label>Customer Name</label>
         <input asp-for="CustomerName" class="form-control" readonly />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label>Mobile No</label>
         <input asp-for="MobileNo" class="form-control" readonly />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label asp-for="RoomNo"></label>
         <input asp-for="RoomNo" class="form-control" readonly />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label asp-for="CheckInAt"></label>
         <input asp-for="CheckInAt" class="form-control" readonly />
     </div>
 
-    <div class="form-group">
-        <label asp-for="CheckOutAt"></label>
-        <input asp-for="CheckOutAt" type="datetime-local" class="form-control" />
+    <!-- ✅ HTML5 DATE VALIDATION -->
+    <div class="mb-3">
+        <label>Check-Out Date & Time</label>
+        <input asp-for="CheckOutAt"
+               asp-format="{0:yyyy-MM-ddTHH:mm}"
+               type="datetime-local"
+               class="form-control"
+               min="@Model.CheckInAt.ToString("yyyy-MM-ddTHH:mm")"
+               step="60"
+               required />
         <span asp-validation-for="CheckOutAt" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="AmountPaid"></label>
-        <input asp-for="AmountPaid" class="form-control" />
-        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+
+    <div class="form-group mb-2">
+        <label>Total Room Price</label>
+        <input id="RoomPrice"
+               class="form-control"
+               value="@ViewBag.RoomPrice"
+               readonly />
     </div>
 
-    <br />
+    <div class="form-group mb-2">
+        <label>Deposit Paid</label>
+        <input asp-for="DepositPaid"
+               id="DepositPaid"
+               class="form-control"
+               readonly />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Pending Amount</label>
+        <input id="PendingAmount"
+               class="form-control"
+               readonly />
+    </div>
+
+
+    <!-- ✅ HTML5 NUMBER VALIDATION -->
+    <div class="form-group mb-2">
+        <label asp-for="AmountPaid">
+            Total Amount Paid (Deposit + Final)
+        </label>
+        <input asp-for="AmountPaid"
+               id="AmountPaid"
+               class="form-control"
+               type="number"
+               min="0"
+               max="@ViewBag.RoomPrice"
+               step="0.01"
+               required />
+    </div>
 
     <button type="submit" class="btn btn-danger">
         Confirm Check-Out
     </button>
 
-    <a asp-action="Index" class="btn btn-secondary">
+    <a asp-action="Index" class="btn btn-secondary ms-2">
         Cancel
     </a>
 </form>
+
+@section Scripts {
+    <script>
+        (function () {
+
+            const roomPrice = parseFloat(document.getElementById("RoomPrice").value) || 0;
+            const deposit = parseFloat(document.getElementById("DepositPaid").value) || 0;
+            const amountPaidInput = document.getElementById("AmountPaid");
+            const pendingInput = document.getElementById("PendingAmount");
+
+            function calculatePending() {
+                const paid = parseFloat(amountPaidInput.value) || 0;
+                const pending = roomPrice - paid;
+                pendingInput.value = pending >= 0 ? pending.toFixed(2) : "0.00";
+            }
+
+            // ✅ Initialize AmountPaid with Deposit
+            if (!amountPaidInput.value || parseFloat(amountPaidInput.value) === 0) {
+                amountPaidInput.value = deposit.toFixed(2);
+            }
+
+            amountPaidInput.addEventListener("input", calculatePending);
+
+            // ✅ Initial calculation
+            calculatePending();
+
+        })();
+    </script>
+}

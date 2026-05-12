@@ -1,26 +1,61 @@
-﻿@{
+﻿@model HotelManagement.WebApp.ViewModels.LoginViewModel
+
+@{
     ViewData["Title"] = "Login";
 }
 
-<h3>Login</h3>
+<div class="container mt-5" style="max-width: 420px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
 
-<form method="post">
-    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+            <h4 class="fw-bold text-center mb-4">
+                Login
+            </h4>
 
-    <div>
-        <label>Username</label>
-        <input name="username" />
+            <form asp-controller="Auth"
+                  asp-action="Login"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <!-- ✅ RETURN URL -->
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                <!-- USERNAME -->
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input asp-for="Username"
+                           class="form-control"
+                           placeholder="Enter your username" />
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="Enter your password" />
+                </div>
+
+                <!-- SUBMIT -->
+                <div class="d-grid">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Login
+                    </button>
+                </div>
+
+                <!-- ERRORS -->
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div class="text-danger text-center mt-2">
+                        @error.ErrorMessage
+                    </div>
+                }
+
+            </form>
+
+        </div>
     </div>
-
-    <div>
-        <label>Password</label>
-        <input type="password" name="password" />
-    </div>
-
-    <button type="submit">Login</button>
-
-    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-    {
-        <div style="color:red">@error.ErrorMessage</div>
-    }
-</form>
+</div>

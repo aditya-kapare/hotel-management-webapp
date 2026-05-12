@@ -1,150 +1,143 @@
-﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Room.RoomDto>
-@using HotelManagement.WebApp.Domain.Enums
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Room.RoomDTO>
 
 @{
     ViewData["Title"] = "Rooms";
 }
 
-
-
-@functions {
-    string FormatRoomType(string value)
-    {
-        return System.Text.RegularExpressions.Regex
-            .Replace(value, "(\\B[A-Z])", " $1");
-    }
-}
-@functions {
-
-    string FormatEnumText(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return value;
-
-        if (value.Equals("AC", StringComparison.OrdinalIgnoreCase))
-            return "AC";
-
-        if (value.Equals("NonAC", StringComparison.OrdinalIgnoreCase) ||
-            value.Equals("NonAc", StringComparison.OrdinalIgnoreCase))
-            return "Non AC";
-
-        return System.Text.RegularExpressions.Regex
-            .Replace(value, "(?<=[a-z])([A-Z])", " $1");
-    }
-}
-
-
-
-
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Rooms</h3>
-        @if (!ViewBag.IsReadOnly)
-        {
-            <a asp-action="Create" class="btn btn-primary mb-3">Add Room</a>
-        }
+    <div class="d-flex justify-content-between mb-3">
+        <h4 class="fw-bold">Rooms</h4>
 
+        <div>
+            @if (ViewBag.IsReadOnly)
+            {
+                <a href="/reception/home" class="btn btn-dark mt-3">← Back</a>
+            }
+            else
+            {
+                <a href="/admin/home" class="btn btn-secondary mt-3">← Back</a>
+                <a asp-action="Create" class="btn btn-primary mt-3">+ Add Room</a>
+            }
+        </div>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <!-- ✅ FILTERS -->
+    <form method="get" class="row g-3 mb-4 align-items-end">
 
-        <!-- Room Type -->
         <div class="col-md-3">
+            <label class="form-label fw-semibold">Room Type</label>
             <select name="type" class="form-select">
-                <option value="">All Room Types</option>
-                @foreach (var rt in ViewBag.RoomTypes)
+                <option value="">All</option>
+                @foreach (RoomType t in ViewBag.RoomTypes)
                 {
-                    <option value="@rt" selected="@(ViewBag.SelectedType == rt)">
-                        @FormatEnumText(rt)
+                    <option value="@((int)t)"
+                            selected="@(ViewBag.SelectedType != null && (int)t == ViewBag.SelectedType)">
+                        @t.ToDisplayName()
                     </option>
                 }
             </select>
         </div>
 
-        <!-- AC Option -->
-        <div class="col-md-2">
-            <select name="acOption" class="form-select">
-                <option value="">All AC Options</option>
-                @foreach (var ac in ViewBag.AcOptions)
-                {
-                    <option value="@ac" selected="@(ViewBag.SelectedAc == ac)">
-                        @FormatEnumText(ac)
-                    </option>
-                }
-            </select>
-        </div>
-
-        <!-- Clean Status -->
-        <div class="col-md-2">
-            <select name="cleanStatus" class="form-select">
-                <option value="">All Cleanliness</option>
-                @foreach (var cs in ViewBag.CleanStatuses)
-                {
-                    <option value="@cs" selected="@(ViewBag.SelectedClean == cs)">
-                        @cs
-                    </option>
-                }
-            </select>
-        </div>
-
-        <!-- Availability Status -->
         <div class="col-md-3">
-            <select name="availabilityStatus" class="form-select">
-                <option value="">All Availability</option>
-                @foreach (var av in ViewBag.AvailabilityStatuses)
+            <label class="form-label fw-semibold">AC Option</label>
+            <select name="acOption" class="form-select">
+                <option value="">All</option>
+                @foreach (AcOption ac in ViewBag.AcOptions)
                 {
-                    <option value="@av" selected="@(ViewBag.SelectedAvailability == av)">
-                        @av
+                    <option value="@((int)ac)"
+                            selected="@(ViewBag.SelectedAc != null && (int)ac == ViewBag.SelectedAc)">
+                        @ac.ToDisplayName()
                     </option>
                 }
             </select>
         </div>
 
-        <!-- Filter Button -->
-        <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100">
-                Filter
-            </button>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Clean Status</label>
+            <select name="cleanStatus" class="form-select">
+                <option value="">All</option>
+                @foreach (CleanStatus cs in ViewBag.CleanStatuses)
+                {
+                    <option value="@((int)cs)"
+                            selected="@(ViewBag.SelectedClean != null && (int)cs == ViewBag.SelectedClean)">
+                        @cs.ToDisplayName()
+                    </option>
+                }
+            </select>
         </div>
 
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Availability</label>
+            <select name="availabilityStatus" class="form-select">
+                <option value="">All</option>
+                @foreach (AvailabilityStatus av in ViewBag.AvailabilityStatuses)
+                {
+                    <option value="@((int)av)"
+                            selected="@(ViewBag.SelectedAvailability != null && (int)av == ViewBag.SelectedAvailability)">
+                        @av.ToDisplayName()
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+
+        <div class="col-md-1">
+            <a href="@(ViewBag.IsReadOnly ? "/rooms" : "/admin/rooms")"
+               class="btn btn-danger w-100">Reset</a>
+        </div>
     </form>
+
+    <!-- ✅ TABLE -->
     <table class="table table-bordered table-hover align-middle">
-        <thead class="table-light">
+        <thead class="table-dark">
             <tr>
                 <th>Room No</th>
                 <th>Type</th>
                 <th>AC</th>
-                <th>Availability Status</th>
-                <th>Cleanliness status</th>
+                <th>Availability</th>
+                <th>Clean Status</th>
                 <th class="text-end">Price</th>
-                <th class="text-center">Actions</th>
+                @if (!ViewBag.IsReadOnly)
+                {
+                    <th class="text-center">Action</th>
+                }
             </tr>
         </thead>
+
         <tbody>
             @foreach (var r in Model)
             {
                 <tr>
                     <td>@r.RoomNo</td>
-                    <td>@FormatEnumText(r.RoomType.ToString())</td>
-                    <td>@FormatEnumText(r.AcOption.ToString())</td>
+                    <td>@(((RoomType)r.RoomType).ToDisplayName())</td>
+                    <td>@(((AcOption)r.AcOption).ToDisplayName())</td>
                     <td>
-                        <span class="badge @(r.AvailabilityStatus.ToString() == "Available"
-                                                      ? "bg-success" : "bg-danger")">
-                        @r.AvailabilityStatus
+                        <span class="badge @(((AvailabilityStatus)r.AvailabilityStatus == AvailabilityStatus.Available)
+                                                          ? "bg-success" : "bg-danger")">
+                        @(((AvailabilityStatus)r.AvailabilityStatus).ToDisplayName())
                     </span>
                 </td>
-                <td>@r.CleanStatus</td>
+                <td>@(((CleanStatus)r.CleanStatus).ToDisplayName())</td>
                 <td class="text-end">₹ @r.Price</td>
-                <td class="text-center">
+
                 @if (!ViewBag.IsReadOnly)
                     {
-                        <a asp-action="Edit" asp-route-id="@r.RoomNo">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@r.RoomNo">Delete</a>
+                        <td class="text-center">
+                            <a asp-action="Edit"
+                               asp-route-id="@r.RoomNo"
+                               class="btn btn-sm btn-info">Edit</a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@r.RoomNo"
+                               class="btn btn-sm btn-danger ms-2">Delete</a>
+                        </td>
                     }
-                </td>
-            </tr>
-                        }
+                </tr>
+            }
         </tbody>
     </table>
 

@@ -32,10 +32,11 @@
             <h4 class="fw-bold mb-0">Employee Details</h4>
             <small class="text-muted">Complete employee profile</small>
         </div>
-
-        <a href="/admin/employees" class="btn btn-outline-secondary btn-sm">
+        <div class="col-md-2 ms-auto text-end">
+        <a href="/admin/employees" class="btn btn-secondary btn-sm">
             ← Back
         </a>
+        </div>
     </div>
 
     <hr />
@@ -92,10 +93,14 @@
                     <div class="field-box">@Model.MobileNo</div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="field-label">Email</div>
-                    <div class="field-box">@Model.EmailId</div>
-                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.EmailId))
+                {
+                    <div class="col-md-4">
+                        <div class="field-label">Email</div>
+                        <div class="field-box">@Model.EmailId</div>
+                    </div>
+                }
+
 
             </div>
 

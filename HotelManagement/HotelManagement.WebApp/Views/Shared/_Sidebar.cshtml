@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+<div id="sidebar"
+     class="sidebar bg-dark text-white p-3"
+     style="width:250px;
+            margin-left:-250px;
+            transition: margin-left 0.3s ease;">
+
+    <ul class="nav flex-column gap-1">
+
+        @* ================= ADMIN ================= *@
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <a href="/admin/employees" class="nav-link text-white">
+                    Employees
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/rooms" class="nav-link text-white">
+                    Rooms
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/cabdrivers" class="nav-link text-white">
+                    Cab Drivers
+                </a>
+            </li>
+        }
+
+        @* ================= RECEPTIONIST ================= *@
+        @if (User.IsInRole("Receptionist"))
+        {
+            <li class="nav-item">
+                <a href="/customers" class="nav-link text-white">
+                    Customers
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/rooms" class="nav-link text-white">
+                    Rooms
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/stays" class="nav-link text-white">
+                    Stays
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/cabservice" class="nav-link text-white">
+                    Drop & Pick
+                </a>
+            </li>
+        }
+
+    </ul>
+</div>

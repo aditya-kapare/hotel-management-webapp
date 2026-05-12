@@ -1,14 +1,13 @@
 ﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Stays.StayDto>
 
 <style>
-    /* Make table denser */
     .table.compact-table th,
     .table.compact-table td {
-        padding: 0.4rem 0.5rem; /* default is ~0.75rem */
+        padding: 0.4rem 0.5rem;
         vertical-align: middle;
         white-space: nowrap;
     }
-    /* Actions column alignment */
+
     .actions-cell .btn {
         margin-bottom: 2px;
     }
@@ -16,10 +15,17 @@
 
 <div class="container-fluid mt-4 px-4">
 
-    <div class="d-flex justify-content-between mb-3">
-        <h4 class="fw-bold">Active Stays</h4>
+    <!-- HEADER WITH BACK BUTTON -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Active Stays</h4>
+
+        <a href="/stays"
+           class="btn btn-dark">
+            Back
+        </a>
     </div>
 
+    <!-- SEARCH FORM -->
     <form method="get" class="row g-2 mb-3">
 
         <div class="col-md-4">
@@ -50,9 +56,11 @@
 
     </form>
 
+    <!-- TABLE -->
     <table class="table table-bordered table-hover align-middle compact-table">
         <thead class="table-dark">
             <tr>
+                <th>Stay Id</th>
                 <th>Customer ID</th>
                 <th class="col-customer-name">Customer Name</th>
                 <th>Mobile No</th>
@@ -65,6 +73,7 @@
             @foreach (var stay in Model)
             {
                 <tr>
+                    <td>@stay.StayId</td>
                     <td>@stay.CustomerIdentityId</td>
                     <td class="col-customer-name">@stay.CustomerName</td>
                     <td>@stay.MobileNo</td>
@@ -90,6 +99,7 @@
 
                         <a asp-controller="CabService"
                            asp-action="Create"
+                           asp-route-stayId="@stay.StayId"
                            asp-route-identityId="@stay.CustomerIdentityId"
                            class="btn btn-sm btn-warning ms-1">
                             Book Cab
@@ -99,9 +109,5 @@
             }
         </tbody>
     </table>
-
-    <a asp-action="Home" class="btn btn-secondary mt-3">
-        ← Back
-    </a>
 
 </div>

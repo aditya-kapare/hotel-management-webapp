@@ -6,6 +6,9 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
     public interface IDropPickRequestService
     {
         Task<IReadOnlyList<DropPickRequestDto>> GetAllAsync();
+        Task<IReadOnlyList<DropPickRequestDto>> GetRequestListAsync();
+        Task<IReadOnlyList<DropPickRequestDto>> GetOngoingListAsync();
+        Task<IReadOnlyList<DropPickRequestDto>> GetPastListAsync();
         Task<DropPickRequestDto?> GetByIdAsync(int requestId);
 
         Task<IReadOnlyList<DropPickRequestDto>> GetByStayIdAsync(int stayId);
@@ -14,8 +17,9 @@ namespace HotelManagement.WebApp.Application.Interfaces.Services
         Task<IReadOnlyList<CabDriver>> GetAvailableDriversAsync();
 
         Task<DropPickRequestDto> CreateAsync(CreateDropPickRequest request);
+        Task<DropPickRequest> CreateAsync(DropPickRequest request);
         Task<DropPickRequestDto> UpdateAsync(int requestId, UpdateDropPickRequest request);
-
+        Task<DropPickRequestDto?> GetRequestByIdAsync(int requestId);
         Task<bool> DeleteAsync(int requestId);
     }
 }

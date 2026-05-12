@@ -15,44 +15,55 @@ namespace HotelManagement.WebApp.Controllers
             _receptionistService = receptionistService;
         }
 
-        // --------------------------------------------------
-        // a. ADD NEW CUSTOMER (GET)
-        // --------------------------------------------------
+
         [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // --------------------------------------------------
-        // a. ADD NEW CUSTOMER (POST)
-        // --------------------------------------------------
         [HttpPost("create")]
         public async Task<IActionResult> Create(CreateCustomerViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ViewModel → DTO (same style as StaysController)
-            var request = new CreateCustomerRequest
+            try
             {
-                IdentityId = model.IdentityId,
-                IdentityIdType = model.IdentityIdType,
-                MobileNo = model.MobileNo,
-                Name = model.Name,
-                Gender = model.Gender,
-                Address = model.Address,
-                Country = model.Country
-            };
+                var request = new CreateCustomerRequest
+                {
+                    IdentityId = model.IdentityId,
+                    IdentityIdType = model.IdentityIdType,
+                    MobileNo = model.MobileNo,
+                    Name = model.Name,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Country = model.Country
+                };
 
-            await _receptionistService.Customers.CreateAsync(request);
+                await _receptionistService.Customers.CreateAsync(request);
 
-            return RedirectToAction("Create");
+                TempData["Success"] = "Customer added successfully";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Unexpected error occurred. Please try again.");
+                return View(model);
+            }
         }
 
-        // --------------------------------------------------
-        // c. VIEW CUSTOMERS (LIST + FILTER)
-        // --------------------------------------------------
         [HttpGet("")]
         public async Task<IActionResult> Index(
             string? identityType,
@@ -88,9 +99,9 @@ namespace HotelManagement.WebApp.Controllers
             return View("Index", customers);
         }
 
-        // --------------------------------------------------
-        // SHARED FILTER PREP
-        // --------------------------------------------------
+
+
+
         private void PrepareFilters(
             IEnumerable<CustomerDto> customers,
             string? identityType,
@@ -119,5 +130,56 @@ namespace HotelManagement.WebApp.Controllers
             ViewBag.SelectedGender = gender;
             ViewBag.SelectedCountry = country;
         }
+
+        [HttpGet("edit/{identityId}")]
+        public async Task<IActionResult> Edit(string identityId)
+        {
+            var customer = (await _receptionistService.Customers.GetAllAsync())
+                .FirstOrDefault(c => c.IdentityId == identityId);
+
+            if (customer == null)
+                return NotFound();
+
+            var vm = new EditCustomerViewModel
+            {
+                IdentityId = customer.IdentityId,
+                IdentityIdType = customer.IdentityIdType,
+                Name = customer.Name,
+                MobileNo = customer.MobileNo,
+                Gender = customer.Gender,
+                Country = customer.Country,
+                Address = customer.Address
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("edit/{identityId}")]
+        public async Task<IActionResult> Edit(
+       string identityId,
+       EditCustomerViewModel model)
+        {
+            if (identityId != model.IdentityId)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var request = new UpdateCustomerRequest
+            {
+                Name = model.Name,
+                MobileNo = model.MobileNo,
+                Gender = model.Gender,
+                Country = model.Country,
+                Address = model.Address
+            };
+
+            await _receptionistService.Customers.UpdateAsync(
+                model.IdentityId,
+                request);
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

@@ -9,7 +9,14 @@ namespace HotelManagement.WebApp.Application.Dtos.DropPickRequests
         public string Notes { get; init; } = string.Empty;
         public RequestType RequestType { get; init; }
 
+        public DropPickStatus RequestStatus { get; init; }
+
         public int StayId { get; init; }
         public int DriverId { get; init; }
+        public string DriverName { get; init; } = string.Empty;
+        public string CustomerName { get; init; } = string.Empty;
+        public string CustomerPhone { get; init; } = string.Empty;
+        public int RoomNo { get; init; }
+        public bool CanEdit { get; init; }
     }
 }

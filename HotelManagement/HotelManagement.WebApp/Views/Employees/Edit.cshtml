@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Edit Employee";
+    var returnUrl = ViewBag.ReturnUrl as string;
 }
 
 <div class="container mt-5">
@@ -10,91 +11,38 @@
             <small class="text-muted">Update employee information</small>
         </div>
 
-        <a href="/admin/employees" class="btn btn-outline-secondary btn-sm">
-            ← Back
-        </a>
+        @if (!string.IsNullOrEmpty(returnUrl))
+        {
+            <div class="col-md-2 ms-auto text-end">
+            <a href="@returnUrl" class="btn btn-secondary btn-sm mb-5">
+                ← Back
+            </a>
+            </div>
+        }
+        else
+        {
+            <div>
+            <a href="javascript:history.back()"
+               class="btn btn-secondary btn-sm mb-5">
+                ← Back
+            </a>
+            </div>
+        }
     </div>
 
     <form method="post">
 
         @await Component.InvokeAsync("EmployeeForm", Model)
 
-        <div class="mt-4">
-            <button class="btn btn-primary px-4">
-                Update Employee
-            </button>
+        <div class="card-footer bg-light pt-3 pb-4">
+            <div class="d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    Update Employee
+                </button>
+            </div>
         </div>
 
     </form>
 </div>
 
 
-@* @model HotelManagement.WebApp.Application.Dtos.Employee.UpdateEmployeeRequest
-
-<link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-
-<div class="container mt-4">
-
-    <h4 class="fw-bold">Edit Employee</h4>
-    <hr />
-
-    <div class="card shadow">
-        <div class="card-body">
-
-            <form method="post">
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Name</label>
-                        <input asp-for="Name" class="form-control" />
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Age</label>
-                        <input asp-for="Age" class="form-control" />
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Gender</label>
-                        <input asp-for="Gender" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Position</label>
-                        <input asp-for="EmployeePosition" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Salary</label>
-                        <input asp-for="Salary" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Mobile</label>
-                        <input asp-for="MobileNo" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Email</label>
-                        <input asp-for="EmailId" class="form-control" />
-                    </div>
-
-                </div>
-
-                <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
-                        Save Changes
-                    </button>
-
-                    <a href="/admin/employees"
-                       class="btn btn-secondary">
-                        ← Back
-                    </a>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-
-</div> *@

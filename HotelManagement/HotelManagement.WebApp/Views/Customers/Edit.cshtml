@@ -1,0 +1,84 @@
+﻿@model HotelManagement.WebApp.ViewModels.Customers.EditCustomerViewModel
+
+<h3>Edit Customer</h3>
+
+<form method="post">
+
+    <!-- IdentityId -->
+    <input type="hidden" asp-for="IdentityId" />
+
+    <div class="mb-3">
+        <label class="form-label">Identity Type</label>
+        <input class="form-control"
+               value="@Model.IdentityIdType"
+               readonly />
+        <input type="hidden" asp-for="IdentityIdType" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Identity ID</label>
+        <input class="form-control"
+               value="@Model.IdentityId"
+               readonly />
+    </div>
+   
+
+    <!-- Name -->
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name"
+               class="form-control"
+               required
+               pattern="[A-Za-z\s]+" />
+    </div>
+
+    <!-- Mobile -->
+    <div class="mb-3">
+        <label asp-for="MobileNo" class="form-label"></label>
+        <input asp-for="MobileNo"
+               class="form-control"
+               type="tel"
+               inputmode="numeric"
+               pattern="[0-9]{10}"
+               maxlength="10"
+               required />
+    </div>
+
+    <!-- Gender -->
+    <div class="mb-3">
+        <label asp-for="Gender" class="form-label"></label>
+        <select asp-for="Gender"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<HotelManagement.WebApp.Domain.Enums.Gender>()"
+                required>
+            <option value="">-- Select --</option>
+        </select>
+    </div>
+
+    <!-- Country -->
+    <div class="mb-3">
+        <label asp-for="Country" class="form-label"></label>
+        <input asp-for="Country"
+               class="form-control"
+               required
+               pattern="[A-Za-z\s]+" />
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <textarea asp-for="Address"
+                  class="form-control"
+                  rows="3"
+                  required></textarea>
+    </div>
+
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">
+        Update
+    </button>
+    <a href="/customers" class="btn btn-secondary ms-2">
+        Cancel
+    </a>
+
+</form>

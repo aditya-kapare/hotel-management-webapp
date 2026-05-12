@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagement.WebApp.ViewModels.Stays
 {
@@ -29,6 +28,6 @@ namespace HotelManagement.WebApp.ViewModels.Stays
 
         [Range(0, double.MaxValue)]
         [Display(Name = "Pending Amount")]
-        public decimal PendingAmount { get; set; } 
+        public decimal PendingAmount { get; set; }
     }
 }

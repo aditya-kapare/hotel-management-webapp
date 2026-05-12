@@ -32,6 +32,26 @@ namespace HotelManagement.WebApp.Application.Services
             return stays.Select(StayMapping.ToDto).ToList();
         }
 
+        public async Task<IReadOnlyList<StayDto>> GetActiveAsync()
+        {
+            var stays = await _stayDal.GetAllStaysAsync();
+
+            return stays
+                .Where(s => s.CheckOutAt == null)
+                .Select(StayMapping.ToDto)
+                .ToList();
+        }
+
+        public async Task<IReadOnlyList<StayDto>> GetPastAsync()
+        {
+            var stays = await _stayDal.GetAllStaysAsync();
+
+            return stays
+                .Where(s => s.CheckOutAt != null)
+                .Select(StayMapping.ToDto)
+                .ToList();
+        }
+
         public async Task<StayDto?> GetByIdAsync(int stayId)
         {
             if (stayId <= 0) return null;
@@ -92,6 +112,22 @@ namespace HotelManagement.WebApp.Application.Services
             return StayMapping.ToDto(stay);
         }
 
+        public async Task<StayDto> ForceCheckInAsync(CheckInRequest request)
+        {
+            var normalized = NormalizeCheckIn(request);
+
+            var room = await _roomDal.GetRoomByRoomNoAsync(normalized.RoomNo)
+                ?? throw new KeyNotFoundException();
+
+
+            room.CleanStatus = CleanStatus.Clean;
+            room.AvailabilityStatus = AvailabilityStatus.Available;
+            await _roomDal.UpdateRoomAsync(room);
+
+
+            return await CheckInAsync(normalized);
+        }
+
         public async Task<StayDto> UpdateAsync(int stayId, UpdateStayRequest request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
@@ -100,7 +136,7 @@ namespace HotelManagement.WebApp.Application.Services
             var normalized = NormalizeUpdate(request);
             ValidateUpdate(normalized);
 
-            // ✅ Read is required here to validate state & room move
+
             var stay = await _stayDal.GetStayByIdAsync(stayId);
             if (stay is null)
                 throw new KeyNotFoundException($"Stay '{stayId}' was not found.");
@@ -175,7 +211,7 @@ namespace HotelManagement.WebApp.Application.Services
 
             stay.CheckOutAt = checkOutAt;
 
-            // ✅ AmountPaid = additional paid beyond deposit
+
             stay.AmountPaid = normalized.AmountPaid;
 
             stay.PendingAmount = bill.Pending;
@@ -195,11 +231,11 @@ namespace HotelManagement.WebApp.Application.Services
         {
             if (stayId <= 0) return false;
 
-            // ✅ No read-first: single DB op delete
+
             return await _stayDal.DeleteStayAsync(stayId);
         }
 
-        // Normalize + validate helpers
+
         private static string NormalizeId(string id) => (id ?? string.Empty).Trim();
 
         private static CheckInRequest NormalizeCheckIn(CheckInRequest r) => new()

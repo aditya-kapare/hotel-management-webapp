@@ -1,0 +1,66 @@
+﻿@using HotelManagement.WebApp.ViewModels.DropPickRequests
+@model IReadOnlyList<DropPickRequestViewListModel>
+
+<div class="container-fluid mt-4 px-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4 class="fw-bold">Past Drop / Pick Requests</h4>
+
+        <a asp-action="Home" class="btn btn-dark">
+            ← Back
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle compact-table">
+        <thead class="table-dark">
+            <tr>
+                <th>Request ID</th>
+                <th>Room No</th>
+                <th>Customer</th>
+                <th>Mobile</th>
+                <th>Driver</th>
+                <th>Status</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.RequestId</td>
+                    <td>@r.RoomNo</td>
+                    <td>@r.CustomerName</td>
+                    <td>@r.CustomerMobileNo</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(r.DriverName))
+                        {
+                            @r.DriverName
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not Assigned</span>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">Cancelled</span>
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="Details"
+                           asp-route-id="@r.RequestId"
+                           class="btn btn-sm btn-secondary">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No past requests found.
+        </div>
+    }
+</div>

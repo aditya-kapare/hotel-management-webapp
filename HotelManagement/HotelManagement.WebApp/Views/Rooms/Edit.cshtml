@@ -1,22 +1,118 @@
-﻿@model HotelManagement.WebApp.Application.Dtos.Room.UpdateRoomRequest
+﻿@model HotelManagement.WebApp.Application.Dtos.Room.RoomForUpdateDTO
 
 @{
     ViewData["Title"] = "Edit Room";
 }
 
 <div class="container mt-4">
-    <h3 class="mb-3">Edit Room - @ViewBag.RoomNo</h3>
 
-    <form asp-action="Edit" method="post">
-        @Html.AntiForgeryToken()
+    <h4 class="fw-bold">Edit Room - @ViewBag.RoomNo</h4>
 
-        <input type="hidden" name="id" value="@ViewBag.RoomNo" />
+    <div class="col-md-2 ms-auto text-end">
+        <a href="/admin/rooms" class="btn btn-secondary">
+            ← Back
+        </a>
+    </div>
 
-        <partial name="RoomUIForm" model="Model" />
+    <hr />
 
-        <div class="mt-4">
-            <button class="btn btn-warning">Update</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <div class="card shadow">
+        <div class="card-body">
+
+            <!-- ✅ DO NOT use novalidate -->
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- ✅ Room number comes from route -->
+                <input type="hidden" name="id" value="@ViewBag.RoomNo" />
+
+                <div class="row g-3">
+
+                    <!-- ✅ Room Type -->
+                    <div class="col-md-6">
+                        <label class="form-label">Room Type</label>
+                        <select name="RoomType" class="form-select" required>
+                            @foreach (RoomType rt in Enum.GetValues(typeof(RoomType)))
+                            {
+                                <option value="@((int)rt)"
+                                        selected="@((int)rt == Model.RoomType)">
+                                    @rt.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ AC Option -->
+                    <div class="col-md-6">
+                        <label class="form-label">AC Option</label>
+                        <select name="AcOption" class="form-select" required>
+                            @foreach (AcOption ac in Enum.GetValues(typeof(AcOption)))
+                            {
+                                <option value="@((int)ac)"
+                                        selected="@((int)ac == Model.AcOption)">
+                                    @ac.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ Availability Status -->
+                    <div class="col-md-6">
+                        <label class="form-label">Availability Status</label>
+                        <select name="AvailabilityStatus" class="form-select" required>
+                            @foreach (AvailabilityStatus av in Enum.GetValues(typeof(AvailabilityStatus)))
+                            {
+                                <option value="@((int)av)"
+                                        selected="@((int)av == Model.AvailabilityStatus)">
+                                    @av.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ Clean Status -->
+                    <div class="col-md-6">
+                        <label class="form-label">Clean Status</label>
+                        <select name="CleanStatus" class="form-select" required>
+                            @foreach (CleanStatus cs in Enum.GetValues(typeof(CleanStatus)))
+                            {
+                                <option value="@((int)cs)"
+                                        selected="@((int)cs == Model.CleanStatus)">
+                                    @cs.ToDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ Price -->
+                    <div class="col-md-6">
+                        <label class="form-label">Price</label>
+                        <input type="number"
+                               name="Price"
+                               class="form-control"
+                               value="@Model.Price"
+                               step="0.01"
+                               min="1"
+                               required />
+                        <div class="form-text text-muted">
+                            Price must be greater than or equal to 1.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Update
+                    </button>
+
+                    <a href="/admin/rooms" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
         </div>
-    </form>
+    </div>
 </div>

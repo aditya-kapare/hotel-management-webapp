@@ -1,0 +1,95 @@
+﻿@model IReadOnlyList<HotelManagement.WebApp.Application.Dtos.Stays.StayDto>
+
+<style>
+ 
+    .table.compact-table th,
+    .table.compact-table td {
+        padding: 0.4rem 0.5rem;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+   
+    .actions-cell .btn {
+        margin-bottom: 2px;
+    }
+</style>
+
+<div class="container-fluid mt-4 px-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4 class="fw-bold">Past Stays</h4>
+
+       
+        <a asp-action="Home" class="btn btn-dark">
+            ← Back
+        </a>
+    </div>
+
+
+    <form method="get" class="row g-2 mb-3">
+
+        <div class="col-md-4">
+            <input name="customer"
+                   value="@ViewBag.Customer"
+                   class="form-control"
+                   placeholder="Search Customer Name / ID" />
+        </div>
+
+        <div class="col-md-2">
+            <input name="roomNo"
+                   value="@ViewBag.RoomNo"
+                   class="form-control"
+                   placeholder="Room No" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100">
+                Search
+            </button>
+        </div>
+
+        <div class="col-md-2">
+            <a asp-action="History" class="btn btn-outline-danger w-100">
+                Reset
+            </a>
+        </div>
+
+
+    </form>
+
+    <table class="table table-bordered table-hover align-middle compact-table">
+        <thead class="table-dark">
+            <tr>
+                <th>Stay Id</th>
+                <th>Customer ID</th>
+                <th class="col-customer-name">Customer Name</th>
+                <th>Mobile No</th>
+                <th>Room No</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var stay in Model)
+            {
+                <tr>
+                    <td>@stay.StayId</td>
+                    <td>@stay.CustomerIdentityId</td>
+                    <td class="col-customer-name">@stay.CustomerName</td>
+                    <td>@stay.MobileNo</td>
+                    <td>@stay.RoomNo</td>
+                    <td class="text-center actions-cell">
+                        <a asp-action="ViewDetails"
+                           asp-route-stayId="@stay.StayId"
+                           class="btn btn-sm btn-secondary">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+</div>

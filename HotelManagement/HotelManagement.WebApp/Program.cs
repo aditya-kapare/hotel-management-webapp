@@ -1,7 +1,8 @@
-using HotelManagement.WebApp.Application.Facades;
+﻿using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services;
+using HotelManagement.WebApp.Application.Services.Customers;
 using HotelManagement.WebApp.Application.Services.Stays;
 using HotelManagement.WebApp.Domain.Models;
 using HotelManagement.WebApp.Persistance.DataSeeder;
@@ -38,27 +39,47 @@ builder.Services.AddScoped<IStayChargeCalculator, StayChargeCalculator>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICabDriverService, CabDriverService>();
+
+builder.Services
+    .AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
+// HttpClient for CustomerService (API calling)
+builder.Services.AddHttpClient("client", option => { 
+    option.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
+});
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+//builder.Services.AddHttpClient<ICustomerService, CustomerService>(client =>
+//{
+//    client.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
+//});
+
+//builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
 builder.Services.AddScoped<IReceptionistServiceFacade, ReceptionistServiceFacade>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
+
     options.LoginPath = "/auth/login";
     options.AccessDeniedPath = "/auth/denied";
+
 });
 
 
 //************************Middleware********************
 var app = builder.Build();
 
-
+//later to comment this out.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-    await SeedRunner.RunAsync(db);
-    await IdentitySeedData.PopulateAsync(app);
+    //await SeedRunner.RunAsync(db);
+    //await IdentitySeedData.PopulateAsync(app);
 }
 
 
@@ -67,6 +88,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 //This is for test purpose only. It will be removed in production.**************8
 //*****************************Configurations area **********************************

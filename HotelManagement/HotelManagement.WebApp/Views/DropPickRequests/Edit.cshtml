@@ -1,0 +1,90 @@
+﻿@model HotelManagement.WebApp.ViewModels.DropPickRequests.UpdateDropPickRequestViewModel
+@using HotelManagement.WebApp.Domain.Enums
+
+@{
+    ViewData["Title"] = "Edit Drop / Pick Request";
+}
+
+<div class="container mt-4">
+    <h4 class="fw-bold mb-3">Edit Drop / Pick Request</h4>
+
+    <form asp-action="Edit"
+          asp-route-id="@Model.RequestId"
+          method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="RequestId" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3"></div>
+
+        <!-- CONTEXT -->
+        <div class="alert alert-info mb-3">
+            <p class="mb-1">
+                <strong>Customer:</strong> @Model.CustomerName
+            </p>
+            <p class="mb-0">
+                <strong>Current Driver:</strong> @Model.CurrentDriverName
+            </p>
+        </div>
+
+        <!-- DRIVER -->
+        <div class="mb-3">
+            <label asp-for="DriverId" class="form-label"></label>
+            <select asp-for="DriverId"
+                    asp-items="ViewBag.Drivers"
+                    class="form-select">
+            </select>
+            <span asp-validation-for="DriverId"
+                  class="text-danger"></span>
+        </div>
+
+        <!-- REQUEST TYPE -->
+        <div class="mb-3">
+            <label asp-for="RequestType" class="form-label"></label>
+            <select asp-for="RequestType"
+                    asp-items="Html.GetEnumSelectList<RequestType>()"
+                    class="form-select">
+            </select>
+        </div>
+
+       
+        <div class="mb-3">
+            <label asp-for="RequestedAt" class="form-label"></label>
+
+            <input asp-for="RequestedAt"
+                   asp-format="{0:yyyy-MM-ddTHH:mm}"
+                   type="datetime-local"
+                   class="form-control"
+                   min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")"
+                   step="60"
+                   required />
+        </div>
+
+        <!-- STATUS -->
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status"
+                    asp-items="Html.GetEnumSelectList<DropPickStatus>()"
+                    class="form-select">
+            </select>
+        </div>
+
+        <!-- NOTES -->
+        <div class="mb-3">
+            <label asp-for="Notes" class="form-label"></label>
+            <textarea asp-for="Notes"
+                      class="form-control"
+                      rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Update
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary ms-2">
+            Cancel
+        </a>
+    </form>
+</div>

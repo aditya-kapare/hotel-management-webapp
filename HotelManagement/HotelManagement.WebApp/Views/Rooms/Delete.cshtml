@@ -1,4 +1,4 @@
-﻿@model HotelManagement.WebApp.Application.Dtos.Room.RoomDto
+﻿@model HotelManagement.WebApp.Application.Dtos.Room.RoomDTO
 
 @{
     ViewData["Title"] = "Delete Room";
@@ -14,9 +14,15 @@
 
     <form asp-action="Delete" method="post">
         @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="RoomNo" />
 
         <button class="btn btn-danger">Delete</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+        <a asp-action="AdminIndex"
+           asp-controller="Rooms"
+           class="btn btn-secondary">
+            Cancel
+        </a>
     </form>
 </div>

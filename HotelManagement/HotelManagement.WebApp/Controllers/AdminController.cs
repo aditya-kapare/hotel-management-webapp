@@ -7,14 +7,15 @@ namespace HotelManagement.WebApp.Controllers.Admin
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-            [HttpGet("home")]
-            public IActionResult Home()
-            {
-                // Explicitly tell MVC the view name
-                return View("~/Views/AdminHome.cshtml");
-            }
+        [HttpGet("home")]
+        [HttpGet("")]
+        public IActionResult Home()
+        {
+            // Explicitly tell MVC the view name
+            return View("~/Views/AdminHome.cshtml");
         }
+    }
 
 
-    
+
 }
