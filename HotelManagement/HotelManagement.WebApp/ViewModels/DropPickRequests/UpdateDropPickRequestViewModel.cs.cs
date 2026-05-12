@@ -1,6 +1,5 @@
-﻿using System;
+﻿using HotelManagement.WebApp.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using HotelManagement.WebApp.Domain.Enums;
 
 namespace HotelManagement.WebApp.ViewModels.DropPickRequests
 {
@@ -26,7 +25,7 @@ namespace HotelManagement.WebApp.ViewModels.DropPickRequests
 
         public string CustomerName { get; set; } = string.Empty;
         public string CustomerPhone { get; set; } = string.Empty;
-        
+
         public string CurrentDriverName { get; set; } = string.Empty;
 
         public string Notes { get; set; } = string.Empty;

@@ -1,0 +1,21 @@
+﻿/* Sidebar collapse behavior */
+.sidebar {
+    transition: width 0.3s ease;
+}
+
+.sidebar-collapsed {
+    width: 60px !important;
+}
+
+.sidebar-collapsed .nav-link span,
+.sidebar-collapsed h5 {
+    display: none;
+}
+
+.sidebar-collapsed .nav-link {
+    text-align: center;
+}
+
+.sidebar-collapsed .nav-link i {
+    margin-right: 0 !important;
+}

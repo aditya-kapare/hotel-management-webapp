@@ -2,9 +2,6 @@
 using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace HotelManagementSystem.DAL
 {
@@ -17,7 +14,7 @@ namespace HotelManagementSystem.DAL
 
         public CustomerDAL(HotelDbContext context)
         {
-           
+
             _context = context;
         }
 
@@ -43,19 +40,19 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-        
+       
         public async Task<bool> AddCustomerAsync(Customer customer)
         {
-           
+
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
             return true;
         }
 
-      
+
         public async Task<bool> UpdateCustomerAsync(Customer customer)
         {
-          
+
             _context.Customers.Update(customer);
 
             try
@@ -75,7 +72,7 @@ namespace HotelManagementSystem.DAL
         /// </summary>
         public async Task<bool> DeleteCustomerAsync(string identityId)
         {
-            
+
             var customer = await _context.Customers
                 .Where(c => c.IdentityId == identityId)
                 .ExecuteDeleteAsync();

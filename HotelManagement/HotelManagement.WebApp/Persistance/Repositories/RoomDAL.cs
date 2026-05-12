@@ -12,10 +12,10 @@ namespace HotelManagementSystem.DAL
     {
         private readonly HotelDbContext _context;
 
-    
+
         public RoomDAL(HotelDbContext context)
         {
-           
+
             _context = context;
         }
 
@@ -28,7 +28,7 @@ namespace HotelManagementSystem.DAL
             return await _context.Rooms.ToListAsync();
         }
 
-      
+
         public async Task<IEnumerable<Room>> GetRoomsByTypeAsync(int roomType)
         {
             // Filter rooms by room type
@@ -37,7 +37,7 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-        
+
         public async Task<Room?> GetRoomByRoomNoAsync(int roomNo)
         {
             // Find room matching the room number
@@ -45,10 +45,10 @@ namespace HotelManagementSystem.DAL
                 .FirstOrDefaultAsync(r => r.RoomNo == roomNo);
         }
 
-      
+
         public async Task<bool> AddRoomAsync(Room room)
         {
-         
+
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
             return true;
@@ -64,15 +64,15 @@ namespace HotelManagementSystem.DAL
             }
             catch (DbUpdateConcurrencyException)
             {
-              
+
                 return false;
             }
         }
 
-        
+
         public async Task<bool> DeleteRoomAsync(int roomNo)
         {
-       
+
             var room = await _context.Rooms
                 .Where(r => r.RoomNo == roomNo)
                 .ExecuteDeleteAsync();

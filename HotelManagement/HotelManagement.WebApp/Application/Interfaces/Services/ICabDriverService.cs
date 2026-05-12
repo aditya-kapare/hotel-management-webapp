@@ -1,15 +1,26 @@
 ﻿using HotelManagement.WebApp.Application.Dtos.Drivers;
+using HotelManagementSystem.DAL;
 
 namespace HotelManagement.WebApp.Application.Interfaces.Services
 {
     public interface ICabDriverService
     {
-        Task<IReadOnlyList<CabDriverDto>> GetAllAsync();
-        Task<CabDriverDto?> GetByIdAsync(int driverId);
 
-        Task<CabDriverDto> CreateAsync(CabDriverRequest request);
-        Task<CabDriverDto> UpdateAsync(int driverId, CabDriverRequest request);
+        // READ
+        Task<IReadOnlyList<CabDriverDTO>> GetAllAsync();
+        Task<CabDriverDTO?> GetByIdAsync(int driverId);
+        Task<CabDriverDTO?> GetByGovtIdAsync(string govtId);
 
-        Task<bool> DeleteAsync(int driverId);
+        // CREATE
+        Task<CabDriverDTO> CreateAsync(CabDriverForCreationDTO request);
+
+        // UPDATE
+        Task<CabDriverDTO> UpdateByIdAsync(int driverId, CabDriverForUpdateDTO request);
+        Task<CabDriverDTO> UpdateByGovtIdAsync(string govtId, CabDriverForUpdateDTO request);
+
+        // DELETE
+        Task<bool> DeleteByIdAsync(int driverId);
+        Task<bool> DeleteByGovtIdAsync(string govtId);
+
     }
 }
