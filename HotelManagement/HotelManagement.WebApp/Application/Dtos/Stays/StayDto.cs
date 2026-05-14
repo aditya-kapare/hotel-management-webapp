@@ -13,6 +13,8 @@ namespace HotelManagement.WebApp.Application.Dtos.Stays
         public decimal AmountPaid { get; init; }
         public decimal PendingAmount { get; init; }
 
+        public decimal RoomPrice { get; init; }
+
         public string CustomerIdentityId { get; init; } = string.Empty;
 
         public CustomerBriefDto Customer { get; init; }

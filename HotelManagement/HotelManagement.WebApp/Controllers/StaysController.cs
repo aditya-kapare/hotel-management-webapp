@@ -81,6 +81,21 @@ namespace HotelManagement.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            // ✅ Check if room is occupied by another stay
+            var activeStays = await _stayService.Stays.GetActiveAsync();
+
+            var roomOccupied = activeStays.Any(s =>
+                s.RoomNo == model.RoomNo &&
+                s.StayId != stayId); // allow same stay
+
+            if (roomOccupied)
+            {
+                ModelState.AddModelError(nameof(model.RoomNo),
+                    "Selected room is already occupied");
+
+                return View(model); // ✅ NO exception
+            }
+
             var request = new UpdateStayRequest
             {
                 CustomerIdentityId = model.CustomerIdentityId,
@@ -112,7 +127,8 @@ namespace HotelManagement.WebApp.Controllers
                 CheckInAt = stay.CheckInAt,
                 CheckOutAt = DateTime.Now,
                 AmountPaid = stay.AmountPaid,
-                DepositPaid = stay.DepositPaid
+                DepositPaid = stay.DepositPaid,
+                RoomPrice = stay.RoomPrice
             };
 
             var rooms = await _stayService.Rooms.GetAllAsync();
@@ -222,5 +238,171 @@ namespace HotelManagement.WebApp.Controllers
             TempData["Success"] = "Customer checked in (room auto-cleaned)";
             return RedirectToAction("Index", "Stays");
         }
+
+        // ✅ CHECK-IN GET
+    
+
+        //public async Task<IActionResult> CheckIn(string identityId)
+        //{
+        //    if (string.IsNullOrWhiteSpace(identityId))
+        //        return BadRequest();
+
+        //    // ✅ Load customer details
+        //    var customer = await _stayService.Customers.GetByIdentityIdAsync(identityId);
+        //    if (customer == null)
+        //        return NotFound();
+
+        //    var model = new CheckInStayViewModel
+        //    {
+        //        CustomerIdentityId = identityId,
+        //        CustomerName = customer.Name,
+        //        MobileNo = customer.MobileNo,
+        //        CheckInAt = DateTime.Now,
+
+        //        // ✅ STATIC ROOM TYPES (NO ROOM SERVICE)
+        //        RoomTypes = new List<SelectListItem>
+        //{
+        //    new SelectListItem { Value = "Deluxe", Text = "Deluxe" },
+        //    new SelectListItem { Value = "SemiDeluxe", Text = "Semi Deluxe" },
+        //    new SelectListItem { Value = "DoubleBed", Text = "Double Bed" },
+        //    new SelectListItem { Value = "SingleBed", Text = "Single Bed" }
+        //},
+
+        //        // ✅ STATIC AC OPTIONS (NO ROOM SERVICE)
+        //        AcOptions = new List<SelectListItem>
+        //{
+        //    new SelectListItem { Value = "AC", Text = "AC" },
+        //    new SelectListItem { Value = "NonAC", Text = "Non‑AC" }
+        //}
+        //    };
+
+        //    return View(model);
+        //}
+
+        [HttpGet("checkin")]
+        public async Task<IActionResult> CheckIn(string identityId)
+        {
+            var customer = await _stayService.Customers.GetByIdentityIdAsync(identityId);
+
+            var model = new CheckInStayViewModel
+            {
+                CustomerIdentityId = identityId,
+                CustomerName = customer.Name,
+                MobileNo = customer.MobileNo,
+                CheckInAt = DateTime.Now
+            };
+
+            ReloadCheckInDropdowns(model);
+            return View(model);
+        }
+
+        [HttpGet("GetAvailableRooms")]
+        public async Task<IActionResult> GetAvailableRooms(string roomType, string acOption)
+        {
+            if (string.IsNullOrWhiteSpace(roomType) || string.IsNullOrWhiteSpace(acOption))
+                return Ok(new List<object>());
+
+            // ✅ Convert UI strings → enum → int
+            if (!Enum.TryParse<RoomType>(roomType, true, out var parsedRoomType))
+                return Ok(new List<object>());
+
+            if (!Enum.TryParse<AcOption>(acOption, true, out var parsedAcOption))
+                return Ok(new List<object>());
+
+            var rooms = await _stayService.Rooms.GetAllAsync();
+
+            var availableRooms = rooms
+                .Where(r =>
+                    r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
+                    r.RoomType == (int)parsedRoomType &&
+                    r.AcOption == (int)parsedAcOption
+                )
+                .Select(r => new
+                {
+                    roomNo = r.RoomNo
+                })
+                .ToList();
+
+            return Ok(availableRooms);
+        }
+
+
+        // ✅ CHECK-IN POST
+        [HttpPost("checkin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckIn(CheckInStayViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ReloadCheckInDropdowns(model);
+                return View(model);
+            }
+
+            if (!model.RoomNo.HasValue)
+            {
+                ModelState.AddModelError(nameof(model.RoomNo), "Please select a room");
+                ReloadCheckInDropdowns(model);
+                return View(model);
+            }
+
+            await _stayService.Stays.CheckInAsync(new CheckInRequest
+            {
+                CustomerIdentityId = model.CustomerIdentityId,
+                RoomNo = model.RoomNo.Value,
+                CheckInAt = model.CheckInAt,
+                DepositPaid = model.DepositPaid
+            });
+
+            TempData["Success"] = "Customer checked in successfully";
+            return RedirectToAction("Index");
+        }
+        private void ReloadCheckInDropdowns(CheckInStayViewModel model)
+        {
+            model.RoomTypes = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "Deluxe", Text = "Deluxe" },
+        new SelectListItem { Value = "SemiDeluxe", Text = "Semi Deluxe" },
+        new SelectListItem { Value = "DoubleBed", Text = "Double Bed" },
+        new SelectListItem { Value = "SingleBed", Text = "Single Bed" }
+    };
+
+            model.AcOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "AC", Text = "AC" },
+        new SelectListItem { Value = "NonAC", Text = "Non‑AC" }
+    };
+        }
+        [HttpPost("checkin/load-rooms")]
+        public async Task<IActionResult> LoadRooms(CheckInStayViewModel model)
+        {
+            ReloadCheckInDropdowns(model);
+
+            if (!string.IsNullOrEmpty(model.RoomType) &&
+                !string.IsNullOrEmpty(model.AcOption))
+            {
+                var rooms = await _stayService.Rooms.GetAllAsync();
+
+                var availableRooms = rooms
+                    .Where(r =>
+                        r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
+                        r.RoomType == (int)Enum.Parse<RoomType>(model.RoomType) &&
+                        r.AcOption == (int)Enum.Parse<AcOption>(model.AcOption))
+                    .Select(r => new SelectListItem
+                    {
+                        Value = r.RoomNo.ToString(),
+                        Text = $"Room {r.RoomNo}"
+                    })
+                    .ToList();
+
+                model.AvailableRooms = availableRooms;
+            }
+
+            return View("CheckIn", model);
+        }
     }
 }
+
+
+
+
+

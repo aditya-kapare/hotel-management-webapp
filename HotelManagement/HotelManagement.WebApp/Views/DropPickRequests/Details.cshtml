@@ -57,10 +57,12 @@
                 <div class="col-sm-8">@Model.RequestType</div>
             </div>
 
-            <div class="row mb-2">
+        @*     <div class="row mb-2">
                 <div class="col-sm-4 fw-bold">Requested At</div>
-                <div class="col-sm-8">@Model.RequestedAt</div>
-            </div>
+                <div class="col-sm-8">
+                    @Model.RequestedAt.ToString("dd-MM-yyyy HH:mm")
+                </div>
+            </div> *@
 
             @if (!string.IsNullOrWhiteSpace(Model.Notes))
             {

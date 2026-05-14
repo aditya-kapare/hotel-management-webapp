@@ -2,135 +2,92 @@
 
 <h3>Check In Guest</h3>
 
-<form method="post" action="/stays/checkin/@Model.CustomerIdentityId">
+<!-- =========================
+     CUSTOMER DETAILS (READONLY)
+     ========================= -->
+<div class="mb-3">
+    <label>Customer Name</label>
+    <input class="form-control" value="@Model.CustomerName" readonly />
+</div>
+
+<div class="mb-3">
+    <label>Mobile No</label>
+    <input class="form-control" value="@Model.MobileNo" readonly />
+</div>
+
+<!-- =========================
+     STEP 1: LOAD AVAILABLE ROOMS
+     ========================= -->
+<form method="post" asp-action="LoadRooms" asp-controller="Stays">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" asp-for="ActionType" value="Submit" />
     <input type="hidden" asp-for="CustomerIdentityId" />
+    <input type="hidden" asp-for="CustomerName" />
+    <input type="hidden" asp-for="MobileNo" />
+    <input type="hidden" asp-for="CheckInAt" />
 
-    <!-- Customer Name -->
-    <div class="mb-3">
-        <label>Customer Name</label>
-        <input class="form-control" value="@Model.CustomerName" readonly />
-    </div>
-
-    <!-- Mobile -->
-    <div class="mb-3">
-        <label>Mobile No</label>
-        <input class="form-control" value="@Model.MobileNo" readonly />
-    </div>
-
-    <!-- ✅ Check-In Date & Time -->
-    <div class="mb-3">
-        <label>Check-In Date & Time</label>
-        <input asp-for="CheckInAt"
-               asp-format="{0:yyyy-MM-ddTHH:mm}"
-               type="datetime-local"
-               class="form-control"
-               min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")"
-               step="60"
-               required />
-    </div>
-
-    <!-- Room Type -->
     <div class="mb-3">
         <label>Room Type</label>
-        <select id="RoomType" name="RoomType" class="form-control" required>
+        <select asp-for="RoomType"
+                asp-items="Model.RoomTypes"
+                class="form-control"
+                required>
             <option value="">-- Select Room Type --</option>
-            @foreach (var rt in Model.RoomTypes)
-            {
-                <option value="@rt.Value">@rt.Text</option>
-            }
         </select>
     </div>
 
-    <!-- AC Option -->
     <div class="mb-3">
         <label>AC Option</label>
-        <select id="AcOption" name="AcOption" class="form-control" required>
+        <select asp-for="AcOption"
+                asp-items="Model.AcOptions"
+                class="form-control"
+                required>
             <option value="">-- Select AC Option --</option>
-            @foreach (var ac in Model.AcOptions)
-            {
-                <option value="@ac.Value">@ac.Text</option>
-            }
         </select>
     </div>
 
-    <!-- Room Number -->
-    <div class="mb-3">
-        <label>Room Number</label>
-        <select id="RoomNo" name="RoomNo" class="form-control" required>
-            <option value="">-- Select Room --</option>
-        </select>
-    </div>
-
-    <!-- Room Price -->
-    <div class="mb-3">
-        <label>Room Price</label>
-        <input id="Price" class="form-control" readonly />
-    </div>
-
-    <!-- Deposit Paid -->
-    <div class="mb-3">
-        <label>Deposit Paid</label>
-        <input asp-for="DepositPaid"
-               id="DepositPaid"
-               class="form-control"
-               type="number"
-               min="0"
-               step="0.01"
-               required />
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        Confirm Check-In
+    <button type="submit" class="btn btn-secondary">
+        Load Available Rooms
     </button>
-
-    <a href="/customers" class="btn btn-secondary ms-2">
-        Cancel
-    </a>
 </form>
+<hr />
 
-<!-- ✅ SCRIPT (UNCHANGED LOGIC) -->
-<script>
-    const roomType = document.getElementById("RoomType");
-    const acOption = document.getElementById("AcOption");
-    const roomNo = document.getElementById("RoomNo");
-    const priceBox = document.getElementById("Price");
-    const depositInput = document.getElementById("DepositPaid");
+<!-- =========================
+     STEP 2: CONFIRM CHECK-IN
+     ========================= -->
+@if (Model.AvailableRooms != null && Model.AvailableRooms.Any())
+{
+    <form method="post" asp-action="CheckIn" asp-controller="Stays">
+        @Html.AntiForgeryToken()
 
-    function loadRooms() {
-        if (!roomType.value || !acOption.value) return;
+        <input type="hidden" asp-for="CustomerIdentityId" />
+        <input type="hidden" asp-for="RoomType" />
+        <input type="hidden" asp-for="AcOption" />
+        <input type="hidden" asp-for="CheckInAt" />
 
-        fetch(`/Stays/GetAvailableRooms?roomType=${roomType.value}&acOption=${acOption.value}`)
-            .then(res => res.json())
-            .then(data => {
-                roomNo.innerHTML = '<option value="">-- Select Room --</option>';
-                priceBox.value = "";
-                depositInput.value = "";
-                depositInput.removeAttribute("max");
+        <div class="mb-3">
+            <label>Room Number</label>
+            <select asp-for="RoomNo"
+                    asp-items="Model.AvailableRooms"
+                    class="form-control"
+                    required>
+                <option value="">-- Select Room --</option>
+            </select>
+            <span asp-validation-for="RoomNo" class="text-danger"></span>
+        </div>
 
-                data.forEach(r => {
-                    const opt = document.createElement("option");
-                    opt.value = r.roomNo;
-                    opt.text = r.roomNo;
-                    roomNo.appendChild(opt);
-                });
-            });
-    }
+        <div class="mb-3">
+            <label>Deposit Paid</label>
+            <input asp-for="DepositPaid"
+                   class="form-control"
+                   type="number"
+                   min="0"
+                   step="0.01"
+                   required />
+        </div>
 
-    function loadPrice() {
-        if (!roomNo.value) return;
-
-        fetch(`/Stays/GetRoomPrice?roomNo=${roomNo.value}`)
-            .then(res => res.json())
-            .then(data => {
-                priceBox.value = data.price;
-                depositInput.max = data.price;
-            });
-    }
-
-    roomType.addEventListener("change", loadRooms);
-    acOption.addEventListener("change", loadRooms);
-    roomNo.addEventListener("change", loadPrice);
-</script>
+        <button type="submit" class="btn btn-primary">
+            Confirm Check-In
+        </button>
+    </form>
+}
