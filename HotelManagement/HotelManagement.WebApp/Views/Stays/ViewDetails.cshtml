@@ -43,29 +43,38 @@
             <p><strong>Total Paid:</strong> @totalPaid</p>
             <p><strong>Room Price:</strong> @Model.RoomPrice</p>
 
-            <p class="text-danger">
-                <strong>Pending Amount:</strong> @Model.PendingAmount
-            </p>
+
+            @if (Model.CheckOutAt != null)
+            {
+                <p class="text-danger">
+                    <strong>Pending Amount:</strong> @Model.PendingAmount
+                </p>
+            }
 
         </div>
     </div>
 
     <div class="mt-3">
-        <a asp-action="Edit"
-           asp-route-stayId="@Model.StayId"
-           class="btn btn-info">
-            Edit
-        </a>
 
-        <a asp-action="CheckOut"
-           asp-route-stayId="@Model.StayId"
-           class="btn btn-danger ms-2">
-            Check‑Out
-        </a>
+        @if (Model.CheckOutAt == null)
+        {
+            <a asp-action="Edit"
+               asp-route-stayId="@Model.StayId"
+               class="btn btn-info">
+                Edit
+            </a>
+
+            <a asp-action="CheckOut"
+               asp-route-stayId="@Model.StayId"
+               class="btn btn-danger ms-2">
+                Check‑Out
+            </a>
+        }
 
         <a asp-action="Index"
            class="btn btn-secondary ms-2">
             Back to List
         </a>
+
     </div>
 </div>

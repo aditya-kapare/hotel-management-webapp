@@ -2,9 +2,7 @@
 
 <h3>Check In Guest</h3>
 
-<!-- =========================
-     CUSTOMER DETAILS (READONLY)
-     ========================= -->
+
 <div class="mb-3">
     <label>Customer Name</label>
     <input class="form-control" value="@Model.CustomerName" readonly />
@@ -15,9 +13,8 @@
     <input class="form-control" value="@Model.MobileNo" readonly />
 </div>
 
-<!-- =========================
-     STEP 1: LOAD AVAILABLE ROOMS
-     ========================= -->
+
+    
 <form method="post" asp-action="LoadRooms" asp-controller="Stays">
     @Html.AntiForgeryToken()
 
@@ -52,18 +49,19 @@
 </form>
 <hr />
 
-<!-- =========================
-     STEP 2: CONFIRM CHECK-IN
-     ========================= -->
-@if (Model.AvailableRooms != null && Model.AvailableRooms.Any())
+
+@if (Model.AvailableRooms != null || ViewData.ModelState.ContainsKey(nameof(Model.RoomNo)))
 {
+
     <form method="post" asp-action="CheckIn" asp-controller="Stays">
         @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="CustomerIdentityId" />
+        <input type="hidden" asp-for="CustomerName" />
+        <input type="hidden" asp-for="MobileNo" />
         <input type="hidden" asp-for="RoomType" />
         <input type="hidden" asp-for="AcOption" />
-        <input type="hidden" asp-for="CheckInAt" />
+
 
         <div class="mb-3">
             <label>Room Number</label>
@@ -73,6 +71,7 @@
                     required>
                 <option value="">-- Select Room --</option>
             </select>
+
             <span asp-validation-for="RoomNo" class="text-danger"></span>
         </div>
 

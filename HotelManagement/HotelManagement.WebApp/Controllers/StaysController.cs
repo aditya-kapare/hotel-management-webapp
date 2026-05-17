@@ -24,7 +24,7 @@ namespace HotelManagement.WebApp.Controllers
             return View();
         }
 
-        // ✅ LIST
+   
         [HttpGet("list")]
         public async Task<IActionResult> Index(string? customer, int? roomNo)
         {
@@ -51,7 +51,6 @@ namespace HotelManagement.WebApp.Controllers
             return View(stays);
         }
 
-        // ✅ EDIT GET
         [HttpGet("edit/{stayId:int}")]
         public async Task<IActionResult> Edit(int stayId)
         {
@@ -73,43 +72,52 @@ namespace HotelManagement.WebApp.Controllers
 
             return View(model);
         }
-
-        // ✅ EDIT POST
+  
         [HttpPost("edit/{stayId:int}")]
         public async Task<IActionResult> Edit(int stayId, UpdateStayViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ✅ Check if room is occupied by another stay
+           
+            var stay = await _stayService.Stays.GetByIdAsync(stayId);
+            if (stay == null)
+                return NotFound();
+
+          
             var activeStays = await _stayService.Stays.GetActiveAsync();
 
-            var roomOccupied = activeStays.Any(s =>
+            bool roomOccupied = activeStays.Any(s =>
                 s.RoomNo == model.RoomNo &&
-                s.StayId != stayId); // allow same stay
+                s.StayId != stayId 
+            );
 
             if (roomOccupied)
             {
-                ModelState.AddModelError(nameof(model.RoomNo),
-                    "Selected room is already occupied");
+                ModelState.AddModelError(
+                    nameof(model.RoomNo),
+                    "This room is already occupied. Please select another room."
+                );
 
-                return View(model); // ✅ NO exception
+                return View(model);
             }
 
+          
             var request = new UpdateStayRequest
             {
-                CustomerIdentityId = model.CustomerIdentityId,
                 RoomNo = model.RoomNo,
                 CheckInAt = model.CheckInAt,
-                AmountPaid = model.AmountPaid,
-                PendingAmount = model.PendingAmount
+
+               
+                AmountPaid = model.AmountPaid
             };
 
+            
             await _stayService.Stays.UpdateAsync(stayId, request);
+
             return RedirectToAction("Index");
         }
-
-        // ✅ CHECKOUT GET
+     
         [HttpGet("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(int stayId)
         {
@@ -138,10 +146,13 @@ namespace HotelManagement.WebApp.Controllers
             return View(model);
         }
 
-        // ✅ CHECKOUT POST
+     
         [HttpPost("checkout/{stayId:int}")]
         public async Task<IActionResult> CheckOut(int stayId, CheckOutStayViewModel model)
         {
+            var stay = await _stayService.Stays.GetByIdAsync(stayId);
+            if (stay == null)
+                return NotFound();
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -156,17 +167,6 @@ namespace HotelManagement.WebApp.Controllers
 
             var totalAmount = room.Price;
 
-            if (model.AmountPaid > totalAmount)
-            {
-                TempData["Error"] = "Amount paid cannot exceed room price";
-                return RedirectToAction(nameof(CheckOut), new { stayId });
-            }
-
-            if (model.AmountPaid < totalAmount)
-            {
-                TempData["Error"] = "Amount paid is less than required";
-                return RedirectToAction(nameof(CheckOut), new { stayId });
-            }
 
             var request = new CheckOutRequest
             {
@@ -178,7 +178,6 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✅ HISTORY
         [HttpGet("history")]
         public async Task<IActionResult> History(string? customer, int? roomNo)
         {
@@ -205,7 +204,6 @@ namespace HotelManagement.WebApp.Controllers
             return View(stays);
         }
 
-        // ✅ DETAILS
         [HttpGet("details/{stayId:int}")]
         public async Task<IActionResult> ViewDetails(int stayId)
         {
@@ -220,7 +218,7 @@ namespace HotelManagement.WebApp.Controllers
             return View(stay);
         }
 
-        // ✅ FORCE CHECKIN
+      
         [HttpPost("force-checkin")]
         public async Task<IActionResult> ForceCheckIn()
         {
@@ -239,45 +237,6 @@ namespace HotelManagement.WebApp.Controllers
             return RedirectToAction("Index", "Stays");
         }
 
-        // ✅ CHECK-IN GET
-    
-
-        //public async Task<IActionResult> CheckIn(string identityId)
-        //{
-        //    if (string.IsNullOrWhiteSpace(identityId))
-        //        return BadRequest();
-
-        //    // ✅ Load customer details
-        //    var customer = await _stayService.Customers.GetByIdentityIdAsync(identityId);
-        //    if (customer == null)
-        //        return NotFound();
-
-        //    var model = new CheckInStayViewModel
-        //    {
-        //        CustomerIdentityId = identityId,
-        //        CustomerName = customer.Name,
-        //        MobileNo = customer.MobileNo,
-        //        CheckInAt = DateTime.Now,
-
-        //        // ✅ STATIC ROOM TYPES (NO ROOM SERVICE)
-        //        RoomTypes = new List<SelectListItem>
-        //{
-        //    new SelectListItem { Value = "Deluxe", Text = "Deluxe" },
-        //    new SelectListItem { Value = "SemiDeluxe", Text = "Semi Deluxe" },
-        //    new SelectListItem { Value = "DoubleBed", Text = "Double Bed" },
-        //    new SelectListItem { Value = "SingleBed", Text = "Single Bed" }
-        //},
-
-        //        // ✅ STATIC AC OPTIONS (NO ROOM SERVICE)
-        //        AcOptions = new List<SelectListItem>
-        //{
-        //    new SelectListItem { Value = "AC", Text = "AC" },
-        //    new SelectListItem { Value = "NonAC", Text = "Non‑AC" }
-        //}
-        //    };
-
-        //    return View(model);
-        //}
 
         [HttpGet("checkin")]
         public async Task<IActionResult> CheckIn(string identityId)
@@ -302,7 +261,7 @@ namespace HotelManagement.WebApp.Controllers
             if (string.IsNullOrWhiteSpace(roomType) || string.IsNullOrWhiteSpace(acOption))
                 return Ok(new List<object>());
 
-            // ✅ Convert UI strings → enum → int
+        
             if (!Enum.TryParse<RoomType>(roomType, true, out var parsedRoomType))
                 return Ok(new List<object>());
 
@@ -327,7 +286,6 @@ namespace HotelManagement.WebApp.Controllers
         }
 
 
-        // ✅ CHECK-IN POST
         [HttpPost("checkin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(CheckInStayViewModel model)
@@ -345,6 +303,22 @@ namespace HotelManagement.WebApp.Controllers
                 return View(model);
             }
 
+            var activeStays = await _stayService.Stays.GetActiveAsync();
+
+            bool roomOccupied = activeStays.Any(s =>
+                s.RoomNo == model.RoomNo.Value
+            );
+
+            if (roomOccupied)
+            {
+                ModelState.AddModelError(
+                    nameof(model.RoomNo),
+                    "This room is already occupied. Please select another room."
+                );
+
+                ReloadCheckInDropdowns(model);
+                return View(model); 
+            }
             await _stayService.Stays.CheckInAsync(new CheckInRequest
             {
                 CustomerIdentityId = model.CustomerIdentityId,
@@ -383,16 +357,16 @@ namespace HotelManagement.WebApp.Controllers
                 var rooms = await _stayService.Rooms.GetAllAsync();
 
                 var availableRooms = rooms
-                    .Where(r =>
-                        r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
-                        r.RoomType == (int)Enum.Parse<RoomType>(model.RoomType) &&
-                        r.AcOption == (int)Enum.Parse<AcOption>(model.AcOption))
-                    .Select(r => new SelectListItem
-                    {
-                        Value = r.RoomNo.ToString(),
-                        Text = $"Room {r.RoomNo}"
-                    })
-                    .ToList();
+    .Where(r =>
+        r.AvailabilityStatus == (int)AvailabilityStatus.Available &&
+        r.RoomType == (int)Enum.Parse<RoomType>(model.RoomType) &&
+        r.AcOption == (int)Enum.Parse<AcOption>(model.AcOption))
+    .Select(r => new SelectListItem
+    {
+        Value = r.RoomNo.ToString(),
+        Text = $"Room {r.RoomNo} - ₹{r.Price}"
+    })
+    .ToList();
 
                 model.AvailableRooms = availableRooms;
             }

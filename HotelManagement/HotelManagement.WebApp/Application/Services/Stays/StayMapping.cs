@@ -40,9 +40,9 @@ namespace HotelManagement.WebApp.Application.Services.Stays
         {
             s.RoomNo = r.RoomNo;
             s.CheckInAt = (r.CheckInAt == null) ? DateTime.Now : r.CheckInAt.Value;
-            s.DepositPaid = r.DepositPaid;
+    
             s.AmountPaid = r.AmountPaid;
-            s.PendingAmount = r.PendingAmount;
+         
         }
 
         internal static void ApplyCheckOut(CheckOutRequest r, Stay s, DateTime checkOutAt)

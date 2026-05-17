@@ -43,8 +43,18 @@
                         }
                     </td>
                     <td>
-                        <span class="badge bg-danger">Cancelled</span>
+                        @switch (r.Status)
+                        {
+                            case DropPickStatus.Completed:
+                                <span class="badge bg-success">Completed</span>
+                                break;
+
+                            case DropPickStatus.Cancelled:
+                                <span class="badge bg-danger">Cancelled</span>
+                                break;
+                        }
                     </td>
+                    
                     <td class="text-center">
                         <a asp-action="Details"
                            asp-route-id="@r.RequestId"
