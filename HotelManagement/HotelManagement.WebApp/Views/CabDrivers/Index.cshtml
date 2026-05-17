@@ -93,24 +93,36 @@
         </thead>
 
         <tbody>
-            @foreach (var d in Model)
+            @if (Model != null && Model.Any())
+            {
+                foreach (var d in Model)
+                {
+                    <tr>
+                        <td>@d.Name</td>
+                        <td>@d.Age</td>
+                        <td>@((Gender)d.Gender)</td>
+                        <td>@d.CarVendor</td>
+                        <td>@d.CarType</td>
+                        <td class="text-center">
+                            <a href="/admin/cabdrivers/edit/@d.DriverId"
+                               class="btn btn-sm btn-info">
+                                Edit
+                            </a>
+
+                            <a href="/admin/cabdrivers/delete/@d.DriverId"
+                               class="btn btn-sm btn-danger ms-2">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else if (ViewBag.FiltersApplied)
             {
                 <tr>
-                    <td>@d.Name</td>
-                    <td>@d.Age</td>
-                    <td>@((Gender)d.Gender)</td>
-                    <td>@d.CarVendor</td>
-                    <td>@d.CarType</td>
-                    <td class="text-center">
-                        <a href="/admin/cabdrivers/edit/@d.DriverId"
-                           class="btn btn-sm btn-info">
-                            Edit
-                        </a>
-
-                        <a href="/admin/cabdrivers/delete/@d.DriverId"
-                           class="btn btn-sm btn-danger ms-2">
-                            Delete
-                        </a>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No cab drivers match the selected filters.
                     </td>
                 </tr>
             }

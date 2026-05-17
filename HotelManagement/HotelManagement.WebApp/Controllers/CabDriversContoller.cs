@@ -23,37 +23,35 @@ namespace HotelManagement.WebApp.Controllers.Admin
             string? carVendor,
             string? carType)
         {
-            var drivers = await _admin.Drivers.GetAllAsync();
+            var allDrivers = await _admin.Drivers.GetAllAsync();
+
+            var drivers = allDrivers.AsQueryable();
 
             if (gender.HasValue)
-            {
-                drivers = drivers
-                    .Where(d => (int)d.Gender == gender.Value)
-                    .ToList();
-            }
+                drivers = drivers.Where(d => (int)d.Gender == gender.Value);
 
             if (!string.IsNullOrWhiteSpace(carVendor))
-            {
-                drivers = drivers
-                    .Where(d => d.CarVendor == carVendor)
-                    .ToList();
-            }
+                drivers = drivers.Where(d => d.CarVendor == carVendor);
 
             if (!string.IsNullOrWhiteSpace(carType))
-            {
-                drivers = drivers
-                    .Where(d => d.CarType == carType)
-                    .ToList();
-            }
+                drivers = drivers.Where(d => d.CarType == carType);
+
+            var filteredDrivers = drivers.ToList();
 
             ViewBag.Genders = Enum.GetValues(typeof(Gender));
-            ViewBag.CarVendors = drivers.Select(d => d.CarVendor).Distinct().ToList();
-            ViewBag.CarTypes = drivers.Select(d => d.CarType).Distinct().ToList();
+            ViewBag.CarVendors = allDrivers.Select(d => d.CarVendor).Distinct().ToList();
+            ViewBag.CarTypes = allDrivers.Select(d => d.CarType).Distinct().ToList();
+
             ViewBag.SelectedGender = gender;
             ViewBag.SelectedCarVendor = carVendor;
             ViewBag.SelectedCarType = carType;
 
-            return View(drivers);
+            ViewBag.FiltersApplied =
+                gender.HasValue ||
+                !string.IsNullOrWhiteSpace(carVendor) ||
+                !string.IsNullOrWhiteSpace(carType);
+
+            return View(filteredDrivers);
         }
 
         [HttpGet("create")]

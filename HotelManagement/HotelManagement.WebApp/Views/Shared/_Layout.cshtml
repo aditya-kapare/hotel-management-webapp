@@ -64,11 +64,23 @@
 
                 @if(User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    <form method="post" action="/account/logout" class="d-flex align-items-center gap-2">
+                    @* <form method="post" action="/account/logout" class="d-flex align-items-center gap-2">
                         <span class="text-muted small">
                             @User.Identity.Name
                         </span>
                         <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            Logout
+                        </button>
+                    </form> *@
+                    <form asp-controller="Auth"
+                          asp-action="Logout"
+                          method="post"
+                          class="d-inline">
+                        <span class="text-muted small">
+                            @User.Identity.Name
+                        </span>
+                        <button type="submit"
+                                class="btn btn-outline-danger btn-sm">
                             Logout
                         </button>
                     </form>
