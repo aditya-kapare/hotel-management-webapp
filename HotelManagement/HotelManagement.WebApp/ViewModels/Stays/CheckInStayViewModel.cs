@@ -34,6 +34,9 @@ namespace HotelManagement.WebApp.ViewModels.Stays
         // ✅ Dropdown data (server‑side)
         public IEnumerable<SelectListItem> RoomTypes { get; set; } = [];
         public IEnumerable<SelectListItem> AcOptions { get; set; } = [];
-        public IEnumerable<SelectListItem> AvailableRooms { get; set; } = [];
+        public List<SelectListItem> AvailableRooms { get; set; } = new();
+
+
+
     }
 }

@@ -76,8 +76,17 @@
                 <tr>
                     <td>@stay.StayId</td>
                     <td>@stay.CustomerIdentityId</td>
-                    <td class="col-customer-name">@stay.CustomerName</td>
-                    <td>@stay.MobileNo</td>
+
+                    <!-- ✅ FIXED -->
+                    <td class="col-customer-name">
+                        @stay.Customer?.Name
+                    </td>
+
+                    <!-- ✅ FIXED -->
+                    <td>
+                        @stay.Customer?.MobileNo
+                    </td>
+
                     <td>@stay.RoomNo</td>
                     <td class="text-center actions-cell">
                         <a asp-action="ViewDetails"

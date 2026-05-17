@@ -1,4 +1,5 @@
-﻿using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
+﻿using Azure.Core;
+using HotelManagement.WebApp.Application.Dtos.DropPickRequests;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Domain.Enums;
 using HotelManagement.WebApp.Domain.Models;
@@ -17,12 +18,12 @@ public sealed class DropPickRequestsController : Controller
         _receptionist = receptionist;
     }
 
-
+ 
 
     [HttpGet("")]
     public IActionResult Home()
     {
-        return View("Home");
+        return View("Home");   
     }
 
 
@@ -34,7 +35,9 @@ public sealed class DropPickRequestsController : Controller
             .GetRequestListAsync();
 
         var model = requests
-            .Where(r => r.RequestStatus != DropPickStatus.Cancelled)
+           .Where(r =>
+    r.Status == DropPickStatus.Assigned ||
+    r.Status == DropPickStatus.InProgress)
             .Select(r => new DropPickRequestViewListModel
             {
                 RequestId = r.RequestId,
@@ -42,7 +45,7 @@ public sealed class DropPickRequestsController : Controller
                 CustomerName = r.CustomerName,
                 CustomerMobileNo = r.CustomerPhone,
                 DriverName = r.DriverName,
-                Status = r.RequestStatus,
+                Status = r.Status,
                 CanEdit = r.CanEdit
             })
             .ToList();
@@ -55,7 +58,7 @@ public sealed class DropPickRequestsController : Controller
     {
         var model = new CreateDropPickRequestCompositeViewModel();
 
-
+      
         if (stayId.HasValue && stayId.Value > 0)
         {
             var stay = await _receptionist.Stays.GetByIdAsync(stayId.Value);
@@ -124,9 +127,9 @@ public sealed class DropPickRequestsController : Controller
         if (req == null)
             return RedirectToAction(nameof(Index));
 
+    
 
-
-        if (req.RequestStatus is DropPickStatus.Completed or DropPickStatus.Cancelled)
+        if (req.Status is DropPickStatus.Completed or DropPickStatus.Cancelled)
             return RedirectToAction(nameof(Index));
 
         var availableDrivers = (await _receptionist
@@ -139,7 +142,7 @@ public sealed class DropPickRequestsController : Controller
             })
             .ToList();
 
-
+ 
         bool currentDriverExists = availableDrivers
             .Any(d => d.Value == req.DriverId.ToString());
 
@@ -154,7 +157,7 @@ public sealed class DropPickRequestsController : Controller
         }
         else
         {
-
+           
             availableDrivers
                 .First(d => d.Value == req.DriverId.ToString())
                 .Selected = true;
@@ -167,8 +170,7 @@ public sealed class DropPickRequestsController : Controller
             RequestId = req.RequestId,
             DriverId = req.DriverId,
             RequestType = req.RequestType,
-            Status = req.RequestStatus,
-            RequestedAt = req.RequestedAt,
+            Status = req.Status,
 
             CustomerName = req.CustomerName,
             CustomerPhone = req.CustomerPhone,
@@ -195,22 +197,48 @@ public sealed class DropPickRequestsController : Controller
     })
     .ToList();
 
-            ViewBag.Drivers = drivers;
+ViewBag.Drivers = drivers;
 
             return View(model);
         }
 
-        await _receptionist.DropPickRequests.UpdateAsync(
-            id,
-            new UpdateDropPickRequest
-            {
-                RequestId = id,
-                DriverId = model.DriverId,
-                RequestType = model.RequestType,
-                RequestedAt = model.RequestedAt,
-                Status = model.Status,
-                Notes = model.Notes
-            });
+        try
+        {
+            await _receptionist.DropPickRequests.UpdateAsync(
+                id,
+                new UpdateDropPickRequest
+                {
+                    RequestId = id,
+                    DriverId = model.DriverId,
+                    RequestType = model.RequestType,
+                    RequestedAt = model.RequestedAt,
+                    Status = model.Status,
+                    Notes = model.Notes
+                });
+        }
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError(
+                nameof(model.Status),
+                "This status change is not allowed. " +
+                "Allowed flow: Assigned → InProgress / Completed / Cancelled, " +
+                "InProgress → Completed / Cancelled."
+            );
+
+           
+            ViewBag.Drivers = (await _receptionist
+                .DropPickRequests
+                .GetAvailableDriversAsync())
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.DriverId.ToString(),
+                    Selected = d.DriverId == model.DriverId
+                })
+                .ToList();
+
+            return View(model);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -249,7 +277,6 @@ public sealed class DropPickRequestsController : Controller
             DriverName = dto.DriverName,
 
             RequestType = dto.RequestType.ToString(),
-            RequestedAt = dto.RequestedAt,
             Notes = dto.Notes,
 
             CanEdit = dto.CanEdit
@@ -268,20 +295,27 @@ public sealed class DropPickRequestsController : Controller
             return await ReloadCreateView(model);
         }
 
-        var stay = await _receptionist.Stays.GetByIdAsync(model.StayId);
-        if (stay == null)
+        try
         {
-            ModelState.AddModelError(nameof(model.StayId), "Stay not found");
+            var stay = await _receptionist.Stays.GetByIdAsync(model.StayId);
+
+            var customer = await _receptionist
+                .Customers
+                .GetByIdentityIdAsync(stay.CustomerIdentityId);
+
+            model.RoomNo = stay.RoomNo;
+            model.CustomerName = customer?.Name ?? "Unknown";
+            model.CustomerMobileNo = customer?.MobileNo ?? string.Empty;
+        }
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError(
+                nameof(model.StayId),
+                "Stay not found. Please enter a valid Stay ID."
+            );
+
             return await ReloadCreateView(model);
         }
-
-        var customer = await _receptionist
-            .Customers
-            .GetByIdentityIdAsync(stay.CustomerIdentityId);
-
-        model.RoomNo = stay.RoomNo;
-        model.CustomerName = customer?.Name ?? "Unknown";
-        model.CustomerMobileNo = customer?.MobileNo ?? string.Empty;
 
         return await ReloadCreateView(model);
     }
@@ -305,18 +339,20 @@ public sealed class DropPickRequestsController : Controller
             .GetRequestListAsync();
 
         var model = requests
-            .Where(r => (r.RequestStatus == DropPickStatus.Cancelled) || (r.RequestStatus == DropPickStatus.Completed))
-            .Select(r => new DropPickRequestViewListModel
-            {
-                RequestId = r.RequestId,
-                RoomNo = r.RoomNo,
-                CustomerName = r.CustomerName,
-                CustomerMobileNo = r.CustomerPhone,
-                DriverName = r.DriverName,
-                Status = r.RequestStatus,
-                CanEdit = false
-            })
-            .ToList();
+    .Where(r =>
+        r.Status == DropPickStatus.Cancelled ||
+        r.Status == DropPickStatus.Completed)
+    .Select(r => new DropPickRequestViewListModel
+    {
+        RequestId = r.RequestId,
+        RoomNo = r.RoomNo,
+        CustomerName = r.CustomerName,
+        CustomerMobileNo = r.CustomerPhone,
+        DriverName = r.DriverName,
+        Status = r.Status,
+        CanEdit = false
+    })
+    .ToList();
 
         return View("History", model);
     }

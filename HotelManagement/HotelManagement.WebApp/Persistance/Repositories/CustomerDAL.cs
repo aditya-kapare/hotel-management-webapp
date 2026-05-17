@@ -3,6 +3,7 @@ using HotelManagement.WebApp.Persistance.Interfaces.Repositories;
 using HotelManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace HotelManagementSystem.DAL
 {
     /// <summary>
@@ -40,7 +41,7 @@ namespace HotelManagementSystem.DAL
                 .ToListAsync();
         }
 
-
+       
         public async Task<bool> AddCustomerAsync(Customer customer)
         {
 

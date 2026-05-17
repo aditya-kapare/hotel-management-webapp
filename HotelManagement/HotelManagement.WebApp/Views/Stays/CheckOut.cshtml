@@ -14,7 +14,6 @@
 
 <h2>Check-Out Customer</h2>
 
-<!-- ✅ HTML5 FORMS API ENABLED -->
 <form method="post">
     <input type="hidden" asp-for="StayId" />
 
@@ -43,7 +42,6 @@
         <input asp-for="CheckInAt" class="form-control" readonly />
     </div>
 
-    <!-- ✅ HTML5 DATE VALIDATION -->
     <div class="mb-3">
         <label>Check-Out Date & Time</label>
         <input asp-for="CheckOutAt"
@@ -61,7 +59,7 @@
         <label>Total Room Price</label>
         <input id="RoomPrice"
                class="form-control"
-               value="@ViewBag.RoomPrice"
+               value="@Model.RoomPrice"
                readonly />
     </div>
 
@@ -81,17 +79,16 @@
     </div>
 
 
-    <!-- ✅ HTML5 NUMBER VALIDATION -->
     <div class="form-group mb-2">
         <label asp-for="AmountPaid">
-            Total Amount Paid (Deposit + Final)
+            Additional Amount Paid (Deposit + Final)
         </label>
         <input asp-for="AmountPaid"
                id="AmountPaid"
                class="form-control"
                type="number"
                min="0"
-               max="@ViewBag.RoomPrice"
+            
                step="0.01"
                required />
     </div>
@@ -115,19 +112,18 @@
             const pendingInput = document.getElementById("PendingAmount");
 
             function calculatePending() {
-                const paid = parseFloat(amountPaidInput.value) || 0;
-                const pending = roomPrice - paid;
+
+        const paid = parseFloat(amountPaidInput.value) || 0;
+        const totalPaid = deposit + paid;
+        const pending = roomPrice - totalPaid;
+
                 pendingInput.value = pending >= 0 ? pending.toFixed(2) : "0.00";
             }
 
-            // ✅ Initialize AmountPaid with Deposit
-            if (!amountPaidInput.value || parseFloat(amountPaidInput.value) === 0) {
-                amountPaidInput.value = deposit.toFixed(2);
-            }
+
 
             amountPaidInput.addEventListener("input", calculatePending);
 
-            // ✅ Initial calculation
             calculatePending();
 
         })();

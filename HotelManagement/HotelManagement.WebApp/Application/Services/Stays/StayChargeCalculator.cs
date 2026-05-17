@@ -36,7 +36,7 @@ namespace HotelManagement.WebApp.Application.Services.Stays
             decimal depositPaid,
             decimal additionalAmountPaid)
         {
-            // Compute nights and total charge
+          
             var nights = CalculateNights(checkInAt, checkOutAt);
             var total = CalculateTotalCharge(roomPricePerNight, nights);
 

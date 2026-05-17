@@ -5,11 +5,11 @@ namespace HotelManagement.WebApp.Application.Dtos.DropPickRequests
     public sealed class DropPickRequestDto
     {
         public int RequestId { get; init; }
-        public DateTime RequestedAt { get; init; }
+
         public string Notes { get; init; } = string.Empty;
         public RequestType RequestType { get; init; }
 
-        public DropPickStatus RequestStatus { get; init; }
+        public DropPickStatus Status { get; init; }
 
         public int StayId { get; init; }
         public int DriverId { get; init; }

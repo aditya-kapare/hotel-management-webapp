@@ -1,4 +1,4 @@
-﻿using HotelManagement.WebApp.Application.Facades;
+using HotelManagement.WebApp.Application.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Facades;
 using HotelManagement.WebApp.Application.Interfaces.Services;
 using HotelManagement.WebApp.Application.Services;
@@ -16,8 +16,20 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //***********************Service Registration area****************************
-builder.Services.AddControllersWithViews();
 
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
+
+builder.Services.AddHttpClient("client", options =>
+{
+    options.BaseAddress = new Uri("http://localhost:8000/");
+});
 builder.Services.AddDbContext<HotelDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:HotelManagementSystemDb"])
 );
@@ -39,25 +51,9 @@ builder.Services.AddScoped<IStayChargeCalculator, StayChargeCalculator>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ICabDriverService, CabDriverService>();
-
-builder.Services
-    .AddControllersWithViews()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-    });
-
-// HttpClient for CustomerService (API calling)
-builder.Services.AddHttpClient("client", option => { 
-    option.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
-});
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-//builder.Services.AddHttpClient<ICustomerService, CustomerService>(client =>
-//{
-//    client.BaseAddress = new Uri("http://localhost:8000/"); // 🔁 WebAPI port
-//});
-
-//builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>(
+    
+    );
 builder.Services.AddScoped<IStayService, StayService>();
 builder.Services.AddScoped<IDropPickRequestService, DropPickRequestService>();
 builder.Services.AddScoped<IAdminServiceFacade, AdminServiceFacade>();
@@ -75,12 +71,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 var app = builder.Build();
 
 //later to comment this out.
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-    //await SeedRunner.RunAsync(db);
-    //await IdentitySeedData.PopulateAsync(app);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
+//    await SeedRunner.RunAsync(db);
+//    await IdentitySeedData.PopulateAsync(app);
+//}
 
 
 

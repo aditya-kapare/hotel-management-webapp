@@ -29,5 +29,11 @@ namespace HotelManagement.WebApp.ViewModels.Stays
         [Range(0, double.MaxValue)]
         [Display(Name = "Deposit Paid")]
         public decimal DepositPaid { get; set; }
+
+        [Range(0, double.MaxValue)]
+        [Display(Name = "Room Price")]
+        public decimal RoomPrice { get; set; }
+
+        public decimal PendingAmount { get; set; }
     }
 }

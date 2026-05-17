@@ -44,8 +44,8 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Adds a new employee with optional password.
         /// </summary>
-
-        //URL [HttpPost] - /api/emplyees/
+        
+        //URL [HttpPost] - /api/employees/
         public async Task<bool> AddEmployeeAsync(
             ApplicationEmployee employee,
             string? password)
@@ -72,14 +72,14 @@ namespace HotelManagementSystem.DAL
             var update = await _userManager.UpdateAsync(employee);
             return update.Succeeded;
         }
-
+        //URL [HttpPut] - /api/employees/{employeeId}/employee
         public async Task<bool> UpdateEmployeeAsync(ApplicationEmployee employee)
         {
             var result = await _userManager.UpdateAsync(employee);
             return result.Succeeded;
         }
 
-
+        //URL [HttpDelete] - /api/emplyees/{aadharNo:}
         public async Task<bool> DeleteEmployeeByAadharAsync(string aadharNo)
         {
             // Locate employee by Aadhaar number

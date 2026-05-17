@@ -1,60 +1,79 @@
 ﻿@model HotelManagement.WebApp.ViewModels.Stays.UpdateStayViewModel
 
 @{
-    ViewData["Title"] = "Update Stay Details";
+    ViewData["Title"] = "Update Stay";
 }
 
-<h2>Update Checked-In Customer</h2>
+<h2>Update Stay</h2>
 
 <form method="post">
+
     <input type="hidden" asp-for="StayId" />
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="CustomerIdentityId"></label>
-        <input asp-for="CustomerIdentityId" class="form-control" readonly />
+        <input asp-for="CustomerIdentityId" class="form-control" required />
     </div>
 
-    <div class="form-group">
-        <label>Customer Name</label>
-        <input asp-for="CustomerName" class="form-control" readonly />
+    <div class="form-group mb-3">
+        <label asp-for="CustomerName"></label>
+        <input asp-for="CustomerName" class="form-control" required />
     </div>
 
-    <div class="form-group">
-        <label>Mobile No</label>
-        <input asp-for="MobileNo" class="form-control" readonly />
+    <div class="form-group mb-3">
+        <label asp-for="MobileNo"></label>
+        <input asp-for="MobileNo"
+               class="form-control"
+               pattern="[0-9]{10}"
+               maxlength="10"
+               inputmode="numeric"
+               required
+               title="Enter 10 digit mobile number" />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="RoomNo"></label>
-        <input asp-for="RoomNo" class="form-control" />
-        <span asp-validation-for="RoomNo" class="text-danger"></span>
-    </div>
+    <input asp-for="RoomNo"
+           type="number"
+           min="1"
+           class="form-control"
+           required />
+           </div>
 
-    <div class="form-group">
-        <label asp-for="CheckInAt"></label>
-        <input asp-for="CheckInAt" type="datetime-local" class="form-control" />
-        <span asp-validation-for="CheckInAt" class="text-danger"></span>
-    </div>
+    <span asp-validation-for="RoomNo" class="text-danger"></span>
 
-    <div class="form-group">
+
+    <div class="form-group mb-3">
         <label asp-for="AmountPaid"></label>
-        <input asp-for="AmountPaid" class="form-control" />
-        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+        <input asp-for="AmountPaid"
+               type="number"
+               min="0"
+               step="0.01"
+               class="form-control"
+               required
+               title="Amount paid cannot be negative" />
     </div>
 
-    <div class="form-group">
+   
+    <div class="form-group mb-3">
         <label asp-for="PendingAmount"></label>
-        <input asp-for="PendingAmount" class="form-control" />
-        <span asp-validation-for="PendingAmount" class="text-danger"></span>
-    </div>
+        <input asp-for="PendingAmount"
+               type="number"
+               min="0"
+               step="0.01"
+               class="form-control"
+               required
+               title="Pending amount cannot be negative" 
+               readonly/>
 
-    <br />
+    </div>
 
     <button type="submit" class="btn btn-primary">
         Update
     </button>
 
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancel
+    <a asp-action="Index" class="btn btn-dark">
+        Back
     </a>
+
 </form>

@@ -8,7 +8,7 @@ namespace HotelManagement.WebApp.Application.Services
     {
         private const string BaseRoute = "api/cabdrivers";
         private readonly IHttpClientFactory _httpClientFactory;
-        //private readonly HttpClient _httpClient;
+  
 
         public CabDriverService(IHttpClientFactory httpClientFactory)
         {
@@ -67,7 +67,7 @@ namespace HotelManagement.WebApp.Application.Services
 
             var response = await _httpClient.PostAsJsonAsync(BaseRoute, request);
 
-            // ✅ HANDLE DUPLICATE (409)
+
             if (response.StatusCode == HttpStatusCode.Conflict)
             {
                 var apiMessage = await response.Content.ReadAsStringAsync();
