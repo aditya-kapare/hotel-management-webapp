@@ -70,7 +70,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 //************************Middleware********************
 var app = builder.Build();
 
-//later to comment this out.
+//in order to seed the database, we need to create a scope and get the required services. This is for test purpose only. It will be removed in production.**************8
 //using (var scope = app.Services.CreateScope())
 //{
 //    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
